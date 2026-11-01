@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"menuScene.h"
 #include"seeScene.h"
 #include"music.h"
@@ -15,13 +16,13 @@ bool seescene::init() {
 	if (!Layer::init())
 		return false;
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óÐ¡
+	auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨çŽ‡å¤§å°
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óÐ¡
+	Size screenSize = Director::getInstance()->getWinSize();    //èŽ·å–å±å¹•å¤§å°
 
-	//·Å±³¾°
-	auto backgroundImage = Sprite::create("see.png");
-	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //»ñµÃËõ·Å±¶Êý
+	//æ”¾èƒŒæ™¯
+	auto backgroundImage = EnglishUI::sprite("see.png");
+	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //èŽ·å¾—ç¼©æ”¾å€æ•°
 	float scaleY = screenSize.height / backgroundImage->getContentSize().height;
 	if (backgroundImage == nullptr)
 		problemLoading("'see.png'");
@@ -32,12 +33,12 @@ bool seescene::init() {
 		backgroundImage->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 		this->addChild(backgroundImage, 0);
 	}
-	//Ìí¼Ó·µ»Ø°´Å¥
+	//æ·»åŠ è¿”å›žæŒ‰é’®
 	auto menu = Menu::create();
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	auto returnButton = MenuItemImage::create("CarrotGuardRes/UI/SettingReturnNormal.png", "CarrotGuardRes/UI/SettingReturnSelected.png", CC_CALLBACK_1(seescene::to_menuScene, this));
+	auto returnButton = EnglishUI::menuItem("CarrotGuardRes/UI/SettingReturnNormal.png", "CarrotGuardRes/UI/SettingReturnSelected.png", CC_CALLBACK_1(seescene::to_menuScene, this));
 	if (returnButton == nullptr ||
 		returnButton->getContentSize().width <= 0 ||
 		returnButton->getContentSize().height <= 0)

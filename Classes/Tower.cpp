@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"Tower.h"
 #include"BaseLevelScene.h"
 #include"music.h"
@@ -43,7 +44,7 @@ const float Shit::speed = 500;
 float Tower::interval_table[TOWER_NUM] = { 0.8,1.5,2.5,1.0 };
 
 std::string Bottle::bottle_shell[3] = { "Towers/shell1-1.png","Towers/shell1-2.png" ,"Towers/shell1-3.png" };
-//ÓÎÏ·¹ı³ÌÖĞ²»ĞèÒª±ä¶¯µÄÁ¿µÄ³õÊ¼»¯
+//æ¸¸æˆè¿‡ç¨‹ä¸­ä¸éœ€è¦å˜åŠ¨çš„é‡çš„åˆå§‹åŒ–
 
 std::string MyPlane::ray[3] = { "Towers/ray0.png","Towers/ray1.png","Towers/ray2.png" };
 
@@ -63,17 +64,17 @@ Tower* createTower(int index,int grade)
 
 int count = 0;
 
-float getAngleBetweenVec2(const Vec2& v1, const Vec2& v2);//»ñÈ¡Á½¸öÏòÁ¿Ö®¼äµÄ¼Ğ½Ç
-bool isColliding(Sprite* spriteA, Sprite* spriteB);//¾ÙĞĞÅö×²¼ì²â
+float getAngleBetweenVec2(const Vec2& v1, const Vec2& v2);//è·å–ä¸¤ä¸ªå‘é‡ä¹‹é—´çš„å¤¹è§’
+bool isColliding(Sprite* spriteA, Sprite* spriteB);//ä¸¾è¡Œç¢°æ’æ£€æµ‹
 
 void Tower::build(BaseLevelScene* my_scene, Vec2 position)
-{//ÅĞ¶ÏÇ®¹»²»¹»µÄ£¬²»ÔÚÕâÀïÊµÏÖ£¬Ç®²»¹»Ê±£¬²»»á´´½¨Õâ¸ö¶ÔÏó
-	auto base = Sprite::create(base_table[index]);
+{//åˆ¤æ–­é’±å¤Ÿä¸å¤Ÿçš„ï¼Œä¸åœ¨è¿™é‡Œå®ç°ï¼Œé’±ä¸å¤Ÿæ—¶ï¼Œä¸ä¼šåˆ›å»ºè¿™ä¸ªå¯¹è±¡
+	auto base = EnglishUI::sprite(base_table[index]);
 	base->setAnchorPoint(anchorpoint_table[index][0]);
 	base->setPosition(position);
 	my_scene->addChild(base);
 	sp_base = base;
-	auto tower = Sprite::create(tower_table[index][grade]);
+	auto tower = EnglishUI::sprite(tower_table[index][grade]);
 	tower->setAnchorPoint(anchorpoint_table[index][1]);
 	tower->setPosition(position);
 	if (index == 1) tower->setScale(0.8);
@@ -100,7 +101,7 @@ void Tower::update(BaseLevelScene* my_scene, Vec2 position)
 	my_scene->removeChild(sprite_mark);
 	sprite_mark->release();
 	grade += 1;
-	auto tower = Sprite::create(tower_table[index][grade]);
+	auto tower = EnglishUI::sprite(tower_table[index][grade]);
 	if (index == 1) tower->setScale(0.8);
 	tower->setAnchorPoint(anchorpoint_table[index][1]);
 	tower->setPosition(position);
@@ -114,11 +115,11 @@ void Tower::update(BaseLevelScene* my_scene, Vec2 position)
 void Tower::UpMenuAppear(BaseLevelScene* my_scene, Vec2& position)
 {
 	Sprite* up;
-	if (grade < 2 && my_scene->getMoney() >= up_cost[index][grade]) up = Sprite::create(up_graph[up_cost[index][grade]]);
-	else if (grade < 2) up = Sprite::create(noup_graph[up_cost[index][grade]]);
-	else up = Sprite::create("Towers/upgrade_top.png");
-	auto sale = Sprite::create(sale_graph[sell_money[index][grade]]);
-	auto range = Sprite::create("Towers/range.png");
+	if (grade < 2 && my_scene->getMoney() >= up_cost[index][grade]) up = EnglishUI::sprite(up_graph[up_cost[index][grade]]);
+	else if (grade < 2) up = EnglishUI::sprite(noup_graph[up_cost[index][grade]]);
+	else up = EnglishUI::sprite("Towers/upgrade_top.png");
+	auto sale = EnglishUI::sprite(sale_graph[sell_money[index][grade]]);
+	auto range = EnglishUI::sprite("Towers/range.png");
 	range->setScale(range_table[index][grade] / range->getContentSize().width);
 	up->setScale(CELL_SIZE / up->getContentSize().width);
 	sale->setScale(CELL_SIZE / sale->getContentSize().width);
@@ -144,7 +145,7 @@ void Tower::UpMenuGone(BaseLevelScene* my_scene)
 template<class T>
 void DemageSprite(T*sp,int demage)
 {
-	
+
 	sp->getHurt(demage);
 	if (!sp->getHpVisibleState()) {
 		sp->setHpVisible(true);
@@ -155,13 +156,13 @@ void DemageSprite(T*sp,int demage)
 
 void Bottle::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu)
 {
-	
+
 	/*Director::getInstance()->end();*/
 	/*Director::getInstance()->end();*/
 	interval = 0;
 	if (isTarget == 1) {
 		if (AttackSprite(tar_m, my_scene,jiasu))
-			return;//Èç¹û´òÁË£¬·µ»Ø£¬·ñÔòÍùÏÂ×ß
+			return;//å¦‚æœæ‰“äº†ï¼Œè¿”å›ï¼Œå¦åˆ™å¾€ä¸‹èµ°
 	}
 	if (isTarget == 2) {
 		if (AttackSprite(tar_o, my_scene,jiasu))
@@ -184,47 +185,47 @@ template<class T>
 bool Bottle::AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu)
 {
 	Vec2 m_pos = sp->getPosition();
-	//¼ÆËã¾àÀë
+	//è®¡ç®—è·ç¦»
 	double distance = sqrt((m_pos.x - pos.x) * (m_pos.x - pos.x) + (m_pos.y - pos.y) * (m_pos.y - pos.y));
-	if (distance < range / 2) {//ÈôÔÚ·¶Î§ÄÚ£¬Ôò·¢¶¯¹¥»÷
+	if (distance < range / 2) {//è‹¥åœ¨èŒƒå›´å†…ï¼Œåˆ™å‘åŠ¨æ”»å‡»
 		Vec2 direction = m_pos - pos;
 		direction.normalize();
 		auto ang = direction.getAngle();
 		ang = m_pos.y < pos.y ? (ang < 0 ? fabs(ang / PI) * 180 : ang / PI * 180) : (ang > 0 ? -ang / PI * 180 : ang / PI * 180);
-		auto action1 = RotateTo::create(fabs(ang / (360*jiasu)), ang);//ÅÚËş×ªÏò
+		auto action1 = RotateTo::create(fabs(ang / (360*jiasu)), ang);//ç‚®å¡”è½¬å‘
 
 
 
 		auto callback2 = CallFunc::create([this, my_scene, sp, m_pos, ang,jiasu]() {
 
-			tower_angle = ang;//½Ç¶È¸üĞÂ
-			ShellProduct(my_scene);//×Óµ¯µÄÉú³É
-			//Vec2 start_pos = curr_shell->getPosition();//»ñÈ¡³õÊ¼Î»ÖÃ
-			//curr_dis = sqrt((m_pos.x - start_pos.x) * (m_pos.x - start_pos.x) + (m_pos.y - start_pos.y) * (m_pos.y - start_pos.y)); 
+			tower_angle = ang;//è§’åº¦æ›´æ–°
+			ShellProduct(my_scene);//å­å¼¹çš„ç”Ÿæˆ
+			//Vec2 start_pos = curr_shell->getPosition();//è·å–åˆå§‹ä½ç½®
+			//curr_dis = sqrt((m_pos.x - start_pos.x) * (m_pos.x - start_pos.x) + (m_pos.y - start_pos.y) * (m_pos.y - start_pos.y));
 			//auto action2 = MoveTo::create(curr_dis / speed, m_pos);
 			//auto callback1 = CallFunc::create([this, my_scene, &monsters, it, ang]() {
 			//	ShellDemage(my_scene, monsters, it); });
 			//auto sequence1 = Sequence::create(action2, callback1, nullptr);
-			//curr_shell->runAction(sequence1); 
+			//curr_shell->runAction(sequence1);
 
-			auto callback3 = CallFunc::create([sp, this,jiasu]() {//×Óµ¯×·×Ù
+			auto callback3 = CallFunc::create([sp, this,jiasu]() {//å­å¼¹è¿½è¸ª
 				auto m_pos = sp->getPosition();
 				auto s_pos = curr_shell->getPosition();
 
 				auto move = m_pos - s_pos;
 				move.normalize();
 				move = move * 10;
-				//¼ì²â×Óµ¯Î»ÖÃºÍ¹ÖÊŞÎ»ÖÃ£¬²¢Ïò¸ÃÎ»ÖÃÒÆ¶¯10¸öÏñËØµã
+				//æ£€æµ‹å­å¼¹ä½ç½®å’Œæ€ªå…½ä½ç½®ï¼Œå¹¶å‘è¯¥ä½ç½®ç§»åŠ¨10ä¸ªåƒç´ ç‚¹
 				auto action3 = MoveBy::create(10 / (speed*jiasu), move);
 				curr_shell->runAction(action3);
 				});
 			auto callback4 = CallFunc::create([my_scene, sp, this]() {
 				if ((sp->getPosition() - curr_shell->getPosition()).distance(Vec2(0, 0)) < 10.f) {
-					curr_shell->stopAllActions();//Ò»µ©¾àÀë×ã¹»Ğ¡£¬ÔòÍ£Ö¹¶¯×÷
+					curr_shell->stopAllActions();//ä¸€æ—¦è·ç¦»è¶³å¤Ÿå°ï¼Œåˆ™åœæ­¢åŠ¨ä½œ
 					ShellDemage(my_scene, sp);
 				}
 				});
-			de_time = 10 / (speed*jiasu);//²»¶ÏÖØ¸´¼ì²âÓëÒÆ¶¯£¬ÒÔÊµÏÖ×·»÷Ğ§¹û
+			de_time = 10 / (speed*jiasu);//ä¸æ–­é‡å¤æ£€æµ‹ä¸ç§»åŠ¨ï¼Œä»¥å®ç°è¿½å‡»æ•ˆæœ
 			auto sequence3 = Sequence::create(callback3, DelayTime::create(de_time), callback4, nullptr);
 			auto repeat = RepeatForever::create(sequence3);
 			curr_shell->runAction(repeat);
@@ -234,13 +235,13 @@ bool Bottle::AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu)
 		sprite_mark->runAction(sequence2);
 		return true;
 	}
-	return false;//Èç¹ûÔÚ·¶Î§Íâ£¬ËµÃ÷Ã»´ò£¬·µ»Ø0
+	return false;//å¦‚æœåœ¨èŒƒå›´å¤–ï¼Œè¯´æ˜æ²¡æ‰“ï¼Œè¿”å›0
 }
 
 
-void Bottle::ShellProduct(Scene* my_scene)//²úÉú×Óµ¯
+void Bottle::ShellProduct(Scene* my_scene)//äº§ç”Ÿå­å¼¹
 {
-	auto shell = Sprite::create(bottle_shell[grade]);
+	auto shell = EnglishUI::sprite(bottle_shell[grade]);
 	Vec2 start_pos;
 	start_pos.x = pos.x;/*+ (sprite_mark->getContentSize().height+shell->getContentSize().width)* cos(PI*tower_angle/180)/2;*/
 	start_pos.y = pos.y;/* + (sprite_mark->getContentSize().height+shell->getContentSize().width)*sin(PI * tower_angle/180)/ 2;*/
@@ -255,22 +256,22 @@ void Bottle::ShellProduct(Scene* my_scene)//²úÉú×Óµ¯
 
 
 template<class T>
-void Bottle::ShellDemage(BaseLevelScene* my_scene, T* sp)//×Óµ¯¶Ô¹ÖÊŞÔì³ÉÉËº¦ºó£¬×Óµ¯ÏûÊ§
+void Bottle::ShellDemage(BaseLevelScene* my_scene, T* sp)//å­å¼¹å¯¹æ€ªå…½é€ æˆä¼¤å®³åï¼Œå­å¼¹æ¶ˆå¤±
 {
-	curr_shell->removeFromParent();//½«×Óµ¯Çå³ı£¬²¢½«ÆäÒıÓÃ¼ÆÊı¼õÒ»£¬×Ô¶¯ÊÍ·Å
+	curr_shell->removeFromParent();//å°†å­å¼¹æ¸…é™¤ï¼Œå¹¶å°†å…¶å¼•ç”¨è®¡æ•°å‡ä¸€ï¼Œè‡ªåŠ¨é‡Šæ”¾
 	auto c = cocos2d::Sprite::create();
 	if (!c) {
 		CCLOG("Failed to create c sprite.");
 		return;
 	}
 	my_scene->addChild(c);
-	c->setPosition(sp->getPosition());  // ÉèÖÃËÀÍö¶¯»­¾«ÁéÎ»ÖÃÓë¹ÖÎïÏàÍ¬
+	c->setPosition(sp->getPosition());  // è®¾ç½®æ­»äº¡åŠ¨ç”»ç²¾çµä½ç½®ä¸æ€ªç‰©ç›¸åŒ
 	c->setScale(1.4f);
-	// 4. ¼ÓÔØËÀÍö¶¯»­µÄ 4 ÕÅÍ¼Æ¬
+	// 4. åŠ è½½æ­»äº¡åŠ¨ç”»çš„ 4 å¼ å›¾ç‰‡
 	cocos2d::Vector<cocos2d::SpriteFrame*> frames;
 	for (int i = 0; i <= 1; ++i) {
 		std::string frameName = "Towers/texiao_" + std::to_string(i) + ".png";
-		auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 44, 45)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+		auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 44, 45)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
 		if (frame) {
 			frames.pushBack(frame);
 		}
@@ -278,19 +279,19 @@ void Bottle::ShellDemage(BaseLevelScene* my_scene, T* sp)//×Óµ¯¶Ô¹ÖÊŞÔì³ÉÉËº¦ºó£
 			CCLOG("Failed to load frame: %s", frameName.c_str());
 		}
 	}
-	// 5. Èç¹ûÃ»ÓĞ¼ÓÔØµ½¶¯»­Ö¡£¬Ö±½Ó·µ»Ø
+	// 5. å¦‚æœæ²¡æœ‰åŠ è½½åˆ°åŠ¨ç”»å¸§ï¼Œç›´æ¥è¿”å›
 	if (frames.empty()) {
 		CCLOG("No frames found for death animation, skipping.");
 		return;
 	}
-	// 6. ´´½¨¶¯»­£¬Ã¿Ö¡³ÖĞø 0.2 Ãë
+	// 6. åˆ›å»ºåŠ¨ç”»ï¼Œæ¯å¸§æŒç»­ 0.2 ç§’
 	auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 0.2f);
 	auto animate = cocos2d::Animate::create(animation);
-	// 7. ¶¯»­Íê³ÉºóÉ¾³ıÁÙÊ±µÄËÀÍö¶¯»­¾«Áé
+	// 7. åŠ¨ç”»å®Œæˆååˆ é™¤ä¸´æ—¶çš„æ­»äº¡åŠ¨ç”»ç²¾çµ
 	auto onDeathComplete = cocos2d::CallFunc::create([c]() {
 		c->removeFromParent();
 		});
-	// 8. ²¥·ÅËÀÍö¶¯»­£¬¶¯»­½áÊøºóÇåÀíÁÙÊ±¾«Áé
+	// 8. æ’­æ”¾æ­»äº¡åŠ¨ç”»ï¼ŒåŠ¨ç”»ç»“æŸåæ¸…ç†ä¸´æ—¶ç²¾çµ
 	//a.duanSound();
 	c->runAction(cocos2d::Sequence::create(animate, onDeathComplete, nullptr));
 	DemageSprite(sp, demage);
@@ -303,17 +304,17 @@ void Bottle::ShellDemage(BaseLevelScene* my_scene, T* sp)//×Óµ¯¶Ô¹ÖÊŞÔì³ÉÉËº¦ºó£
 
 float getAngleBetweenVec2(const Vec2& v1, const Vec2& v2)
 {
-	// ¼ÆËãµã»ı
+	// è®¡ç®—ç‚¹ç§¯
 	float dot = v1.dot(v2);
 
-	// ¼ÆËãÁ½¸öÏòÁ¿µÄ³¤¶È
+	// è®¡ç®—ä¸¤ä¸ªå‘é‡çš„é•¿åº¦
 	float v1Length = v1.length();
 	float v2Length = v2.length();
 
-	// Ê¹ÓÃ·´ÓàÏÒº¯Êı¼ÆËã¼Ğ½Ç£¨»¡¶È£©
+	// ä½¿ç”¨åä½™å¼¦å‡½æ•°è®¡ç®—å¤¹è§’ï¼ˆå¼§åº¦ï¼‰
 	float angle = acos(dot / (v1Length * v2Length));
 
-	// ½«»¡¶È×ª»»Îª½Ç¶È
+	// å°†å¼§åº¦è½¬æ¢ä¸ºè§’åº¦
 	return CC_RADIANS_TO_DEGREES(angle);
 }
 
@@ -341,7 +342,7 @@ float getAngleBetweenVec2(const Vec2& v1, const Vec2& v2)
 void Sun::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu)
 {
 	interval = 0;
-	//Ëø¶¨ÕÏ°­ÎïÔÚ·¶Î§ÄÚ£¬»òÓĞ¹ÖÎïÔÚ·¶Î§ÄÚ£¬¶¼»á´¥·¢·¶Î§ĞÔµÄÉËº¦
+	//é”å®šéšœç¢ç‰©åœ¨èŒƒå›´å†…ï¼Œæˆ–æœ‰æ€ªç‰©åœ¨èŒƒå›´å†…ï¼Œéƒ½ä¼šè§¦å‘èŒƒå›´æ€§çš„ä¼¤å®³
 	if (isTarget == 2) {
 		Vec2 o_pos = tar_o->getPosition();
 		float distance = sqrt((o_pos.x - pos.x) * (o_pos.x - pos.x) + (o_pos.y - pos.y) * (o_pos.y - pos.y));
@@ -361,15 +362,15 @@ void Sun::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char
 	}
 }
 
-//¹¥»÷ÔÚÆä·¶Î§ÄÚµÄËùÓĞ¹ÖÊŞºÍÕÏ°­Îï
+//æ”»å‡»åœ¨å…¶èŒƒå›´å†…çš„æ‰€æœ‰æ€ªå…½å’Œéšœç¢ç‰©
 void Sun::SunAttack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, float jiasu)
 {
 	a.sunSound();
-	curr_halo = Sprite::create("Towers/sunhalo.png");
+	curr_halo = EnglishUI::sprite("Towers/sunhalo.png");
 	curr_halo->setPosition(pos);
 	curr_halo->setScale(0.8 * range / curr_halo->getContentSize().width);
 	my_scene->addChild(curr_halo);
-	auto scale_up = ScaleBy::create(0.3/jiasu, 1.25);//¹âÈ¦·Å´óµÄ¶¯×÷
+	auto scale_up = ScaleBy::create(0.3/jiasu, 1.25);//å…‰åœˆæ”¾å¤§çš„åŠ¨ä½œ
 
 	auto callback = CallFunc::create([this, my_scene, &monsters]() {
 		for (auto it = my_scene->Obstacles.begin(); it != my_scene->Obstacles.end(); it++) {
@@ -397,7 +398,7 @@ void Sun::SunAttack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, f
 				if ((*it).second->getHealth() <= 0) (*it).second->toDie(my_scene);
 			}
 		}
-		//ÔÚ·¶Î§ÒÔÄÚµÄ£¬¶¼»áÊÜµ½ÉËº¦
+		//åœ¨èŒƒå›´ä»¥å†…çš„ï¼Œéƒ½ä¼šå—åˆ°ä¼¤å®³
 		for (auto it = monsters.begin(); it != monsters.end(); it++) {
 			Vec2 m_pos = (*it)->getPosition();
 			float distance = sqrt((m_pos.x - pos.x) * (m_pos.x - pos.x) + (m_pos.y - pos.y) * (m_pos.y - pos.y));
@@ -408,7 +409,7 @@ void Sun::SunAttack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, f
 				c->setScale(1.8f);
 				cocos2d::Vector<cocos2d::SpriteFrame*> frames;
 				std::string frameName = "Towers/texiao_2.png";
-				auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 26, 15)); 
+				auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 26, 15));
 				if (frame) {
 					frames.pushBack(frame);
 				}
@@ -446,7 +447,7 @@ void Sun::SunAttack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, f
 
 
 //Plane-----------------------------------------------------------------------------------------------------------
-void MyPlane::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu)//¹¥»÷¹ÖÎï
+void MyPlane::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu)//æ”»å‡»æ€ªç‰©
 {
 
 	/*if (isTarget == 2) {
@@ -455,7 +456,7 @@ void MyPlane::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, 
 	interval = 0;
 	if (isTarget == 1) {
 		if (AttackSprite(tar_m, my_scene, monsters,jiasu))
-			return;//Èç¹û´òÁË£¬·µ»Ø£¬·ñÔòÍùÏÂ×ß
+			return;//å¦‚æœæ‰“äº†ï¼Œè¿”å›ï¼Œå¦åˆ™å¾€ä¸‹èµ°
 	}
 	if (isTarget == 2) {
 		if (AttackSprite(tar_o, my_scene, monsters,jiasu))
@@ -475,9 +476,9 @@ template<class T>
 bool  MyPlane::AttackSprite(T* sp, BaseLevelScene* my_scene, std::vector<Monster*>& monsters, float jiasu)
 {
 	Vec2 m_pos = sp->getPosition();
-	//¼ÆËã¾àÀë
+	//è®¡ç®—è·ç¦»
 	double distance = sqrt((m_pos.x - pos.x) * (m_pos.x - pos.x) + (m_pos.y - pos.y) * (m_pos.y - pos.y));
-	if (distance > range / 2) return false;//Èô²»ÔÚ·¶Î§ÄÚ£¬Ôò·µ»Ø
+	if (distance > range / 2) return false;//è‹¥ä¸åœ¨èŒƒå›´å†…ï¼Œåˆ™è¿”å›
 
 
 	auto callback1 = CallFunc::create([this, m_pos, sp, my_scene, &monsters,jiasu]() {
@@ -486,11 +487,11 @@ bool  MyPlane::AttackSprite(T* sp, BaseLevelScene* my_scene, std::vector<Monster
 		auto ang = CC_RADIANS_TO_DEGREES((tool).getAngle());
 		auto m_ang = ang >= 0 ? ang : 360 + ang;
 		int Clockwise = m_ang - tower_angle > 0 ? (m_ang - tower_angle > 180 ? 1 : -1) : (tower_angle - m_ang > 180 ? -1 : 1);
-		//»ñÈ¡×ªÏò·½Ïò
+		//è·å–è½¬å‘æ–¹å‘
 
 		auto TurnCallback = CallFunc::create([this, sp, Clockwise, my_scene, &monsters,jiasu]() {
 			sprite_mark->setRotation(-(tower_angle - 90));
-			Vec2 m_pos = sp->getPosition();//»ñÈ¡¹ÖÎïµ±Ç°Î»ÖÃ
+			Vec2 m_pos = sp->getPosition();//è·å–æ€ªç‰©å½“å‰ä½ç½®
 			Vec2 tool = m_pos - pos;
 			auto ang = CC_RADIANS_TO_DEGREES((tool).getAngle());
 			auto m_ang = ang >= 0 ? ang : 360 + ang;
@@ -501,13 +502,13 @@ bool  MyPlane::AttackSprite(T* sp, BaseLevelScene* my_scene, std::vector<Monster
 				sprite_mark->stopAllActions();
 				/*sprite_mark->runAction(seq);*/
 				auto callback2 = CallFunc::create([this, my_scene]() {
-					curr_ray = Sprite::create(ray[grade]);
+					curr_ray = EnglishUI::sprite(ray[grade]);
 					curr_ray->setAnchorPoint(Vec2(0.5, 0));
 					curr_ray->setScale(CELL_SIZE / curr_ray->getContentSize().width);
 					Vec2 ray_pos;
 					ray_pos.x = pos.x + 0.5 * sprite_mark->getContentSize().height * cos(CC_DEGREES_TO_RADIANS(tower_angle));
 					ray_pos.y = pos.y + 0.5 * sprite_mark->getContentSize().height * sin(CC_DEGREES_TO_RADIANS(tower_angle));
-					curr_ray->setPosition(ray_pos);//²úÉúÉäÏß
+					curr_ray->setPosition(ray_pos);//äº§ç”Ÿå°„çº¿
 					curr_ray->setRotation(90 - tower_angle);
 					my_scene->addChild(curr_ray);
 					});
@@ -522,7 +523,7 @@ bool  MyPlane::AttackSprite(T* sp, BaseLevelScene* my_scene, std::vector<Monster
 				return;
 			}
 			tower_angle = tower_angle - Clockwise * 5 < 0 ? 360 + tower_angle - Clockwise * 5 : (tower_angle - Clockwise * 5 >= 360 ? tower_angle - Clockwise * 5 - 360 : tower_angle - Clockwise * 5);
-			//°Ñ½Ç¶È±äÎªÄæÊ±Õë×ª¶¯¶øÔö¼ÓµÄĞÎÊ½£¬·ûºÏÈËµÄÒ»°ãÀíÄî
+			//æŠŠè§’åº¦å˜ä¸ºé€†æ—¶é’ˆè½¬åŠ¨è€Œå¢åŠ çš„å½¢å¼ï¼Œç¬¦åˆäººçš„ä¸€èˆ¬ç†å¿µ
 			auto TurnLittle = RotateBy::create(5 / (360.0f*jiasu), Clockwise * 5);
 			sprite_mark->runAction(TurnLittle);
 			de_ang += 5;
@@ -546,12 +547,12 @@ void MyPlane::PlaneDemage(BaseLevelScene* my_scene, std::vector<Monster*>& monst
 			CCLOG("--------------------------------------------------------------cccc");
 			auto c = cocos2d::Sprite::create();
 			my_scene->addChild(c);
-			c->setPosition((*it).second->getPosition());  // ÉèÖÃËÀÍö¶¯»­¾«ÁéÎ»ÖÃÓë¹ÖÎïÏàÍ¬
+			c->setPosition((*it).second->getPosition());  // è®¾ç½®æ­»äº¡åŠ¨ç”»ç²¾çµä½ç½®ä¸æ€ªç‰©ç›¸åŒ
 			c->setScale(1.4f);
 			cocos2d::Vector<cocos2d::SpriteFrame*> frames;
 			for (int i = 3; i <= 4; ++i) {
 				std::string frameName = "Towers/texiao_" + std::to_string(i) + ".png";
-				auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 44, 47)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+				auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 44, 47)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
 				if (frame) {
 					frames.pushBack(frame);
 				}
@@ -567,19 +568,19 @@ void MyPlane::PlaneDemage(BaseLevelScene* my_scene, std::vector<Monster*>& monst
 			if ((*it).second->getHealth() <= 0) (*it).second->toDie(my_scene);
 		}
 	}
-	//ÔÚ·¶Î§ÒÔÄÚµÄ£¬¶¼»áÊÜµ½ÉËº¦
+	//åœ¨èŒƒå›´ä»¥å†…çš„ï¼Œéƒ½ä¼šå—åˆ°ä¼¤å®³
 	for (auto it = monsters.begin(); it != monsters.end(); it++) {
 		if (isColliding(*it, curr_ray)&& (*it)->getHealth() > 0) {
 			CCLOG("--------------------------------------------------------------cccc");
 			auto c = cocos2d::Sprite::create();
 			my_scene->addChild(c);
-			c->setPosition((*it)->getPosition());  // ÉèÖÃËÀÍö¶¯»­¾«ÁéÎ»ÖÃÓë¹ÖÎïÏàÍ¬
+			c->setPosition((*it)->getPosition());  // è®¾ç½®æ­»äº¡åŠ¨ç”»ç²¾çµä½ç½®ä¸æ€ªç‰©ç›¸åŒ
 			c->setScale(1.4f);
-			// 4. ¼ÓÔØËÀÍö¶¯»­µÄ 4 ÕÅÍ¼Æ¬
+			// 4. åŠ è½½æ­»äº¡åŠ¨ç”»çš„ 4 å¼ å›¾ç‰‡
 			cocos2d::Vector<cocos2d::SpriteFrame*> frames;
 			for (int i = 3; i <= 4; ++i) {
 				std::string frameName = "Towers/texiao_" + std::to_string(i) + ".png";
-				auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 44, 47)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+				auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 44, 47)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
 				if (frame) {
 					frames.pushBack(frame);
 				}
@@ -597,19 +598,19 @@ void MyPlane::PlaneDemage(BaseLevelScene* my_scene, std::vector<Monster*>& monst
 	}
 
 }
-bool isColliding(Sprite* spriteA, Sprite* spriteB) {//¾ØĞÎÅö×²¼ì²â
+bool isColliding(Sprite* spriteA, Sprite* spriteB) {//çŸ©å½¢ç¢°æ’æ£€æµ‹
 	return spriteA->getBoundingBox().intersectsRect(spriteB->getBoundingBox());
 }
 
 
 
 //shit---------------------------------------------------------------------------------------------------------------
-void Shit::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu)//¹¥»÷¹ÖÎï
+void Shit::attack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu)//æ”»å‡»æ€ªç‰©
 {
 	interval = 0;
 	if (isTarget == 1) {
 		if (AttackSprite(tar_m, my_scene, jiasu))
-			return;//Èç¹û´òÁË£¬·µ»Ø£¬·ñÔòÍùÏÂ×ß
+			return;//å¦‚æœæ‰“äº†ï¼Œè¿”å›ï¼Œå¦åˆ™å¾€ä¸‹èµ°
 	}
 	if (isTarget == 2) {
 		if (AttackSprite(tar_o, my_scene, jiasu))
@@ -630,48 +631,48 @@ template<class T>
 bool  Shit::AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu)
 {
 	Vec2 m_pos = sp->getPosition();
-	//¼ÆËã¾àÀë
+	//è®¡ç®—è·ç¦»
 	double distance = sqrt((m_pos.x - pos.x) * (m_pos.x - pos.x) + (m_pos.y - pos.y) * (m_pos.y - pos.y));
-	if (distance < range / 2) {//ÈôÔÚ·¶Î§ÄÚ£¬Ôò·¢¶¯¹¥»÷
+	if (distance < range / 2) {//è‹¥åœ¨èŒƒå›´å†…ï¼Œåˆ™å‘åŠ¨æ”»å‡»
 
 		auto callback2 = CallFunc::create([this, my_scene, sp, jiasu]() {
 			/*Director::getInstance()->end();
 			return;*/
-			ShellProduct(my_scene);//×Óµ¯µÄÉú³É
+			ShellProduct(my_scene);//å­å¼¹çš„ç”Ÿæˆ
 
-			auto callback3 = CallFunc::create([sp, this, jiasu]() {//×Óµ¯×·×Ù
+			auto callback3 = CallFunc::create([sp, this, jiasu]() {//å­å¼¹è¿½è¸ª
 				auto m_pos = sp->getPosition();
 				auto s_pos = curr_shell->getPosition();
 
 				auto move = m_pos - s_pos;
 				move.normalize();
 				move = move * 10;
-				//¼ì²â×Óµ¯Î»ÖÃºÍ¹ÖÊŞÎ»ÖÃ£¬²¢Ïò¸ÃÎ»ÖÃÒÆ¶¯10¸öÏñËØµã
+				//æ£€æµ‹å­å¼¹ä½ç½®å’Œæ€ªå…½ä½ç½®ï¼Œå¹¶å‘è¯¥ä½ç½®ç§»åŠ¨10ä¸ªåƒç´ ç‚¹
 				auto action3 = MoveBy::create(10 / (speed * jiasu), move);
 				curr_shell->runAction(action3);
 				});
 			auto callback4 = CallFunc::create([my_scene, sp, this]() {
 				if ((sp->getPosition() - curr_shell->getPosition()).distance(Vec2(0, 0)) < 10.f) {
-					curr_shell->stopAllActions();//Ò»µ©¾àÀë×ã¹»Ğ¡£¬ÔòÍ£Ö¹¶¯×÷
+					curr_shell->stopAllActions();//ä¸€æ—¦è·ç¦»è¶³å¤Ÿå°ï¼Œåˆ™åœæ­¢åŠ¨ä½œ
 					ShellDemage(my_scene, sp);
 				}
 				});
-			de_time = 10 / (speed * jiasu);//²»¶ÏÖØ¸´¼ì²âÓëÒÆ¶¯£¬ÒÔÊµÏÖ×·»÷Ğ§¹û
+			de_time = 10 / (speed * jiasu);//ä¸æ–­é‡å¤æ£€æµ‹ä¸ç§»åŠ¨ï¼Œä»¥å®ç°è¿½å‡»æ•ˆæœ
 			auto sequence3 = Sequence::create(callback3, DelayTime::create(de_time), callback4, nullptr);
 			auto repeat = RepeatForever::create(sequence3);
 			curr_shell->runAction(repeat);
 			});
 
-		callback2->execute();//ÓÃºÍÆ¿×ÓÒ»ÑùµÄ·½Ê½ÊÇ»á³ö´íµÄ
+		callback2->execute();//ç”¨å’Œç“¶å­ä¸€æ ·çš„æ–¹å¼æ˜¯ä¼šå‡ºé”™çš„
 		return true;
 	}
-	return false;//Èç¹ûÔÚ·¶Î§Íâ£¬ËµÃ÷Ã»´ò£¬·µ»Ø0
+	return false;//å¦‚æœåœ¨èŒƒå›´å¤–ï¼Œè¯´æ˜æ²¡æ‰“ï¼Œè¿”å›0
 }
 
 template<class T>
 void Shit::ShellDemage(BaseLevelScene* my_scene, T* sp)
 {
-	curr_shell->removeFromParent();//½«×Óµ¯Çå³ı£¬²¢½«ÆäÒıÓÃ¼ÆÊı¼õÒ»£¬×Ô¶¯ÊÍ·Å
+	curr_shell->removeFromParent();//å°†å­å¼¹æ¸…é™¤ï¼Œå¹¶å°†å…¶å¼•ç”¨è®¡æ•°å‡ä¸€ï¼Œè‡ªåŠ¨é‡Šæ”¾
 	DemageSprite(sp, demage);
 
 	if (sp->getHealth() <= 0) {
@@ -682,14 +683,14 @@ void Shit::ShellDemage(BaseLevelScene* my_scene, T* sp)
 template<>
 void Shit::ShellDemage(BaseLevelScene* my_scene, Monster* sp)
 {
-	curr_shell->removeFromParent();//½«×Óµ¯Çå³ı£¬²¢½«ÆäÒıÓÃ¼ÆÊı¼õÒ»£¬×Ô¶¯ÊÍ·Å
+	curr_shell->removeFromParent();//å°†å­å¼¹æ¸…é™¤ï¼Œå¹¶å°†å…¶å¼•ç”¨è®¡æ•°å‡ä¸€ï¼Œè‡ªåŠ¨é‡Šæ”¾
 	auto c = cocos2d::Sprite::create();
 	if (!c) {
 		CCLOG("Failed to create c sprite.");
 		return;
 	}
 	sp->addChild(c);
-	c->setPosition(40, 0);  
+	c->setPosition(40, 0);
 	c->setScale(1.4f);
 	cocos2d::Vector<cocos2d::SpriteFrame*> frames;
 	for (int i = 5; i <= 6; ++i) {
@@ -725,9 +726,9 @@ void Shit::ShellDemage(BaseLevelScene* my_scene, Monster* sp)
 	}
 }
 
-void Shit::ShellProduct(Scene* my_scene)//²úÉúÅÚµ¯
+void Shit::ShellProduct(Scene* my_scene)//äº§ç”Ÿç‚®å¼¹
 {
-	auto shell = Sprite::create(shit_shell[grade]);
+	auto shell = EnglishUI::sprite(shit_shell[grade]);
 	Vec2 start_pos;
 	start_pos.x = pos.x;
 	start_pos.y = pos.y;

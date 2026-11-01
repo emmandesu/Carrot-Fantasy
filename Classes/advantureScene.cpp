@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"menuScene.h"
 #include"advantureScene.h"
 #include"themeScene.h"
@@ -17,7 +18,7 @@ static void problemLoading(const char* filename)
 }
 void advanturescene::clearRelatedButtons() {
 	auto sprite = this->getChildByTag(100);
-	// Èç¹ûÕÒµ½ÁË¾«Áé£¬¾Í´ÓÆäËùÔÚ¸¸½ÚµãÖĞÒÆ³ıËü
+	// å¦‚æœæ‰¾åˆ°äº†ç²¾çµï¼Œå°±ä»å…¶æ‰€åœ¨çˆ¶èŠ‚ç‚¹ä¸­ç§»é™¤å®ƒ
 	if (sprite)
 		this->removeChild(sprite);
 	auto know1 = this->getChildByName("know");
@@ -29,18 +30,18 @@ bool advanturescene::init() {
 	if (!Layer::init())
 		return false;
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óĞ¡
+	auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨ç‡å¤§å°
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óĞ¡
+	Size screenSize = Director::getInstance()->getWinSize();    //è·å–å±å¹•å¤§å°
 
-	//Ìí¼ÓÌáÊ¾´Ê
-	auto topLabel = Label::createWithSystemFont(StringUtils::format("Hello World"), "Arial", 32);
+	//æ·»åŠ æç¤ºè¯
+	auto topLabel = Label::createWithSystemFont(EnglishUI::text("theme.choose"), "Arial", 32);
 	topLabel->setColor(Color3B::WHITE);
 	topLabel->setPosition(screenSize.width * 0.49, screenSize.height * 0.95);
 	this->addChild(topLabel, 2);
-	//Ìí¼Ó±³¾°
-	auto backgroundImage = Sprite::create("CarrotGuardRes/UI/AdvantureBackground.png");
-	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //»ñµÃËõ·Å±¶Êı
+	//æ·»åŠ èƒŒæ™¯
+	auto backgroundImage = EnglishUI::sprite("CarrotGuardRes/UI/AdvantureBackground.png");
+	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //è·å¾—ç¼©æ”¾å€æ•°
 	float scaleY = screenSize.height / backgroundImage->getContentSize().height;
 	if (backgroundImage == nullptr)
 		problemLoading("'AdvantureBackground.png'");
@@ -51,13 +52,13 @@ bool advanturescene::init() {
 		backgroundImage->setPosition(Vec2(screenSize.width / 2 + origin.x, screenSize.height / 2 + origin.y));
 		this->addChild(backgroundImage, 0);
 	}
-	
-	//Ìí¼Ó·µ»Ø°´Å¥,»Ømenu
+
+	//æ·»åŠ è¿”å›æŒ‰é’®,å›menu
 	auto menu = Menu::create();
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	auto returnButton = MenuItemImage::create("CarrotGuardRes/UI/SettingReturnNormal.png", "CarrotGuardRes/UI/SettingReturnSelected.png", CC_CALLBACK_1(advanturescene::to_menuScene, this));
+	auto returnButton = EnglishUI::menuItem("CarrotGuardRes/UI/SettingReturnNormal.png", "CarrotGuardRes/UI/SettingReturnSelected.png", CC_CALLBACK_1(advanturescene::to_menuScene, this));
 	if (returnButton == nullptr ||
 		returnButton->getContentSize().width <= 0 ||
 		returnButton->getContentSize().height <= 0)
@@ -73,14 +74,14 @@ bool advanturescene::init() {
 		menu->addChild(returnButton);
 	}
 
-	//Ìí¼Ó×óÓÒ·­Ò³°´Å¥
-   // ´´½¨PageView
+	//æ·»åŠ å·¦å³ç¿»é¡µæŒ‰é’®
+   // åˆ›å»ºPageView
 	auto pageView = PageView::create();
 	pageView->setContentSize(Size(screenSize.width, screenSize.height));
 	pageView->setPosition(Vec2::ZERO);
 	this->addChild(pageView);
 
-	// ¶¨ÒåµØÍ¼Í¼Æ¬Êı×é
+	// å®šä¹‰åœ°å›¾å›¾ç‰‡æ•°ç»„
 	std::vector<std::string> mapImages = {
 		"CarrotGuardRes/UI/advanture1.png",
 		"CarrotGuardRes/UI/advanture2.png",
@@ -90,20 +91,20 @@ bool advanturescene::init() {
 	};
 
 
-	// Ìí¼ÓÒ³Ãæ
+	// æ·»åŠ é¡µé¢
 	for (int i = 0; i < mapImages.size(); ++i) {
 		Layout* layout = Layout::create();
 		layout->setContentSize(Size(screenSize.width, screenSize.height));
-		ImageView* imageView = ImageView::create(mapImages[i]);
+		ImageView* imageView = EnglishUI::imageView(mapImages[i]);
 		imageView->setContentSize(Size(screenSize.width, screenSize.height));
 		imageView->setPosition(Vec2(layout->getContentSize().width / 2, layout->getContentSize().height / 2));
-		imageView->setScale(0.6);  //´ı¶¨
+		imageView->setScale(0.6);  //å¾…å®š
 		layout->addChild(imageView, 1);
 		pageView->addPage(layout);
 	}
 
 
-	// Ìí¼Ó´¥ÃşÊÂ¼ş¼àÌıÆ÷
+	// æ·»åŠ è§¦æ‘¸äº‹ä»¶ç›‘å¬å™¨
 	pageView->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			a.button_music();
@@ -115,7 +116,7 @@ bool advanturescene::init() {
 			Sprite* boss1;
 			Menu* menu1;
 			MenuItemImage* know;
-			// ´¦ÀíÒ³ÃæÇĞ»»Íê³ÉºóµÄÂß¼­
+			// å¤„ç†é¡µé¢åˆ‡æ¢å®Œæˆåçš„é€»è¾‘
 			switch (currentIndex) {
 			case 0:
 				themeScene=themescene::createScene();
@@ -125,10 +126,10 @@ bool advanturescene::init() {
 			case 2:
 			case 3:
 			case 4:
-				visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óĞ¡
+				visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨ç‡å¤§å°
 				origin = Director::getInstance()->getVisibleOrigin();
-				//Ìí¼ÓËø¶¨½çÃæ
-				boss1 = Sprite::create("CarrotGuardRes/UI/un_select.png");
+				//æ·»åŠ é”å®šç•Œé¢
+				boss1 = EnglishUI::sprite("CarrotGuardRes/UI/un_select.png");
 				boss1->setTag(100);
 				if (boss1 == nullptr)
 					problemLoading("'un_select.png'");
@@ -142,8 +143,8 @@ bool advanturescene::init() {
 				menu1 = Menu::create(NULL);
 				menu1->setPosition(Vec2::ZERO);
 				this->addChild(menu1, 3);
-				//Ìí¼Ó¹Ø±Õ°´Å¥
-				know = MenuItemImage::create("CarrotGuardRes/UI/know.png", "CarrotGuardRes/UI/know.png", CC_CALLBACK_1(advanturescene::know_Callback, this));
+				//æ·»åŠ å…³é—­æŒ‰é’®
+				know = EnglishUI::menuItem("CarrotGuardRes/UI/know.png", "CarrotGuardRes/UI/know.png", CC_CALLBACK_1(advanturescene::know_Callback, this));
 				if (know == nullptr ||
 					know->getContentSize().width <= 0 ||
 					know->getContentSize().height <= 0)
@@ -156,7 +157,7 @@ bool advanturescene::init() {
 					float y = origin.y + visibleSize.width / 3.8;
 					know->setScale(1);
 					know->setPosition(Vec2(x, y));
-					menu1->addChild(know);  //¼ÓÈëµ½²Ëµ¥ÖĞ
+					menu1->addChild(know);  //åŠ å…¥åˆ°èœå•ä¸­
 				}
 				break;
 			default:
@@ -165,31 +166,31 @@ bool advanturescene::init() {
 		}
 		});
 
-	// Ìí¼Ó×óÓÒ·­Ò³°´Å¥
-	auto leftButton = Button::create("CarrotGuardRes/UI/leftButtonNormal.png", "CarrotGuardRes/UI/leftButtonSelected.png");
+	// æ·»åŠ å·¦å³ç¿»é¡µæŒ‰é’®
+	auto leftButton = EnglishUI::button("CarrotGuardRes/UI/leftButtonNormal.png", "CarrotGuardRes/UI/leftButtonSelected.png");
 	leftButton->setPosition(Vec2(screenSize.width * 0.1, screenSize.height / 2));
 	leftButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			a.button_music();
 			int currentIndex = pageView->getCurrentPageIndex();
 			CCLOG("currentIndex:  %d", currentIndex);
-			if (currentIndex > 0) 
+			if (currentIndex > 0)
 				pageView->scrollToPage(currentIndex - 1);
 			clearRelatedButtons();
 		}
 		});
 	this->addChild(leftButton, 2);
 
-	auto rightButton = Button::create("CarrotGuardRes/UI/rightButtonNormal.png", "CarrotGuardRes/UI/rightButtonSelected.png");
+	auto rightButton = EnglishUI::button("CarrotGuardRes/UI/rightButtonNormal.png", "CarrotGuardRes/UI/rightButtonSelected.png");
 	rightButton->setPosition(Vec2(screenSize.width * 0.9, screenSize.height / 2));
 	rightButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			a.button_music();
 			int currentIndex = pageView->getCurrentPageIndex();
 			if (currentIndex < 0)
-				currentIndex = 0;  
+				currentIndex = 0;
 			CCLOG("currentIndex:  %d", currentIndex);
-			if (currentIndex < mapImages.size() - 1) 
+			if (currentIndex < mapImages.size() - 1)
 				pageView->scrollToPage(currentIndex + 1);
 			clearRelatedButtons();
 		}
@@ -205,11 +206,11 @@ void advanturescene::to_menuScene(Ref* pSender) {
 
 void advanturescene::know_Callback(Ref* pSender) {
 	auto sprite = this->getChildByTag(100);
-	// Èç¹ûÕÒµ½ÁË¾«Áé£¬¾Í´ÓÆäËùÔÚ¸¸½ÚµãÖĞÒÆ³ıËü
+	// å¦‚æœæ‰¾åˆ°äº†ç²¾çµï¼Œå°±ä»å…¶æ‰€åœ¨çˆ¶èŠ‚ç‚¹ä¸­ç§»é™¤å®ƒ
 	if (sprite)
 		this->removeChild(sprite);
-	// »ñÈ¡°´Å¥ËùÔÚµÄ²Ëµ¥£¨¼ÙÉè°´Å¥µÄ¸¸½ÚµãÊÇ²Ëµ¥£¬¸ù¾İÊµ¼ÊÇé¿ö¿ÉÄÜÓĞËù²»Í¬£©
+	// è·å–æŒ‰é’®æ‰€åœ¨çš„èœå•ï¼ˆå‡è®¾æŒ‰é’®çš„çˆ¶èŠ‚ç‚¹æ˜¯èœå•ï¼Œæ ¹æ®å®é™…æƒ…å†µå¯èƒ½æœ‰æ‰€ä¸åŒï¼‰
 	auto menu = ((MenuItem*)pSender)->getParent();
-	// ´Ó²Ëµ¥ÖĞÒÆ³ı°´Å¥
+	// ä»èœå•ä¸­ç§»é™¤æŒ‰é’®
 	menu->removeChild((MenuItem*)pSender);
 }

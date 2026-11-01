@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"Monster.h"
 
 #include"music.h"
@@ -9,65 +10,65 @@ extern float tower_jiasu;
 int DeadCount=0;
 
 
-//¾²Ì¬·½·¨´´½¨¹ÖÊŞ¶ÔÏó
+//é™æ€æ–¹æ³•åˆ›å»ºæ€ªå…½å¯¹è±¡
 Monster* Monster::create(const std::string& monsterName, const std::vector<Vec2>& path, int startIndex, bool pause) {
     Monster* monster;
-    //ÅĞ¶ÏÊÇ·ñÊÇBoss
+    //åˆ¤æ–­æ˜¯å¦æ˜¯Boss
     if(monsterName.find("Boss")==0)
     {
         if(monsterName=="BossYellow")
         {
-       monster=new (std::nothrow) BossYellow();//Ê¹ÓÃnewÔËËã·û·ÖÅäÄÚ´æ£¬´´½¨Ò»¸öBossYellow¶ÔÏó
+       monster=new (std::nothrow) BossYellow();//ä½¿ç”¨newè¿ç®—ç¬¦åˆ†é…å†…å­˜ï¼Œåˆ›å»ºä¸€ä¸ªBossYellowå¯¹è±¡
         }
         else if (monsterName == "BossSheep")
         {
-            monster = new (std::nothrow) BossSheep();//Ê¹ÓÃnewÔËËã·û·ÖÅäÄÚ´æ£¬´´½¨Ò»¸öBossYellow¶ÔÏó
+            monster = new (std::nothrow) BossSheep();//ä½¿ç”¨newè¿ç®—ç¬¦åˆ†é…å†…å­˜ï¼Œåˆ›å»ºä¸€ä¸ªBossYellowå¯¹è±¡
         }
         else
         {
             CCLOG("UNKONW BOSS: %s",monsterName.c_str());
             return nullptr;
-        }         
+        }
     }
     else
-    monster = new (std::nothrow) Monster();//Ê¹ÓÃnewÔËËã·û·ÖÅäÄÚ´æ£¬´´½¨Ò»¸öMonster¶ÔÏó
-    if (monster && monster->initWithPath(monsterName, path, startIndex, pause))//ÅĞ¶ÏÊÇ·ñ´´½¨³É¹¦ºÍ³õÊ¼»¯³É¹¦
+    monster = new (std::nothrow) Monster();//ä½¿ç”¨newè¿ç®—ç¬¦åˆ†é…å†…å­˜ï¼Œåˆ›å»ºä¸€ä¸ªMonsterå¯¹è±¡
+    if (monster && monster->initWithPath(monsterName, path, startIndex, pause))//åˆ¤æ–­æ˜¯å¦åˆ›å»ºæˆåŠŸå’Œåˆå§‹åŒ–æˆåŠŸ
     {
         monster->autorelease();
-        //Ìí¼ÓÑªÌõ
+        //æ·»åŠ è¡€æ¡
         monster->_HP = cocos2d::ui::LoadingBar::create("Monsters/HPbar.png");
-        monster->_HP->setPercent(100); // ³õÊ¼ÑªÁ¿ÎªÂúÑª
+        monster->_HP->setPercent(100); // åˆå§‹è¡€é‡ä¸ºæ»¡è¡€
         monster->_HP->setPosition(Vec2(monster->getContentSize().width / 2, monster->getContentSize().height * 1.3f));
         monster->addChild(monster->_HP, 10);
-        //Ìí¼ÓÑªÌõ±³¾°
-        monster->hpback = Sprite::create("Monsters/HPBackground.png");
+        //æ·»åŠ è¡€æ¡èƒŒæ™¯
+        monster->hpback = EnglishUI::sprite("Monsters/HPBackground.png");
         monster->hpback->setPosition(Vec2(monster->getContentSize().width / 2, monster->getContentSize().height * 1.3f));
         monster->addChild(monster->hpback, 9);
         monster->_HP->setVisible(false);
         monster->hpback->setVisible(false);
         return monster;
     }
-    CC_SAFE_DELETE(monster);//Èç¹û´´½¨»ò³õÊ¼»¯Ê§°Ü£¬ÊÍ·ÅÄÚ´æ²¢·µ»Ønullptr
+    CC_SAFE_DELETE(monster);//å¦‚æœåˆ›å»ºæˆ–åˆå§‹åŒ–å¤±è´¥ï¼Œé‡Šæ”¾å†…å­˜å¹¶è¿”å›nullptr
     return nullptr;
 }
 
-// ³õÊ¼»¯¹ÖÎï
+// åˆå§‹åŒ–æ€ªç‰©
 bool Monster::initWithPath(const std::string& monsterName, const std::vector<Vec2>& path, int startIndex,bool pause) {
-    // ¼ÓÔØ¾«ÁéÖ¡×ÊÔ´
+    // åŠ è½½ç²¾çµå¸§èµ„æº
     std::string plistPath = "Monsters/" + monsterName + ".plist";
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile(plistPath);
-    // ¼ì²é¾«ÁéÖ¡ÊÇ·ñ¼ÓÔØ
+    // æ£€æŸ¥ç²¾çµå¸§æ˜¯å¦åŠ è½½
     std::string frameName = monsterName + "_0.png";
     if (!SpriteFrameCache::getInstance()->getSpriteFrameByName(frameName)) {
         CCLOG("Failed to load SpriteFrame '%s'.", frameName.c_str());
         return false;
     }
-    // ³õÊ¼»¯¾«Áé
+    // åˆå§‹åŒ–ç²¾çµ
     if (!Sprite::initWithSpriteFrameName(frameName)) {
         CCLOG("Failed to initialize sprite with frame '%s'.", frameName.c_str());
         return false;
     }
-    // ¼ÓÔØ¹ÖÎïÅäÖÃ
+    // åŠ è½½æ€ªç‰©é…ç½®
     MonsterConfig config = MonsterManager::getMonsterConfigByName(monsterName);
     this->startPosIndex=startIndex;
     this->maxHp=this->health=config.health;
@@ -78,71 +79,71 @@ bool Monster::initWithPath(const std::string& monsterName, const std::vector<Vec
     this->pause=pause;
     CCLOG("Monster Config - Sprite Frame: %s, Health: %d, Speed: %.2f, Damage: %d, Reward: %d",
         config.spriteFrameName.c_str(), config.health, config.speed, config.damage, config.reward);
-    // ¼ÓÔØ¹ÖÎïĞĞ×ß¶¯»­
+    // åŠ è½½æ€ªç‰©è¡Œèµ°åŠ¨ç”»
     auto walkFrames = cocos2d::Vector<SpriteFrame*>();
     walkFrames.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(monsterName + "_0.png"));
     walkFrames.pushBack(SpriteFrameCache::getInstance()->getSpriteFrameByName(monsterName + "_1.png"));
-    auto walkAnimation = Animation::createWithSpriteFrames(walkFrames, 0.5f);  // Á½Ö¡¶¯»­£¬ËÙ¶È¿ÉÒÔµ÷½Ú
+    auto walkAnimation = Animation::createWithSpriteFrames(walkFrames, 0.5f);  // ä¸¤å¸§åŠ¨ç”»ï¼Œé€Ÿåº¦å¯ä»¥è°ƒèŠ‚
     auto walkAnimate = Animate::create(walkAnimation);
     auto repeatWalk = RepeatForever::create(walkAnimate);
-    this->runAction(repeatWalk); // ³ÖĞø²¥·ÅĞĞ×ß¶¯»­
-    // ÉèÖÃ³õÊ¼Î»ÖÃ
+    this->runAction(repeatWalk); // æŒç»­æ’­æ”¾è¡Œèµ°åŠ¨ç”»
+    // è®¾ç½®åˆå§‹ä½ç½®
     if (!path.empty()) {
-        moveAlongPath(path); // Á¢¼´Æô¶¯Â·¾¶ÒÆ¶¯Âß¼­
+        moveAlongPath(path); // ç«‹å³å¯åŠ¨è·¯å¾„ç§»åŠ¨é€»è¾‘
     }
 
     return true;
 }
-//¹ÖÊŞµÄÒÆ¶¯Âß¼­
+//æ€ªå…½çš„ç§»åŠ¨é€»è¾‘
 void Monster::moveAlongPath(const std::vector<Vec2>& path) {
     if (path.empty()) {
         CCLOG("Path is empty, cannot move the monster.");
         return;
     }
-    // È·±£¹ÖÎïÔÚÂ·¾¶µÄÆğÊ¼µã
+    // ç¡®ä¿æ€ªç‰©åœ¨è·¯å¾„çš„èµ·å§‹ç‚¹
     this->setPosition(path[startPosIndex]);
-    // ¼ÇÂ¼ÖÕµãÔªËØ
+    // è®°å½•ç»ˆç‚¹å…ƒç´ 
     endPos = path.back();
-    // ´´½¨Ò»¸öÊı×é´æ´¢ËùÓĞµÄ¶¯×÷
+    // åˆ›å»ºä¸€ä¸ªæ•°ç»„å­˜å‚¨æ‰€æœ‰çš„åŠ¨ä½œ
     cocos2d::Vector<cocos2d::FiniteTimeAction*> actions;
-    // ±éÀúÂ·¾¶µã£¬Ìí¼ÓÒÆ¶¯¶¯×÷
+    // éå†è·¯å¾„ç‚¹ï¼Œæ·»åŠ ç§»åŠ¨åŠ¨ä½œ
     float distance;
     float moveTime;
     for (size_t i = startPosIndex+1; i < path.size(); ++i) {
-        // ¼ÆËãÁ½µãÖ®¼äµÄ¾àÀë²¢È·¶¨ÒÆ¶¯Ê±¼ä
+        // è®¡ç®—ä¸¤ç‚¹ä¹‹é—´çš„è·ç¦»å¹¶ç¡®å®šç§»åŠ¨æ—¶é—´
         distance = path[i - 1].distance(path[i]);
-        moveTime = distance / speed;  // ¸ù¾İËÙ¶È¼ÆËãÒÆ¶¯Ê±¼ä
+        moveTime = distance / speed;  // æ ¹æ®é€Ÿåº¦è®¡ç®—ç§»åŠ¨æ—¶é—´
 
-        // ´´½¨ÒÆ¶¯¶¯×÷
+        // åˆ›å»ºç§»åŠ¨åŠ¨ä½œ
         auto moveTo = cocos2d::MoveTo::create(moveTime, path[i]);
-        //ÔÚÃ¿¸öMoveToºó¼ÓÈëÒ»¸ö»Øµ÷À´¸üĞÂpathIndex
+        //åœ¨æ¯ä¸ªMoveToååŠ å…¥ä¸€ä¸ªå›è°ƒæ¥æ›´æ–°pathIndex
         auto updatePathIndex = cocos2d::CallFunc::create([this, i]() {
-            this->PathIndex = i; // ¸üĞÂ¹ÖÎïµÄ pathIndex ³ÉÔ±±äÁ¿
+            this->PathIndex = i; // æ›´æ–°æ€ªç‰©çš„ pathIndex æˆå‘˜å˜é‡
             CCLOG("Monster %p pathIndex updated to %d", this, i);
             });
-        // ½«Ã¿¸öÒÆ¶¯¶¯×÷Ìí¼Óµ½¶¯×÷Êı×éÖĞ
+        // å°†æ¯ä¸ªç§»åŠ¨åŠ¨ä½œæ·»åŠ åˆ°åŠ¨ä½œæ•°ç»„ä¸­
         actions.pushBack(moveTo);
-        actions.pushBack(updatePathIndex); // ÔÚÒÆ¶¯µ½µãºó£¬¸üĞÂ pathIndex
+        actions.pushBack(updatePathIndex); // åœ¨ç§»åŠ¨åˆ°ç‚¹åï¼Œæ›´æ–° pathIndex
     }
-    // ÔÚÂ·¾¶Íê³ÉÊ±´¥·¢ÊÂ¼ş
+    // åœ¨è·¯å¾„å®Œæˆæ—¶è§¦å‘äº‹ä»¶
     auto onPathComplete = cocos2d::CallFunc::create([this]() {
         CCLOG("Monster %p has completed its path.", this);
 
-        // ´´½¨ÊÂ¼ş
+        // åˆ›å»ºäº‹ä»¶
         cocos2d::EventCustom event("monster_path_complete");
-        // ½«¹ÖÊŞ¶ÔÏóÖ¸Õë´«µİ¸øÊÂ¼ş
-        event.setUserData(this); 
+        // å°†æ€ªå…½å¯¹è±¡æŒ‡é’ˆä¼ é€’ç»™äº‹ä»¶
+        event.setUserData(this);
 
-        // »ñÈ¡ÊÂ¼ş·Ö·¢Æ÷²¢·Ö·¢ÊÂ¼ş
+        // è·å–äº‹ä»¶åˆ†å‘å™¨å¹¶åˆ†å‘äº‹ä»¶
         auto dispatcher = Director::getInstance()->getEventDispatcher();
         dispatcher->dispatchEvent(&event);
         });
-    actions.pushBack(onPathComplete); // ´´½¨¶¯×÷ĞòÁĞ
+    actions.pushBack(onPathComplete); // åˆ›å»ºåŠ¨ä½œåºåˆ—
     auto sequence = cocos2d::Sequence::create(actions);
     if (pause) {
-        auto delay = DelayTime::create(4.0f); // ´´½¨Ò»¸öÑÓ³Ù3ÃëµÄ¶¯×÷
-        auto delayedSequence = Sequence::create(delay, sequence, nullptr);  // ½«ÑÓ³Ù¶¯×÷ºÍÏÖÓĞµÄ¶¯×÷ĞòÁĞ½áºÏÆğÀ´
-        speedaction = Speed::create(delayedSequence, beishu); // Ö´ĞĞĞÂµÄĞòÁĞ¶¯×÷£¨ÏÈÑÓ³Ù3Ãë£¬ÔÙÖ´ĞĞÔ­À´µÄsequence£©
+        auto delay = DelayTime::create(4.0f); // åˆ›å»ºä¸€ä¸ªå»¶è¿Ÿ3ç§’çš„åŠ¨ä½œ
+        auto delayedSequence = Sequence::create(delay, sequence, nullptr);  // å°†å»¶è¿ŸåŠ¨ä½œå’Œç°æœ‰çš„åŠ¨ä½œåºåˆ—ç»“åˆèµ·æ¥
+        speedaction = Speed::create(delayedSequence, beishu); // æ‰§è¡Œæ–°çš„åºåˆ—åŠ¨ä½œï¼ˆå…ˆå»¶è¿Ÿ3ç§’ï¼Œå†æ‰§è¡ŒåŸæ¥çš„sequenceï¼‰
     }
     else
     {
@@ -150,7 +151,7 @@ void Monster::moveAlongPath(const std::vector<Vec2>& path) {
     }
     this->runAction(speedaction);
 }
-//ÈÃ¹ÖÎïËÀÍö
+//è®©æ€ªç‰©æ­»äº¡
 void Monster::toDie(BaseLevelScene*my_scene)
 {
     if(isDead)
@@ -158,23 +159,23 @@ void Monster::toDie(BaseLevelScene*my_scene)
     DeadCount++;
     CCLOG("Monster %p is dying.", this);
     my_scene->updateMoney(reward);
-    // 1. ±ê¼ÇËÀÍö²¢Òş²Ø¹ÖÎï
+    // 1. æ ‡è®°æ­»äº¡å¹¶éšè—æ€ªç‰©
     this->isDead = true;
-    // 2. ´´½¨Ò»¸öĞÂµÄÁÙÊ±¾«ÁéÓÃÓÚ²¥·ÅËÀÍö¶¯»­
+    // 2. åˆ›å»ºä¸€ä¸ªæ–°çš„ä¸´æ—¶ç²¾çµç”¨äºæ’­æ”¾æ­»äº¡åŠ¨ç”»
     auto deathSprite = cocos2d::Sprite::create();
     if (!deathSprite) {
         CCLOG("Failed to create death sprite.");
         return;
     }
-    // 3. ½«ËÀÍö¶¯»­¾«ÁéÌí¼Óµ½Óë Monster ÏàÍ¬µÄ¸¸½ÚµãÉÏ
+    // 3. å°†æ­»äº¡åŠ¨ç”»ç²¾çµæ·»åŠ åˆ°ä¸ Monster ç›¸åŒçš„çˆ¶èŠ‚ç‚¹ä¸Š
     this->getParent()->addChild(deathSprite);
-    deathSprite->setPosition(this->getPosition());  // ÉèÖÃËÀÍö¶¯»­¾«ÁéÎ»ÖÃÓë¹ÖÎïÏàÍ¬
+    deathSprite->setPosition(this->getPosition());  // è®¾ç½®æ­»äº¡åŠ¨ç”»ç²¾çµä½ç½®ä¸æ€ªç‰©ç›¸åŒ
     deathSprite->setScale(1.5f);
-    // 4. ¼ÓÔØËÀÍö¶¯»­µÄ 4 ÕÅÍ¼Æ¬
+    // 4. åŠ è½½æ­»äº¡åŠ¨ç”»çš„ 4 å¼ å›¾ç‰‡
     cocos2d::Vector<cocos2d::SpriteFrame*> frames;
     for (int i = 1; i <= 4; ++i) {
         std::string frameName = "Monsters/dead_" + std::to_string(i) + ".png";
-        auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 64, 64)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+        auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 64, 64)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
         if (frame) {
             frames.pushBack(frame);
         }
@@ -182,55 +183,55 @@ void Monster::toDie(BaseLevelScene*my_scene)
             CCLOG("Failed to load frame: %s", frameName.c_str());
         }
     }
-    // 5. Èç¹ûÃ»ÓĞ¼ÓÔØµ½¶¯»­Ö¡£¬Ö±½Ó·µ»Ø
+    // 5. å¦‚æœæ²¡æœ‰åŠ è½½åˆ°åŠ¨ç”»å¸§ï¼Œç›´æ¥è¿”å›
     if (frames.empty()) {
         CCLOG("No frames found for death animation, skipping.");
         return;
     }
-    // 6. ´´½¨¶¯»­£¬Ã¿Ö¡³ÖĞø 0.2 Ãë
+    // 6. åˆ›å»ºåŠ¨ç”»ï¼Œæ¯å¸§æŒç»­ 0.2 ç§’
     auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 0.2f);
     auto animate = cocos2d::Animate::create(animation);
-    // 7. ¶¯»­Íê³ÉºóÉ¾³ıÁÙÊ±µÄËÀÍö¶¯»­¾«Áé
+    // 7. åŠ¨ç”»å®Œæˆååˆ é™¤ä¸´æ—¶çš„æ­»äº¡åŠ¨ç”»ç²¾çµ
     auto onDeathComplete = cocos2d::CallFunc::create([deathSprite]() {
         CCLOG("Death animation completed, removing death sprite.");
         deathSprite->removeFromParent();
         });
-    // 8. ²¥·ÅËÀÍö¶¯»­£¬¶¯»­½áÊøºóÇåÀíÁÙÊ±¾«Áé
+    // 8. æ’­æ”¾æ­»äº¡åŠ¨ç”»ï¼ŒåŠ¨ç”»ç»“æŸåæ¸…ç†ä¸´æ—¶ç²¾çµ
     deathSprite->runAction(cocos2d::Sequence::create(animate, onDeathComplete, nullptr));
     a.normalSound();
-    // 9. É¾³ı¹ÖÎï±¾Éí
+    // 9. åˆ é™¤æ€ªç‰©æœ¬èº«
     this->retain();
     my_scene->removeChild(this);
-    if (my_scene->tar_m == this) {//Èç¹ûÊÇÕâ¸ö¹Ö±»Ëø¶¨£¬ÄÇÃ´Ëü±»´òËÀºó£¬Ëø¶¨½â³ı
+    if (my_scene->tar_m == this) {//å¦‚æœæ˜¯è¿™ä¸ªæ€ªè¢«é”å®šï¼Œé‚£ä¹ˆå®ƒè¢«æ‰“æ­»åï¼Œé”å®šè§£é™¤
         my_scene->isTarget = 0;
         my_scene->tar_m = nullptr;
     }
 }
-//ÉèÖÃÑªÌõ¿É¼û
-void Monster::setHpVisible(bool isVisible) 
-{ 
-    _HP->setVisible(isVisible); 
-     hpback->setVisible(isVisible); 
-     ishpvs = true; 
+//è®¾ç½®è¡€æ¡å¯è§
+void Monster::setHpVisible(bool isVisible)
+{
+    _HP->setVisible(isVisible);
+     hpback->setVisible(isVisible);
+     ishpvs = true;
 }
-//¸üĞÂÑªÌõ
+//æ›´æ–°è¡€æ¡
 void  Monster::updateHealthBar() {
     float percentage = (static_cast<float>(health) / maxHp) * 100;
     if (percentage < 0) percentage = 0;
     if (percentage > 100) percentage = 100;
-    _HP->setPercent(percentage); // ¸üĞÂÑªÌõ°Ù·Ö±È
+    _HP->setPercent(percentage); // æ›´æ–°è¡€æ¡ç™¾åˆ†æ¯”
 }
-//¹ÖÊŞÊÜÉË
+//æ€ªå…½å—ä¼¤
 void  Monster::getHurt(int value)
 {
     health-=value;
 }
 void showBossSkill(const std::string& skillText);
-//BossYellowµÄ¼¼ÄÜ:¼õËÙÅÚËş
+//BossYellowçš„æŠ€èƒ½:å‡é€Ÿç‚®å¡”
 void BossYellow::SpecialAttack() {
-    //boss¼¼ÄÜ£¬ÈÃËşµÄ¹¥ËÙ¼õ°ë
+    //bossæŠ€èƒ½ï¼Œè®©å¡”çš„æ”»é€Ÿå‡åŠ
     CCLOG("BossYellow's Attack!");
-    showBossSkill("SpecialAttack:Slow Speed!");
+    showBossSkill(EnglishUI::text("boss.slow"));
             a.duanSound();
             tower_jiasu = 0.3;
             auto delayaction = Sequence::create(DelayTime::create(20.0f), CallFunc::create([=] {
@@ -242,9 +243,9 @@ void BossYellow::SpecialAttack() {
 #define CELL_SIZE 64
 void BossSheep::SpecialAttack()
 {
-    //boss¼¼ÄÜ£¬ÏûÃğ½üÒ»°ëÅÚËş
+    //bossæŠ€èƒ½ï¼Œæ¶ˆç­è¿‘ä¸€åŠç‚®å¡”
     CCLOG("BossSheep's Attack!");
-    showBossSkill("SpecialAttack:Destroy!");
+    showBossSkill(EnglishUI::text("boss.destroy"));
             a.duanSound();
             auto bong = Sprite::create();
             if (!bong) {
@@ -257,7 +258,7 @@ void BossSheep::SpecialAttack()
             cocos2d::Vector<cocos2d::SpriteFrame*> frames;
             for (int i = 0; i <= 3; ++i) {
                 std::string frameName = "Carrot/bong/bong_" + std::to_string(i) + ".png";
-                auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 164, 160)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+                auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 164, 160)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
                 if (frame) {
                     frames.pushBack(frame);
                 }
@@ -296,37 +297,37 @@ void BossSheep::SpecialAttack()
             }
 }
 
-//ÎÄ×ÖÏÔÊ¾Boss¼¼ÄÜ
+//æ–‡å­—æ˜¾ç¤ºBossæŠ€èƒ½
 void showBossSkill(const std::string& skillText) {
-    // ´´½¨Ò»¸ö Label À´ÏÔÊ¾¼¼ÄÜÃû³Æ
-    auto skillLabel = Label::createWithTTF(skillText, "fonts/Marker Felt.ttf", 48); // Ê¹ÓÃ TTF ×ÖÌå
+    // åˆ›å»ºä¸€ä¸ª Label æ¥æ˜¾ç¤ºæŠ€èƒ½åç§°
+    auto skillLabel = Label::createWithTTF(skillText, "fonts/Marker Felt.ttf", 48); // ä½¿ç”¨ TTF å­—ä½“
     if (!skillLabel) return;
 
-    // ÉèÖÃ Label Î»ÖÃÎªÆÁÄ»ÖĞÑë
+    // è®¾ç½® Label ä½ç½®ä¸ºå±å¹•ä¸­å¤®
     skillLabel->setPosition(Director::getInstance()->getVisibleSize() / 2);
-    skillLabel->setTextColor(Color4B::RED); // ÉèÖÃ×ÖÌåÑÕÉ«ÎªºìÉ«
+    skillLabel->setTextColor(Color4B::RED); // è®¾ç½®å­—ä½“é¢œè‰²ä¸ºçº¢è‰²
 
-    // Ìí¼Ó Label µ½µ±Ç°²ã
-    manager->getScene()->addChild(skillLabel, 100); // ÉèÖÃ½Ï¸ßµÄ z-order È·±£ÏÔÊ¾ÔÚ×îÇ°Ãæ
+    // æ·»åŠ  Label åˆ°å½“å‰å±‚
+    manager->getScene()->addChild(skillLabel, 100); // è®¾ç½®è¾ƒé«˜çš„ z-order ç¡®ä¿æ˜¾ç¤ºåœ¨æœ€å‰é¢
 
-    // µ­Èë¶¯»­
+    // æ·¡å…¥åŠ¨ç”»
     auto fadeIn = FadeIn::create(0.5f);
 
-    // Í£ÁôÊ±¼ä
+    // åœç•™æ—¶é—´
     auto delay = DelayTime::create(2.0f);
 
-    // µ­³ö¶¯»­
+    // æ·¡å‡ºåŠ¨ç”»
     auto fadeOut = FadeOut::create(0.5f);
 
-    // ¶¯»­Íê³ÉºóÒÆ³ı Label
+    // åŠ¨ç”»å®Œæˆåç§»é™¤ Label
     auto remove = CallFunc::create([=]() {
         manager->getScene()->removeChild(skillLabel);
         });
 
-    // ×éºÏ¶¯×÷
+    // ç»„åˆåŠ¨ä½œ
     auto sequence = Sequence::create(fadeIn, delay, fadeOut, remove, nullptr);
 
-    // ÔËĞĞ¶¯×÷
+    // è¿è¡ŒåŠ¨ä½œ
     skillLabel->runAction(sequence);
 }
-  
+

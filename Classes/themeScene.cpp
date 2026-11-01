@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"advantureScene.h"
 #include"themeScene.h"
 #include"music.h"
@@ -10,14 +11,14 @@
 #include<fstream>
 using namespace rapidjson;
 extern Music a;
-extern bool level_is_win[3];//1Í¨¹ØÁË½âËøµÚ2¹Ø
+extern bool level_is_win[3];//1é€šå…³äº†è§£é”ç¬¬2å…³
 extern bool isNewGame[3];
 extern float beishu;
 
 USING_NS_CC;
 using namespace ui;
-// ¼ÙÉèÕâÀïÓĞÒ»¸öÈ«¾Ö±äÁ¿»òÕß³ÉÔ±±äÁ¿À´´æ´¢Ò³ÃæÏà¹ØÄÚÈİ£¬±ÈÈçÊÇ·ñ¿É²Ù×÷µÈ×´Ì¬±êÊ¶
-    // ¾ßÌåº¬ÒåĞè¸ù¾İÏîÄ¿Êµ¼ÊÇé¿öÈ·¶¨£¬ÕâÀïÖ»ÊÇÊ¾Àı
+// å‡è®¾è¿™é‡Œæœ‰ä¸€ä¸ªå…¨å±€å˜é‡æˆ–è€…æˆå‘˜å˜é‡æ¥å­˜å‚¨é¡µé¢ç›¸å…³å†…å®¹ï¼Œæ¯”å¦‚æ˜¯å¦å¯æ“ä½œç­‰çŠ¶æ€æ ‡è¯†
+    // å…·ä½“å«ä¹‰éœ€æ ¹æ®é¡¹ç›®å®é™…æƒ…å†µç¡®å®šï¼Œè¿™é‡Œåªæ˜¯ç¤ºä¾‹
 
 static void problemLoading(const char* filename)
 {
@@ -26,54 +27,54 @@ static void problemLoading(const char* filename)
 }
 
 
-// º¯ÊıÓÃÓÚÇåÀíÓëÌØ¶¨²Ù×÷Ïà¹ØµÄ°´Å¥£¨ÈçÈ·ÈÏ¡¢È¡Ïû¡¢Ëø¶¨°´Å¥£©
-   // ±ÜÃâÔÚ¶à´¦ÖØ¸´ÏàÍ¬µÄÇåÀíÂß¼­´úÂë
+// å‡½æ•°ç”¨äºæ¸…ç†ä¸ç‰¹å®šæ“ä½œç›¸å…³çš„æŒ‰é’®ï¼ˆå¦‚ç¡®è®¤ã€å–æ¶ˆã€é”å®šæŒ‰é’®ï¼‰
+   // é¿å…åœ¨å¤šå¤„é‡å¤ç›¸åŒçš„æ¸…ç†é€»è¾‘ä»£ç 
 void themescene::clearRelatedButtons() {
-    // »ñÈ¡ÃûÎª"confirmButton"µÄ×Ó½Úµã
+    // è·å–åä¸º"confirmButton"çš„å­èŠ‚ç‚¹
     auto confirm = this->getChildByName("confirmButton");
-    // »ñÈ¡ÃûÎª"cancelButton"µÄ×Ó½Úµã
+    // è·å–åä¸º"cancelButton"çš„å­èŠ‚ç‚¹
     auto cancel = this->getChildByName("cancelButton");
-    // »ñÈ¡ÃûÎª"lockedButton"µÄ×Ó½Úµã
+    // è·å–åä¸º"lockedButton"çš„å­èŠ‚ç‚¹
     auto locked = this->getChildByName("lockedButton");
-    // Èç¹ûÈ·ÈÏ°´Å¥ºÍÈ¡Ïû°´Å¥´æÔÚ£¬¾Í´Óµ±Ç°½ÚµãÒÆ³ıËüÃÇ
+    // å¦‚æœç¡®è®¤æŒ‰é’®å’Œå–æ¶ˆæŒ‰é’®å­˜åœ¨ï¼Œå°±ä»å½“å‰èŠ‚ç‚¹ç§»é™¤å®ƒä»¬
     if (confirm && cancel) {
         this->removeChildByName("confirmButton");
         this->removeChildByName("cancelButton");
     }
-    // Èç¹ûËø¶¨°´Å¥´æÔÚ£¬¾Í´Óµ±Ç°½ÚµãÒÆ³ıËü
+    // å¦‚æœé”å®šæŒ‰é’®å­˜åœ¨ï¼Œå°±ä»å½“å‰èŠ‚ç‚¹ç§»é™¤å®ƒ
     if (locked)
         this->removeChildByName("lockedButton");
 }
 
 void themescene::loadGameState() {
-	// »ñÈ¡¿ÉĞ´Â·¾¶
-	std::string writablePath = FileUtils::getInstance()->getWritablePath();  // »ñÈ¡¿ÉĞ´Â·¾¶
+	// è·å–å¯å†™è·¯å¾„
+	std::string writablePath = FileUtils::getInstance()->getWritablePath();  // è·å–å¯å†™è·¯å¾„
 
-	// ¹¹ÔìÎÄ¼şÂ·¾¶£¨ÎÄ¼şÃûÎª level_state£©
-	std::string filePath = writablePath + "level_state.json";  // Éú³ÉÍêÕûÎÄ¼şÂ·¾¶
+	// æ„é€ æ–‡ä»¶è·¯å¾„ï¼ˆæ–‡ä»¶åä¸º level_stateï¼‰
+	std::string filePath = writablePath + "level_state.json";  // ç”Ÿæˆå®Œæ•´æ–‡ä»¶è·¯å¾„
 
-	// ´ò¿ªÎÄ¼ş¶ÁÈ¡
-	std::ifstream ifs(filePath);  // Ê¹ÓÃ¿É¶ÁÂ·¾¶
+	// æ‰“å¼€æ–‡ä»¶è¯»å–
+	std::ifstream ifs(filePath);  // ä½¿ç”¨å¯è¯»è·¯å¾„
 	if (ifs.is_open()) {
-		// ¶ÁÈ¡ÎÄ¼şÄÚÈİµ½×Ö·û´®
+		// è¯»å–æ–‡ä»¶å†…å®¹åˆ°å­—ç¬¦ä¸²
 		std::string jsonContent((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-		ifs.close();  // ¹Ø±ÕÎÄ¼ş
+		ifs.close();  // å…³é—­æ–‡ä»¶
 
-		// ½âÎö JSON ×Ö·û´®
+		// è§£æ JSON å­—ç¬¦ä¸²
 		Document document;
 		document.Parse(jsonContent.c_str());
 
 		if (document.HasMember("levels") && document["levels"].IsArray()) {
-			// »ñÈ¡ levels Êı×é
+			// è·å– levels æ•°ç»„
 			const rapidjson::Value& levels = document["levels"];
 
 
-			// ±éÀú levels Êı×é£¬Ìî³ä level_is_win Êı×é
+			// éå† levels æ•°ç»„ï¼Œå¡«å…… level_is_win æ•°ç»„
 			for (SizeType i = 0; i < levels.Size(); i++) {
-				level_is_win[i] = levels[i].GetBool();  // »ñÈ¡²¼¶ûÖµ²¢Ìí¼Óµ½ level_is_win ÖĞ
+				level_is_win[i] = levels[i].GetBool();  // è·å–å¸ƒå°”å€¼å¹¶æ·»åŠ åˆ° level_is_win ä¸­
 			}
 
-			// ´òÓ¡¹Ø¿¨×´Ì¬
+			// æ‰“å°å…³å¡çŠ¶æ€
 			for (size_t i = 0; i < sizeof(level_is_win) / sizeof(level_is_win[0]); i++) {
 				CCLOG("Level %d: %s", (int)i + 1, level_is_win[i] ? "Win" : "Lose");
 			}
@@ -90,18 +91,18 @@ bool themescene::init() {
     if (!Layer::init())
         return false;
 	loadGameState();
-    auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óĞ¡
+    auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨ç‡å¤§å°
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óĞ¡
+    Size screenSize = Director::getInstance()->getWinSize();    //è·å–å±å¹•å¤§å°
 
-	//Ìí¼ÓÌáÊ¾´Ê
-	auto topLabel = Label::createWithSystemFont(StringUtils::format("Hello World"), "Arial", 32);
+	//æ·»åŠ æç¤ºè¯
+	auto topLabel = Label::createWithSystemFont(EnglishUI::text("level.choose"), "Arial", 32);
 	topLabel->setColor(Color3B::WHITE);
 	topLabel->setPosition(screenSize.width * 0.49, screenSize.height * 0.95);
 	this->addChild(topLabel, 2);
-	//Ìí¼Ó±³¾°
-	auto backgroundImage = Sprite::create("CarrotGuardRes/UI/AdvantureBackground.png");
-	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //»ñµÃËõ·Å±¶Êı
+	//æ·»åŠ èƒŒæ™¯
+	auto backgroundImage = EnglishUI::sprite("CarrotGuardRes/UI/AdvantureBackground.png");
+	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //è·å¾—ç¼©æ”¾å€æ•°
 	float scaleY = screenSize.height / backgroundImage->getContentSize().height;
 	if (backgroundImage == nullptr)
 		problemLoading("'AdvantureBackground.png'");
@@ -112,13 +113,13 @@ bool themescene::init() {
 		backgroundImage->setPosition(Vec2(screenSize.width / 2 + origin.x, screenSize.height / 2 + origin.y));
 		this->addChild(backgroundImage, 0);
 	}
-	
+
 	auto menu = Menu::create();
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	//Ìí¼Ó·µ»Ø°´Å¥
-	auto returnButton = MenuItemImage::create("CarrotGuardRes/UI/ReturnButtonNormal.png", "CarrotGuardRes/UI/ReturnButtonSelected.png", CC_CALLBACK_1(themescene::to_advantureScene, this));
+	//æ·»åŠ è¿”å›æŒ‰é’®
+	auto returnButton = EnglishUI::menuItem("CarrotGuardRes/UI/ReturnButtonNormal.png", "CarrotGuardRes/UI/ReturnButtonSelected.png", CC_CALLBACK_1(themescene::to_advantureScene, this));
 	if (returnButton == nullptr ||
 		returnButton->getContentSize().width <= 0 ||
 		returnButton->getContentSize().height <= 0)
@@ -134,14 +135,14 @@ bool themescene::init() {
 		menu->addChild(returnButton);
 	}
 
-	//Ìí¼Ó×óÓÒ·­Ò³°´Å¥
-	// ´´½¨PageView
+	//æ·»åŠ å·¦å³ç¿»é¡µæŒ‰é’®
+	// åˆ›å»ºPageView
 	auto pageView = PageView::create();
 	pageView->setContentSize(Size(screenSize.width, screenSize.height));
 	pageView->setPosition(Vec2::ZERO);
 	this->addChild(pageView);
 
-	// ¶¨ÒåµØÍ¼Í¼Æ¬Êı×é
+	// å®šä¹‰åœ°å›¾å›¾ç‰‡æ•°ç»„
 	std::vector<std::string> mapImages = {
 		"CarrotGuardRes/UI/SkyLineLevel_1.png",
 		"CarrotGuardRes/UI/SkyLineLevel_2.png",
@@ -149,30 +150,30 @@ bool themescene::init() {
 		"CarrotGuardRes/UI/SkyLineLevel_4.png"
 	};
 
-	// Ìí¼ÓÒ³Ãæ
+	// æ·»åŠ é¡µé¢
 	for (int i = 0; i < mapImages.size(); ++i) {
 		Layout* layout = Layout::create();
 		layout->setContentSize(Size(screenSize.width, screenSize.height));
-		ImageView* imageView = ImageView::create(mapImages[i]);
+		ImageView* imageView = EnglishUI::imageView(mapImages[i]);
 		imageView->setContentSize(Size(screenSize.width, screenSize.height));
 		imageView->setPosition(Vec2(layout->getContentSize().width / 2, layout->getContentSize().height / 2));
 		imageView->setScale(2.0f);
 		layout->addChild(imageView, 1);
 		if ((i == 0 && level_is_win[0] == true) || (i == 1 && level_is_win[1] == true) || (i == 2 && level_is_win[2] == true)) {
-			ImageView* a = ImageView::create("CarrotGuardRes/UI/goldenCarrot.png");
+			ImageView* a = EnglishUI::imageView("CarrotGuardRes/UI/goldenCarrot.png");
 			a->setPosition(Vec2(layout->getContentSize().width / 2 * 1.45, layout->getContentSize().height / 2 * 0.65));
 			a->setScale(1.5f);
 			layout->addChild(a, 2);
 		}
 		if ((i == 1 && level_is_win[0] == false) || (i == 2 && level_is_win[1] == false)) {
-			ImageView* b = ImageView::create("CarrotGuardRes/UI/suo.png");
+			ImageView* b = EnglishUI::imageView("CarrotGuardRes/UI/suo.png");
 			b->setPosition(Vec2(layout->getContentSize().width / 2 * 1.45, layout->getContentSize().height / 2 * 0.65));
 			layout->addChild(b, 2);
 		}
 		pageView->addPage(layout);
 	}
 
-	// Ìí¼Ó´¥ÃşÊÂ¼ş¼àÌıÆ÷
+	// æ·»åŠ è§¦æ‘¸äº‹ä»¶ç›‘å¬å™¨
 	pageView->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::BEGAN)
 			clearRelatedButtons();
@@ -182,18 +183,18 @@ bool themescene::init() {
 			clearRelatedButtons();
 			int currentIndex = pageView->getCurrentPageIndex();
 			if (currentIndex == 0 || (currentIndex == 1 && level_is_win[0] == true) || (currentIndex == 2 && level_is_win[1] == true)) {
-				// ´´½¨´æµµ°´Å¥
-				auto confirmButton = Button::create("CarrotGuardRes/UI/fileNormal.png", "CarrotGuardRes/UI/fileSelected.png");
+				// åˆ›å»ºå­˜æ¡£æŒ‰é’®
+				auto confirmButton = EnglishUI::button("CarrotGuardRes/UI/fileNormal.png", "CarrotGuardRes/UI/fileSelected.png");
 				confirmButton->setName("confirmButton");
 				confirmButton->setPosition(Vec2(screenSize.width * 0.6, screenSize.height * 0.13));
 				confirmButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 					if (type == Widget::TouchEventType::ENDED) {
 						a.button_music();
-						
+
 						isNewGame[currentIndex] = false;
 						auto scene = BaseLevelScene::createScene(currentIndex + 1);
 						Director::getInstance()->replaceScene(scene);
-						// ÔØÈë´æµµ£¬tmp=1
+						// è½½å…¥å­˜æ¡£ï¼Œtmp=1
 						//int tmp = 1;
 						//auto gameScene = GameScene::createSceneWithLevel(currentIndex + 1, tmp);
 						//Director::getInstance()->replaceScene(gameScene);
@@ -201,19 +202,19 @@ bool themescene::init() {
 					});
 				this->addChild(confirmButton);
 
-				// ´´½¨¿ªÊ¼°´Å¥
-				auto cancelButton = Button::create("CarrotGuardRes/UI/startNormal.png", "CarrotGuardRes/UI/startSelected.png");
+				// åˆ›å»ºå¼€å§‹æŒ‰é’®
+				auto cancelButton = EnglishUI::button("CarrotGuardRes/UI/startNormal.png", "CarrotGuardRes/UI/startSelected.png");
 				cancelButton->setName("cancelButton");
-				cancelButton->setPosition(Vec2(screenSize.width * 0.4, screenSize.height * 0.13));  // µ÷ÕûÎ»ÖÃ
+				cancelButton->setPosition(Vec2(screenSize.width * 0.4, screenSize.height * 0.13));  // è°ƒæ•´ä½ç½®
 				cancelButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 					if (type == Widget::TouchEventType::ENDED) {
 						a.button_music();
 
 						isNewGame[currentIndex] = true;
-						// ´´½¨²¢ÇĞ»»µ½µÚÒ»¹Ø
+						// åˆ›å»ºå¹¶åˆ‡æ¢åˆ°ç¬¬ä¸€å…³
 						auto scene = BaseLevelScene::createScene(currentIndex + 1);
 						Director::getInstance()->replaceScene(scene);
-						// ²»ÔØÈë´æµµ£¬tmp=0
+						// ä¸è½½å…¥å­˜æ¡£ï¼Œtmp=0
 						//int tmp = 0;
 						//auto gameScene = GameScene::createSceneWithLevel(currentIndex + 1, tmp);
 						//Director::getInstance()->replaceScene(gameScene);
@@ -222,16 +223,16 @@ bool themescene::init() {
 				this->addChild(cancelButton);
 			}
 			else {
-				auto lockedButton = Button::create("CarrotGuardRes/UI/locked.png");
+				auto lockedButton = EnglishUI::button("CarrotGuardRes/UI/locked.png");
 				lockedButton->setName("lockedButton");
-				lockedButton->setPosition(Vec2(screenSize.width * 0.5, screenSize.height * 0.13));  // µ÷ÕûÎ»ÖÃ
+				lockedButton->setPosition(Vec2(screenSize.width * 0.5, screenSize.height * 0.13));  // è°ƒæ•´ä½ç½®
 				this->addChild(lockedButton);
 
 
-				auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óĞ¡
+				auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨ç‡å¤§å°
 				Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-				auto boss1 = Sprite::create("CarrotGuardRes/UI/un_select2.png");
+				auto boss1 = EnglishUI::sprite("CarrotGuardRes/UI/un_select2.png");
 				boss1->setTag(100);
 				if (boss1 == nullptr)
 					problemLoading("'un_select2.png'");
@@ -244,7 +245,7 @@ bool themescene::init() {
 				auto menu1 = Menu::create(NULL);
 				menu1->setPosition(Vec2::ZERO);
 				this->addChild(menu1, 3);
-				auto know = MenuItemImage::create("CarrotGuardRes/UI/know.png", "CarrotGuardRes/UI/know.png", CC_CALLBACK_1(themescene::know_Callback, this));
+				auto know = EnglishUI::menuItem("CarrotGuardRes/UI/know.png", "CarrotGuardRes/UI/know.png", CC_CALLBACK_1(themescene::know_Callback, this));
 
 				if (know == nullptr ||
 					know->getContentSize().width <= 0 ||
@@ -258,15 +259,15 @@ bool themescene::init() {
 					float y = origin.y + visibleSize.width / 3.8;
 					know->setScale(1);
 					know->setPosition(Vec2(x, y));
-					menu1->addChild(know);  //¼ÓÈëµ½²Ëµ¥ÖĞ
+					menu1->addChild(know);  //åŠ å…¥åˆ°èœå•ä¸­
 				}
 			}
 		}
 		});
 
 
-	// Ìí¼Ó×óÓÒ·­Ò³°´Å¥
-	auto leftButton = Button::create("CarrotGuardRes/UI/leftButtonNormal.png", "CarrotGuardRes/UI/leftButtonSelected.png");
+	// æ·»åŠ å·¦å³ç¿»é¡µæŒ‰é’®
+	auto leftButton = EnglishUI::button("CarrotGuardRes/UI/leftButtonNormal.png", "CarrotGuardRes/UI/leftButtonSelected.png");
 	leftButton->setPosition(Vec2(screenSize.width * 0.1, screenSize.height / 2));
 	leftButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
@@ -275,21 +276,21 @@ bool themescene::init() {
 			if (currentIndex > 0) {
 				pageView->scrollToPage(currentIndex - 1);
 
-				//Ïû³ıÉÏÒ»Ò³µØÍ¼µÄÑ¡Ôñ°´Å¥
+				//æ¶ˆé™¤ä¸Šä¸€é¡µåœ°å›¾çš„é€‰æ‹©æŒ‰é’®
 				clearRelatedButtons();
 			}
 		}
 		});
 	this->addChild(leftButton, 2);
 
-	auto rightButton = Button::create("CarrotGuardRes/UI/rightButtonNormal.png", "CarrotGuardRes/UI/rightButtonSelected.png");
+	auto rightButton = EnglishUI::button("CarrotGuardRes/UI/rightButtonNormal.png", "CarrotGuardRes/UI/rightButtonSelected.png");
 	rightButton->setPosition(Vec2(screenSize.width * 0.9, screenSize.height / 2));
 	rightButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			a.button_music();
 			int currentIndex = pageView->getCurrentPageIndex();
 			if (currentIndex < 0)
-				currentIndex = 0;  //  Î´ÖªÔ­Òòµ¼ÖÂ¿ªÊ¼µÄÊ±ºòindexÊÇ-1£¬ÔİÊ±ÏñÕâÑù´¦Àí¡£
+				currentIndex = 0;  //  æœªçŸ¥åŸå› å¯¼è‡´å¼€å§‹çš„æ—¶å€™indexæ˜¯-1ï¼Œæš‚æ—¶åƒè¿™æ ·å¤„ç†ã€‚
 			if (currentIndex < mapImages.size() - 1) {
 				pageView->scrollToPage(currentIndex + 1);
 				clearRelatedButtons();
@@ -307,10 +308,10 @@ void themescene::to_advantureScene(Ref* pSender) {
 
 void themescene::know_Callback(Ref* pSender) {
 	auto sprite = this->getChildByTag(100);
-	// Èç¹ûÕÒµ½ÁË¾«Áé£¬¾Í´ÓÆäËùÔÚ¸¸½ÚµãÖĞÒÆ³ıËü
+	// å¦‚æœæ‰¾åˆ°äº†ç²¾çµï¼Œå°±ä»å…¶æ‰€åœ¨çˆ¶èŠ‚ç‚¹ä¸­ç§»é™¤å®ƒ
 	if (sprite)
 		this->removeChild(sprite);
 	auto menu = ((MenuItem*)pSender)->getParent();
-	// ´Ó²Ëµ¥ÖĞÒÆ³ı°´Å¥
+	// ä»èœå•ä¸­ç§»é™¤æŒ‰é’®
 	menu->removeChild((MenuItem*)pSender);
 }

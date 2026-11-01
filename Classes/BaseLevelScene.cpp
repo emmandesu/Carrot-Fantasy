@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include "BaseLevelScene.h"
 #include<vector>
 #include"MonsterConfigs.h"
@@ -20,18 +21,18 @@ using namespace ui;
 #define CELL_SIZE 64
 const Color3B moneyColor(154, 101, 25);
 
-extern float beishu;           //ÓÎÏ·±¶Êı
-extern Music a;                //ÒôÀÖÏµÍ³
-extern bool level_is_win[3];   //Í¨¹ØÇé¿ö
-extern bool isNewGame[3];      //´æµµÇé¿ö
-GameManager* manager;          //ÓÃÀ´¹ÜÀí¸÷²¿·Ö½»»¥
-float tower_jiasu = 1;         //ÓÃÓÚËş¼ÓËÙ
-// ¹Ø¿¨µØÍ¼ÎÄ¼şÂ·¾¶Êı×é
-const std::vector<std::string> BaseLevelScene::mapFiles 
+extern float beishu;           //æ¸¸æˆå€æ•°
+extern Music a;                //éŸ³ä¹ç³»ç»Ÿ
+extern bool level_is_win[3];   //é€šå…³æƒ…å†µ
+extern bool isNewGame[3];      //å­˜æ¡£æƒ…å†µ
+GameManager* manager;          //ç”¨æ¥ç®¡ç†å„éƒ¨åˆ†äº¤äº’
+float tower_jiasu = 1;         //ç”¨äºå¡”åŠ é€Ÿ
+// å…³å¡åœ°å›¾æ–‡ä»¶è·¯å¾„æ•°ç»„
+const std::vector<std::string> BaseLevelScene::mapFiles
 = {
-    "map/map1.tmx",  // ¹Ø¿¨ 1
-    "map/map2.tmx",  // ¹Ø¿¨ 2
-    "map/map3.tmx",  // ¹Ø¿¨ 3
+    "map/map1.tmx",  // å…³å¡ 1
+    "map/map2.tmx",  // å…³å¡ 2
+    "map/map3.tmx",  // å…³å¡ 3
 };
 
 
@@ -40,70 +41,70 @@ static void problemLoading(const char* filename)
     printf("Error while loading: %s\n", filename);
     printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in BaseLevelScene.cpp\n");
 }
-/****************±êÇ©²¿·Ö******************/
-//¸üĞÂ½ğ±Ò±êÇ©
+/****************æ ‡ç­¾éƒ¨åˆ†******************/
+//æ›´æ–°é‡‘å¸æ ‡ç­¾
 void BaseLevelScene::updateMoney(int add) {
     money += add;
-    std::string text = std::to_string(money); // ½«Êı×Ö×ª»»Îª×Ö·û´®
+    std::string text = std::to_string(money); // å°†æ•°å­—è½¬æ¢ä¸ºå­—ç¬¦ä¸²
     moneyLable->setString(text);
 }
-//¸üĞÂµ±Ç°²¨Êı±êÇ©
+//æ›´æ–°å½“å‰æ³¢æ•°æ ‡ç­¾
 void BaseLevelScene::updateCurrentWaveLabe() {
     _curNumberLabel->setString(StringUtils::format("%d", std::min(manager->getCurrentWaveNum() + 1, manager->getAllWaveNum())));
 }
 /******************************************/
 
-/****************UI²¿·Ö******************/
-//¶ş±¶ËÙ°´Å¥
+/****************UIéƒ¨åˆ†******************/
+//äºŒå€é€ŸæŒ‰é’®
 void BaseLevelScene::doublespeed(Ref* pSender) {
-    isDoubleSpeed = !isDoubleSpeed; // ÇĞ»»¶ş±¶ËÙ×´Ì¬
+    isDoubleSpeed = !isDoubleSpeed; // åˆ‡æ¢äºŒå€é€ŸçŠ¶æ€
     a.button_music();
     MenuItemImage* button = static_cast<MenuItemImage*>(pSender);
     if (isDoubleSpeed) {
-        button->setNormalImage(Sprite::create("CarrotGuardRes/UI/doubleSpeed.png"));
-        button->setSelectedImage(Sprite::create("CarrotGuardRes/UI/doubleSpeed.png"));
+        button->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/doubleSpeed.png"));
+        button->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/doubleSpeed.png"));
         tower_jiasu = 2;
         guaisou_jiansu(2.0f);
-        beishu = 2;//ÊµÏÖ¼ÓËÙĞ§¹û
+        beishu = 2;//å®ç°åŠ é€Ÿæ•ˆæœ
     }
     else {
-        button->setNormalImage(Sprite::create("CarrotGuardRes/UI/normalSpeed.png"));
-        button->setSelectedImage(Sprite::create("CarrotGuardRes/UI/normalSpeed.png"));
+        button->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/normalSpeed.png"));
+        button->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/normalSpeed.png"));
         tower_jiasu = 1;
         guaisou_jiansu(1.0f);
-        beishu = 1; //ÊµÏÖ¼õËÙĞ§¹û
+        beishu = 1; //å®ç°å‡é€Ÿæ•ˆæœ
     }
 }
-//ÔİÍ£°´Å¥
+//æš‚åœæŒ‰é’®
 void BaseLevelScene::pause_all(Ref* pSender) {
-    isPaused = !isPaused; // ÇĞ»»ÔİÍ£×´Ì¬
+    isPaused = !isPaused; // åˆ‡æ¢æš‚åœçŠ¶æ€
     a.button_music();
     MenuItemImage* button = static_cast<MenuItemImage*>(pSender);
-    if (isPaused) {//ÔİÍ£×´Ì¬
-        button->setNormalImage(Sprite::create("CarrotGuardRes/UI/continueButton.png"));
-        button->setSelectedImage(Sprite::create("CarrotGuardRes/UI/continueButton.png"));
-        // Ìí¼Ó¶¥²¿ÔİÍ£±êÊ¶
-        auto pauseTop = Sprite::create("CarrotGuardRes/UI/pausing.png");
+    if (isPaused) {//æš‚åœçŠ¶æ€
+        button->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/continueButton.PNG"));
+        button->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/continueButton.PNG"));
+        // æ·»åŠ é¡¶éƒ¨æš‚åœæ ‡è¯†
+        auto pauseTop = EnglishUI::sprite("CarrotGuardRes/UI/pausing.png");
         pauseTop->setName("pauseTop");
         pauseTop->setPosition(464, 610);
         pauseTop->setScale(2.0f);
         this->addChild(pauseTop, 10);
         Director::getInstance()->pause();
     }
-    else {//»Ö¸´
-        button->setNormalImage(Sprite::create("CarrotGuardRes/UI/pauseButton.png"));
-        button->setSelectedImage(Sprite::create("CarrotGuardRes/UI/pauseButton.png"));
-        //ÒÆ³ıÔİÍ£±êÊ¶
+    else {//æ¢å¤
+        button->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/pauseButton.PNG"));
+        button->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/pauseButton.PNG"));
+        //ç§»é™¤æš‚åœæ ‡è¯†
         this->removeChildByName("pauseTop");
         Director::getInstance()->resume();
     }
 }
 void BaseLevelScene::wenhao(Ref* pSender) {
     a.button_music();
-    auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óĞ¡
+    auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨ç‡å¤§å°
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óĞ¡
-    //´´½¨»ÒÉ«ÕÚÕÖ²ã
+    Size screenSize = Director::getInstance()->getWinSize();    //è·å–å±å¹•å¤§å°
+    //åˆ›å»ºç°è‰²é®ç½©å±‚
     auto menuLayer = LayerColor::create(Color4B(0, 0, 0, 150));
     menuLayer->setPosition(Vec2::ZERO);
     this->addChild(menuLayer, 10);
@@ -113,21 +114,21 @@ void BaseLevelScene::wenhao(Ref* pSender) {
         return true;
         };
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, menuLayer);
-    auto jie = Sprite::create("Carrot/jieshao/jie_0.png");
+    auto jie = EnglishUI::sprite("Carrot/jieshao/jie_0.png");
     jie->setPosition(480, 500);
     jie->setScale(2);
     menuLayer->addChild(jie, 1);
     auto menu = Menu::create();
     menu->setPosition(Vec2::ZERO);
     menuLayer->addChild(menu, 1);
-    //Ìí¼Ó×óÓÒ·­Ò³°´Å¥
-   // ´´½¨PageView
+    //æ·»åŠ å·¦å³ç¿»é¡µæŒ‰é’®
+   // åˆ›å»ºPageView
 
     auto pageView = PageView::create();
     pageView->setContentSize(Size(screenSize.width, screenSize.height));
     pageView->setPosition(Vec2::ZERO);
     menuLayer->addChild(pageView);
-    // ¶¨ÒåµØÍ¼Í¼Æ¬Êı×é
+    // å®šä¹‰åœ°å›¾å›¾ç‰‡æ•°ç»„
     std::vector<std::string> mapImages = {
         "Carrot/jieshao/jie_1.png",
         "Carrot/jieshao/jie_2.png",
@@ -135,28 +136,28 @@ void BaseLevelScene::wenhao(Ref* pSender) {
         "Carrot/jieshao/jie_4.png",
         "Carrot/jieshao/jie_5.png"
     };
-    // Ìí¼ÓÒ³Ãæ
+    // æ·»åŠ é¡µé¢
     for (int i = 0; i < mapImages.size(); ++i) {
         Layout* layout = Layout::create();
         layout->setContentSize(Size(screenSize.width, screenSize.height));
-        ImageView* imageView = ImageView::create(mapImages[i]);
+        ImageView* imageView = EnglishUI::imageView(mapImages[i]);
         imageView->setContentSize(Size(screenSize.width, screenSize.height));
         imageView->setPosition(Vec2(layout->getContentSize().width / 2, layout->getContentSize().height / 2));
-        imageView->setScale(2);  //´ı¶¨
+        imageView->setScale(2);  //å¾…å®š
         layout->addChild(imageView, 1);
         pageView->addPage(layout);
     }
-    auto continueButton = MenuItemImage::create("Carrot/jieshao/cha_0.png", "Carrot/jieshao/cha_1.png");
+    auto continueButton = EnglishUI::menuItem("Carrot/jieshao/cha_0.png", "Carrot/jieshao/cha_1.png");
     continueButton->setPosition(814,503);
     continueButton->setScale(1.9);
-    // ¼ÌĞøÓÎÏ·Ñ¡Ïî
+    // ç»§ç»­æ¸¸æˆé€‰é¡¹
     continueButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
         this->removeChild(menuLayer);
         });
     menu->addChild(continueButton, 1);
-    // Ìí¼Ó×óÓÒ·­Ò³°´Å¥
-    auto leftButton = Button::create("CarrotGuardRes/UI/leftButtonNormal.png", "CarrotGuardRes/UI/leftButtonSelected.png");
+    // æ·»åŠ å·¦å³ç¿»é¡µæŒ‰é’®
+    auto leftButton = EnglishUI::button("CarrotGuardRes/UI/leftButtonNormal.png", "CarrotGuardRes/UI/leftButtonSelected.png");
     leftButton->setPosition(Vec2(screenSize.width * 0.1, screenSize.height / 2));
     leftButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
@@ -168,7 +169,7 @@ void BaseLevelScene::wenhao(Ref* pSender) {
         }
         });
     menuLayer->addChild(leftButton, 1);
-    auto rightButton = Button::create("CarrotGuardRes/UI/rightButtonNormal.png", "CarrotGuardRes/UI/rightButtonSelected.png");
+    auto rightButton = EnglishUI::button("CarrotGuardRes/UI/rightButtonNormal.png", "CarrotGuardRes/UI/rightButtonSelected.png");
     rightButton->setPosition(Vec2(screenSize.width * 0.9, screenSize.height / 2));
     rightButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
         if (type == Widget::TouchEventType::ENDED) {
@@ -181,16 +182,16 @@ void BaseLevelScene::wenhao(Ref* pSender) {
                 pageView->scrollToPage(currentIndex + 1);
         }
         });
-    menuLayer->addChild(rightButton, 1); 
+    menuLayer->addChild(rightButton, 1);
 }
-//²Ëµ¥°´Å¥
+//èœå•æŒ‰é’®
 void BaseLevelScene::menu_all(Ref* pSender) {
     a.button_music();
     Director::getInstance()->pause();
-    auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óĞ¡
+    auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨ç‡å¤§å°
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óĞ¡
-    //´´½¨»ÒÉ«ÕÚÕÖ²ã
+    Size screenSize = Director::getInstance()->getWinSize();    //è·å–å±å¹•å¤§å°
+    //åˆ›å»ºç°è‰²é®ç½©å±‚
     auto menuLayer = LayerColor::create(Color4B(0, 0, 0, 150));
     menuLayer->setPosition(Vec2::ZERO);
     this->addChild(menuLayer, 10);
@@ -200,59 +201,59 @@ void BaseLevelScene::menu_all(Ref* pSender) {
         return true;
         };
     Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(listener, menuLayer);
-    //Ìí¼ÓÔİÍ£²Ëµ¥±³¾°
-    auto menuBackground = Sprite::create("CarrotGuardRes/UI/gameMenu.png");
+    //æ·»åŠ æš‚åœèœå•èƒŒæ™¯
+    auto menuBackground = EnglishUI::sprite("CarrotGuardRes/UI/gameMenu.png");
     menuBackground->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
     menuBackground->setScale(1.5f);
     menuLayer->addChild(menuBackground, 0);
     auto menu = Menu::create();
     menu->setPosition(Vec2::ZERO);
     menuLayer->addChild(menu, 1);
-    //Ìí¼ÓÔİÍ£²Ëµ¥ÉÏÏà¹Ø¹¦ÄÜ°´Å¥
-    auto continueButton = MenuItemImage::create("CarrotGuardRes/UI/continueNormal.png", "CarrotGuardRes/UI/continueSelected.png");
+    //æ·»åŠ æš‚åœèœå•ä¸Šç›¸å…³åŠŸèƒ½æŒ‰é’®
+    auto continueButton = EnglishUI::menuItem("CarrotGuardRes/UI/continueNormal.png", "CarrotGuardRes/UI/continueSelected.png");
     continueButton->setPosition(Vec2(screenSize.width * 0.495, screenSize.height * 0.649));
     continueButton->setScale(1.5);
-    auto restartButton = MenuItemImage::create("CarrotGuardRes/UI/restartNormal.png", "CarrotGuardRes/UI/restartSelected.png");
+    auto restartButton = EnglishUI::menuItem("CarrotGuardRes/UI/restartNormal.png", "CarrotGuardRes/UI/restartSelected.png");
     restartButton->setPosition(Vec2(screenSize.width * 0.495, screenSize.height * 0.51));
     restartButton->setScale(1.5);
-    auto chooseButton = MenuItemImage::create("CarrotGuardRes/UI/chooseLevelNormal.png", "CarrotGuardRes/UI/chooseLevelSelected.png");
+    auto chooseButton = EnglishUI::menuItem("CarrotGuardRes/UI/chooseLevelNormal.png", "CarrotGuardRes/UI/chooseLevelSelected.png");
     chooseButton->setPosition(Vec2(screenSize.width * 0.495, screenSize.height * 0.375));
     chooseButton->setScale(1.5);
-    // ¼ÌĞøÓÎÏ·Ñ¡Ïî
+    // ç»§ç»­æ¸¸æˆé€‰é¡¹
     continueButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
         this->removeChild(menuLayer);
-        // ÅĞ¶ÏÔÚµã»÷²Ëµ¥°´Å¥Ö®Ç°ÊÇ·ñµã»÷¹ıÔİÍ£°´Å¥£¬·ÀÖ¹³öÏÖbug
+        // åˆ¤æ–­åœ¨ç‚¹å‡»èœå•æŒ‰é’®ä¹‹å‰æ˜¯å¦ç‚¹å‡»è¿‡æš‚åœæŒ‰é’®ï¼Œé˜²æ­¢å‡ºç°bug
         if (isPaused == 0) {
             Director::getInstance()->resume();
         }
         });
-    //ÖØĞÂ¿ªÊ¼ÓÎÏ·Ñ¡Ïî
+    //é‡æ–°å¼€å§‹æ¸¸æˆé€‰é¡¹
     restartButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
         this->removeChild(menuLayer);
-        // È¡ÏûÓë GameManager Ïà¹ØµÄËùÓĞµ÷¶ÈÆ÷
+        // å–æ¶ˆä¸ GameManager ç›¸å…³çš„æ‰€æœ‰è°ƒåº¦å™¨
         GameManager::getInstance()->stopAllSchedulers();
-        //È¡ÏûÊÂ¼ş¼àÌı
+        //å–æ¶ˆäº‹ä»¶ç›‘å¬
         manager->removeListener();
         auto scene = BaseLevelScene::createScene(levelId);
-        scheduler->setTimeScale(1.0f); //ÊµÏÖ¼õËÙĞ§¹û
+        scheduler->setTimeScale(1.0f); //å®ç°å‡é€Ÿæ•ˆæœ
         Director::getInstance()->replaceScene(scene);
         Director::getInstance()->resume();
         });
 
-    //Ñ¡Ôñ¹Ø¿¨Ñ¡Ïî
+    //é€‰æ‹©å…³å¡é€‰é¡¹
     chooseButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
         saveGameState();
-        //¹ÖÊŞ´æµµ
+        //æ€ªå…½å­˜æ¡£
         manager->saveMonstersDataToJson("level"+std::to_string(levelId)+"Monster.json");
-        //Ö²Îï´æµµ
+        //æ¤ç‰©å­˜æ¡£
         saveTowerData();
         this->removeChild(menuLayer);
-        // È¡ÏûÓë GameManager Ïà¹ØµÄËùÓĞµ÷¶ÈÆ÷
+        // å–æ¶ˆä¸ GameManager ç›¸å…³çš„æ‰€æœ‰è°ƒåº¦å™¨
         GameManager::getInstance()->stopAllSchedulers();
-        //È¡ÏûÊÂ¼ş¼àÌı
+        //å–æ¶ˆäº‹ä»¶ç›‘å¬
         manager->removeListener();
         auto themeScene = themescene::createScene();
         Director::getInstance()->replaceScene(themeScene);
@@ -264,11 +265,11 @@ void BaseLevelScene::menu_all(Ref* pSender) {
 }
 void BaseLevelScene::guaisou_jiansu(float guai_jiansu) {
     for (auto it = manager->monsters.begin(); it != manager->monsters.end(); it++) {
-        if ((*it)->getHealth() > 0) 
-            (*it)->speedaction->setSpeed(guai_jiansu);   
+        if ((*it)->getHealth() > 0)
+            (*it)->speedaction->setSpeed(guai_jiansu);
     }
 }
-//¼¼ÄÜ1°´Å¥
+//æŠ€èƒ½1æŒ‰é’®
 void BaseLevelScene::Jineng1(Ref* pSender) {
     a.button_music();
     if (money >= 200) {
@@ -276,11 +277,11 @@ void BaseLevelScene::Jineng1(Ref* pSender) {
         manager->Jineng1();
     }
 }
-//¼¼ÄÜ2°´Å¥
+//æŠ€èƒ½2æŒ‰é’®
 void BaseLevelScene::Jineng2(Ref* pSender) {
     a.button_music();
     if (money >= 200) {
-        updateMoney(-200); 
+        updateMoney(-200);
         guaisou_jiansu(0.01f);
         beishu = 0.01f;
         auto delayaction = Sequence::create(
@@ -290,7 +291,7 @@ void BaseLevelScene::Jineng2(Ref* pSender) {
         this->runAction(delayaction);
     }
 }
-//¼¼ÄÜ3°´Å¥
+//æŠ€èƒ½3æŒ‰é’®
 void BaseLevelScene::Jineng3(Ref* pSender) {
     a.button_music();
     if (money >= 500) {
@@ -305,7 +306,7 @@ void BaseLevelScene::Jineng3(Ref* pSender) {
         cocos2d::Vector<cocos2d::SpriteFrame*> frames;
         for (int i = 0; i <= 3; ++i) {
             std::string frameName = "Carrot/bong/bong_" + std::to_string(i) + ".png";
-            auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 164, 160)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+            auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 164, 160)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
             if (frame) {
                 frames.pushBack(frame);
             }
@@ -330,11 +331,11 @@ void BaseLevelScene::Jineng3(Ref* pSender) {
             if ((*it)->getHealth() > 0) {
                 (*it)->setHealth(0);
                 (*it)->toDie(this);
-            }    
+            }
         }
     }
 }
-//¼¼ÄÜ4°´Å¥
+//æŠ€èƒ½4æŒ‰é’®
 void BaseLevelScene::Jineng4(Ref* pSender) {
     a.button_music();
     if (money >= 200) {
@@ -346,7 +347,7 @@ void BaseLevelScene::Jineng4(Ref* pSender) {
         this->runAction(delayaction);
     }
 }
-//¼¼ÄÜ5°´Å¥
+//æŠ€èƒ½5æŒ‰é’®
 void BaseLevelScene::Jineng5(Ref* pSender) {
     a.button_music();
     if (money >= 150) {
@@ -384,57 +385,57 @@ void BaseLevelScene::UpMenuGone(Vec2& position)
     }
     cell_flag = 1;
 }
-//ÓÎÏ·½áÊøµÄ½çÃæ´¦Àí
+//æ¸¸æˆç»“æŸçš„ç•Œé¢å¤„ç†
 void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
     //Director::getInstance()->pause();
-    // ÉèÖÃ»ÒÉ«ÕÚÕÖ²ã
+    // è®¾ç½®ç°è‰²é®ç½©å±‚
     auto menuLayer = LayerColor::create(Color4B(0, 0, 0, 0));
     menuLayer->setPosition(Vec2::ZERO);
     this->addChild(menuLayer, 10);
 
-    // ´´½¨²Ëµ¥
+    // åˆ›å»ºèœå•
     auto menu = Menu::create();
     menu->setPosition(Vec2::ZERO);
     menuLayer->addChild(menu, 1);
-    // ÓÎÏ·Ê¤Àû
+    // æ¸¸æˆèƒœåˆ©
     if (is_win) {
         level_is_win[levelId - 1] = true;
         saveGameState();
-        //Ìí¼ÓÓÎÏ·»ñÊ¤½çÃæ
-        auto gameWinBackground = Sprite::create("CarrotGuardRes/UI/WinGame.png");
+        //æ·»åŠ æ¸¸æˆè·èƒœç•Œé¢
+        auto gameWinBackground = EnglishUI::sprite("CarrotGuardRes/UI/WinGame.png");
         gameWinBackground->setPosition(Vec2(480, 320));
         gameWinBackground->setScale(1.5f);
         menuLayer->addChild(gameWinBackground, 0);
-        //Ìí¼Ó»ñÊ¤µÄ½ğÂÜ²·±êÊ¶
-        auto goldenCarrot = Sprite::create("CarrotGuardRes/UI/goldenCarrot.png");
+        //æ·»åŠ è·èƒœçš„é‡‘èåœæ ‡è¯†
+        auto goldenCarrot = EnglishUI::sprite("CarrotGuardRes/UI/goldenCarrot.png");
         goldenCarrot->setPosition(Vec2(960 * 0.493, 640 * 0.7));
         menuLayer->addChild(goldenCarrot, 0);
 
-        // Ê¤ÀûµÄÏà¹ØÌáÊ¾Óï
+        // èƒœåˆ©çš„ç›¸å…³æç¤ºè¯­
 
         _curNumberLabel = Label::createWithSystemFont(StringUtils::format("%d", currentWaveNum > allWaveNum ? allWaveNum + 1 : currentWaveNum + 1), "Arial", 32);
         _curNumberLabel->setColor(Color3B::YELLOW);
         _curNumberLabel->setPosition(960 * 0.51, 640 * 0.54);
-        Label* loseWordLeft = Label::createWithSystemFont("fought off", "Arial", 30);
+        Label* loseWordLeft = Label::createWithSystemFont(EnglishUI::text("game.fought_off"), "Arial", 30);
         loseWordLeft->setPosition(960 * 0.36, 640 * 0.54);
-        Label* loseWordRight = Label::createWithSystemFont("waves", "Arial", 30);
+        Label* loseWordRight = Label::createWithSystemFont(EnglishUI::text("game.waves"), "Arial", 30);
         loseWordRight->setPosition(960 * 0.60, 640 * 0.545);
 
         this->addChild(_curNumberLabel, 10);
         this->addChild(loseWordLeft, 10);
         this->addChild(loseWordRight, 10);
-        //¼ÌĞøÓÎÏ·°´Å¥
-        auto continueButton = MenuItemImage::create("CarrotGuardRes/UI/continueNormal.png", "CarrotGuardRes/UI/continueSelected.png");
+        //ç»§ç»­æ¸¸æˆæŒ‰é’®
+        auto continueButton = EnglishUI::menuItem("CarrotGuardRes/UI/continueNormal.png", "CarrotGuardRes/UI/continueSelected.png");
         continueButton->setPosition(Vec2(960 * 0.613, 640 * 0.375));
         continueButton->setScale(1.38);
         continueButton->setCallback([this, menuLayer](Ref* psender) {
             a.button_music();
-            //Èôµ±Ç°Î´µ½¿ª·ÅµÄ×îºóÒ»¹Ø£¬Ôò½øĞĞÏÂÒ»¹Ø
+            //è‹¥å½“å‰æœªåˆ°å¼€æ”¾çš„æœ€åä¸€å…³ï¼Œåˆ™è¿›è¡Œä¸‹ä¸€å…³
             if (levelId < 3) {
                 auto scene = BaseLevelScene::createScene(levelId + 1);
                 Director::getInstance()->replaceScene(scene);
             }
-            //Èôµ±Ç°ÒÑ¾­ÊÇ¿ª·ÅµÄ×îºóÒ»¹Ø£¬Ôò·µ»ØÑ¡Ôñ¹Ø¿¨½çÃæ
+            //è‹¥å½“å‰å·²ç»æ˜¯å¼€æ”¾çš„æœ€åä¸€å…³ï¼Œåˆ™è¿”å›é€‰æ‹©å…³å¡ç•Œé¢
             else {
                 auto themeScene = themescene::createScene();
                 Director::getInstance()->replaceScene(themeScene);
@@ -442,36 +443,36 @@ void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
             });
         menu->addChild(continueButton, 1);
     }
-    // ÓÎÏ·Ê§°Ü
+    // æ¸¸æˆå¤±è´¥
     else {
-        auto gameLoseBackground = Sprite::create("CarrotGuardRes/UI/LoseGame.png");
+        auto gameLoseBackground = EnglishUI::sprite("CarrotGuardRes/UI/LoseGame.png");
         gameLoseBackground->setPosition(Vec2(960 / 2 + 960 * 0.01, 640 / 2 + 640 * 0.015));
         gameLoseBackground->setScale(1.5f);
         menuLayer->addChild(gameLoseBackground, 0);
 
-        // ÓÎÏ·Ê§°ÜµÄÏà¹ØÌáÊ¾Óï
+        // æ¸¸æˆå¤±è´¥çš„ç›¸å…³æç¤ºè¯­
 
-        _curNumberLabel = Label::createWithSystemFont(StringUtils::format("%d", currentWaveNum), "Arial", 32);// ÔİÊ±Ã»¸ãcurrnumÎªÊ²Ã´»á´ó1£¬ËùÒÔÏÈ-1
+        _curNumberLabel = Label::createWithSystemFont(StringUtils::format("%d", currentWaveNum), "Arial", 32);// æš‚æ—¶æ²¡æcurrnumä¸ºä»€ä¹ˆä¼šå¤§1ï¼Œæ‰€ä»¥å…ˆ-1
         _curNumberLabel->setColor(Color3B::YELLOW);
         _curNumberLabel->setPosition(960 * 0.51, 640 * 0.54);
-        Label* loseWordLeft = Label::createWithSystemFont("fought off", "Arial", 30);
+        Label* loseWordLeft = Label::createWithSystemFont(EnglishUI::text("game.fought_off"), "Arial", 30);
 
         loseWordLeft->setPosition(960 * 0.36, 640 * 0.54);
-        Label* loseWordRight = Label::createWithSystemFont("waves", "Arial", 30);
+        Label* loseWordRight = Label::createWithSystemFont(EnglishUI::text("game.waves"), "Arial", 30);
         loseWordRight->setPosition(960 * 0.60, 640 * 0.54);
 
         this->addChild(_curNumberLabel, 10);
         this->addChild(loseWordLeft, 10);
         this->addChild(loseWordRight, 10);
-        //ÖØĞÂÓÎÏ·°´Å¥
-        auto againButton = MenuItemImage::create("CarrotGuardRes/UI/AgainNormal.png", "CarrotGuardRes/UI/AgainSelected.png");
+        //é‡æ–°æ¸¸æˆæŒ‰é’®
+        auto againButton = EnglishUI::menuItem("CarrotGuardRes/UI/AgainNormal.png", "CarrotGuardRes/UI/AgainSelected.png");
         againButton->setPosition(Vec2(960 * 0.61, 640 * 0.37));
         againButton->setScale(0.9);
-        // ÖØĞÂ¿ªÊ¼°´Å¥µÄÑ¡Ïî
+        // é‡æ–°å¼€å§‹æŒ‰é’®çš„é€‰é¡¹
         againButton->setCallback([this, menuLayer](Ref* psender) {
             a.button_music();
             this->removeChild(menuLayer);
-            // È¡ÏûÓë GameManager Ïà¹ØµÄËùÓĞµ÷¶ÈÆ÷
+            // å–æ¶ˆä¸ GameManager ç›¸å…³çš„æ‰€æœ‰è°ƒåº¦å™¨
            // GameManager::getInstance()->stopAllSchedulers();
             auto scene = BaseLevelScene::createScene(levelId);
             Director::getInstance()->replaceScene(scene);
@@ -480,17 +481,17 @@ void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
         menu->addChild(againButton, 1);
 
     }
-    // Ñ¡ÔñÓÎÏ·¹Ø¿¨°´Å¥
-    auto chooseButton = MenuItemImage::create("CarrotGuardRes/UI/chooseLevelNormal.png", "CarrotGuardRes/UI/chooseLevelSelected.png");
+    // é€‰æ‹©æ¸¸æˆå…³å¡æŒ‰é’®
+    auto chooseButton = EnglishUI::menuItem("CarrotGuardRes/UI/chooseLevelNormal.png", "CarrotGuardRes/UI/chooseLevelSelected.png");
     chooseButton->setPosition(Vec2(960 * 0.38, 640 * 0.37));
     chooseButton->setScale(1.4);
-    //Ñ¡Ôñ¹Ø¿¨Ñ¡Ïî
+    //é€‰æ‹©å…³å¡é€‰é¡¹
     chooseButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
         this->removeChild(menuLayer);
-        // È¡ÏûÓë GameManager Ïà¹ØµÄËùÓĞµ÷¶ÈÆ÷
+        // å–æ¶ˆä¸ GameManager ç›¸å…³çš„æ‰€æœ‰è°ƒåº¦å™¨
         GameManager::getInstance()->stopAllSchedulers();
-        //È¡ÏûÊÂ¼ş¼àÌı
+        //å–æ¶ˆäº‹ä»¶ç›‘å¬
         manager->removeListener();
         auto themeScene = themescene::createScene();
         Director::getInstance()->replaceScene(themeScene);
@@ -501,48 +502,48 @@ void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
 }
 /******************************************/
 
-/****************³õÊ¼»¯²¿·Ö******************/
-// ´´½¨³¡¾°Ê±´«Èë¹Ø¿¨±àºÅ
+/****************åˆå§‹åŒ–éƒ¨åˆ†******************/
+// åˆ›å»ºåœºæ™¯æ—¶ä¼ å…¥å…³å¡ç¼–å·
 Scene* BaseLevelScene::createScene(int level) {
-    auto scene = BaseLevelScene::create();  // ´´½¨ BaseLevelScene
+    auto scene = BaseLevelScene::create();  // åˆ›å»º BaseLevelScene
     if (scene && scene->initWithLevel(level))
     {
         return scene;
     }
     return scene;
 }
-// ¼ÓÔØµØÍ¼
+// åŠ è½½åœ°å›¾
 void BaseLevelScene::loadMap() {
     if (levelId <= 0 || levelId > mapFiles.size()) {
         CCLOG("Invalid level number!");
         return;
     }
 
-    // ¼ÓÔØ¹Ø¿¨µØÍ¼
+    // åŠ è½½å…³å¡åœ°å›¾
     tileMap = TMXTiledMap::create(mapFiles[levelId - 1]);
     if (tileMap) {
-        // »ñÈ¡ÆÁÄ»´óĞ¡
+        // è·å–å±å¹•å¤§å°
         auto screenSize = Director::getInstance()->getVisibleSize();
         auto tileMapSize = tileMap->getContentSize();
-        //»ñÈ¡ÍßÆ¬´óĞ¡
+        //è·å–ç“¦ç‰‡å¤§å°
         tileSize = tileMap->getTileSize();
         CCLOG("Tile size: (%f, %f)", tileSize.width, tileSize.height);
-        // Ëõ·ÅÍßÆ¬µØÍ¼£¬Ê¹ÆäÌîÂúÕû¸öÆÁÄ»
+        // ç¼©æ”¾ç“¦ç‰‡åœ°å›¾ï¼Œä½¿å…¶å¡«æ»¡æ•´ä¸ªå±å¹•
         tileMap->setScaleX(screenSize.width / tileMapSize.width);
         tileMap->setScaleY(screenSize.height / tileMapSize.height);
 
-        // ÉèÖÃÍßÆ¬µØÍ¼µÄÃªµãÎª (0, 0)£¬Ê¹µØÍ¼×óÏÂ½ÇÓëÆÁÄ»×óÏÂ½Ç¶ÔÆë
+        // è®¾ç½®ç“¦ç‰‡åœ°å›¾çš„é”šç‚¹ä¸º (0, 0)ï¼Œä½¿åœ°å›¾å·¦ä¸‹è§’ä¸å±å¹•å·¦ä¸‹è§’å¯¹é½
         tileMap->setAnchorPoint(Vec2::ZERO);
         tileMap->setPosition(Vec2::ZERO);
-        // »ñÈ¡²¢Òş²Ø plantable ²ã
+        // è·å–å¹¶éšè— plantable å±‚
         plantableLayer = tileMap->getLayer("plantable");
         if (plantableLayer) {
-            plantableLayer->setVisible(false);  // ²»ÏÔÊ¾ plantable ²ã
+            plantableLayer->setVisible(false);  // ä¸æ˜¾ç¤º plantable å±‚
         }
         else {
             CCLOG("Layer 'plantable' not found in map: %s", mapFiles[levelId - 1].c_str());
         }
-        // ½«ÍßÆ¬µØÍ¼Ìí¼Óµ½µ±Ç°³¡¾°ÖĞ
+        // å°†ç“¦ç‰‡åœ°å›¾æ·»åŠ åˆ°å½“å‰åœºæ™¯ä¸­
         this->addChild(tileMap, 0);
 #ifdef DEBUG_MODE
         drawGrid();
@@ -552,29 +553,31 @@ void BaseLevelScene::loadMap() {
         CCLOG("Failed to load map: %s", mapFiles[levelId - 1].c_str());
     }
 }
-//³õÊ¼»¯ui×é¼ş
+//åˆå§‹åŒ–uiç»„ä»¶
 void BaseLevelScene::initUI()
 {
-    // 1. ÏÔÊ¾³öÏÖÁË¶àÉÙ²¨¹ÖÎï  
+    // 1. æ˜¾ç¤ºå‡ºç°äº†å¤šå°‘æ³¢æ€ªç‰©
     _curNumberLabel = Label::createWithSystemFont(StringUtils::format("%d", std::min(manager->getCurrentWaveNum(), manager->getAllWaveNum())), "Arial", 32);
     _curNumberLabel->setColor(Color3B::YELLOW);
     _curNumberLabel->setPosition(960 * 0.42, 640 * 0.95);
     this->addChild(_curNumberLabel, 2);
-    // 2. Ò»¹²ÓĞ¶àÉÙ²¨¹ÖÎï
-    _numberLabel = Label::createWithSystemFont(StringUtils::format(" / %d times", manager->getAllWaveNum()), "Arial", 32);
+    // 2. ä¸€å…±æœ‰å¤šå°‘æ³¢æ€ªç‰©
+    _numberLabel = Label::createWithSystemFont(StringUtils::format(EnglishUI::text("game.wave_total").c_str(), manager->getAllWaveNum()), "Arial", 32);
     _numberLabel->setColor(Color3B::YELLOW);
-    _numberLabel->setPosition(960 * 0.50, 640 * 0.95);
+    _numberLabel->setAnchorPoint(Vec2(0, 0.5f));
+    _numberLabel->setPosition(960 * 0.44, 640 * 0.95);
+    _numberLabel->setScale(0.8f);
     this->addChild(_numberLabel, 2);
-    //¼Ómoney
+    //åŠ money
     moneyLable = Label::createWithTTF("1000", "fonts/arial.ttf", 27);
     moneyLable->setPosition(Vec2(160, 610));
     this->addChild(moneyLable, 3);
-    //Ìí¼Ó·µ»Ø°´Å¥
+    //æ·»åŠ è¿”å›æŒ‰é’®
     auto menu = Menu::create();
     menu->setPosition(Vec2::ZERO);
     this->addChild(menu, 2);
-    //±¶Êı
-    auto doubleSpeedButton = MenuItemImage::create("CarrotGuardRes/UI/normalSpeed.png", "CarrotGuardRes/UI/doubleSpeed.png", CC_CALLBACK_1(BaseLevelScene::doublespeed, this));
+    //å€æ•°
+    auto doubleSpeedButton = EnglishUI::menuItem("CarrotGuardRes/UI/normalSpeed.png", "CarrotGuardRes/UI/doubleSpeed.png", CC_CALLBACK_1(BaseLevelScene::doublespeed, this));
     if (doubleSpeedButton == nullptr)
     {
         problemLoading("'normalSpeed.png' and 'doubleSpeed.png'");
@@ -585,8 +588,8 @@ void BaseLevelScene::initUI()
         doubleSpeedButton->setScale(1);
         menu->addChild(doubleSpeedButton);
     }
-    //ÔİÍ£
-    auto pauseSpeedButton = MenuItemImage::create("CarrotGuardRes/UI/pauseButton.png", "CarrotGuardRes/UI/continueButton.png", CC_CALLBACK_1(BaseLevelScene::pause_all, this));
+    //æš‚åœ
+    auto pauseSpeedButton = EnglishUI::menuItem("CarrotGuardRes/UI/pauseButton.PNG", "CarrotGuardRes/UI/continueButton.PNG", CC_CALLBACK_1(BaseLevelScene::pause_all, this));
     if (pauseSpeedButton == nullptr)
     {
         problemLoading("'pauseButton.png' and 'continueButton.png'");
@@ -597,8 +600,8 @@ void BaseLevelScene::initUI()
         pauseSpeedButton->setScale(1);
         menu->addChild(pauseSpeedButton);
     }
-    //²Ëµ¥
-    auto menuButton = MenuItemImage::create("CarrotGuardRes/UI/gameMenuNormal.png", "CarrotGuardRes/UI/gameMenuSelected.png", CC_CALLBACK_1(BaseLevelScene::menu_all, this));
+    //èœå•
+    auto menuButton = EnglishUI::menuItem("CarrotGuardRes/UI/gameMenuNormal.png", "CarrotGuardRes/UI/gameMenuSelected.png", CC_CALLBACK_1(BaseLevelScene::menu_all, this));
     if (menuButton == nullptr)
     {
         problemLoading("'gameMenuNormal.png' and 'gameMenuSelected'");
@@ -609,8 +612,8 @@ void BaseLevelScene::initUI()
         menuButton->setScale(1);
         menu->addChild(menuButton);
     }
-    //½éÉÜ
-    auto wenhaoButton = MenuItemImage::create("CarrotGuardRes/UI/wenhao_0.png", "CarrotGuardRes/UI/wenhao_1.png", CC_CALLBACK_1(BaseLevelScene::wenhao, this));
+    //ä»‹ç»
+    auto wenhaoButton = EnglishUI::menuItem("CarrotGuardRes/UI/wenhao_0.png", "CarrotGuardRes/UI/wenhao_1.png", CC_CALLBACK_1(BaseLevelScene::wenhao, this));
     if (menuButton == nullptr)
     {
         problemLoading("'wenhao_0.png' and 'wenhao_1.png'");
@@ -621,7 +624,7 @@ void BaseLevelScene::initUI()
         wenhaoButton->setScale(1.4);
         menu->addChild(wenhaoButton);
     }
-    auto jineng1Button = MenuItemImage::create("Carrot/jineng1.png", "Carrot/jineng1_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng1, this));
+    auto jineng1Button = EnglishUI::menuItem("Carrot/jineng1.png", "Carrot/jineng1_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng1, this));
     if (jineng1Button == nullptr)
     {
         problemLoading("'jineng1.png'");
@@ -632,7 +635,7 @@ void BaseLevelScene::initUI()
         jineng1Button->setScale(1.9);
         menu->addChild(jineng1Button);
     }
-    auto jineng2Button = MenuItemImage::create("Carrot/jineng2.png", "Carrot/jineng2_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng2, this));
+    auto jineng2Button = EnglishUI::menuItem("Carrot/jineng2.png", "Carrot/jineng2_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng2, this));
     if (jineng2Button == nullptr)
     {
         problemLoading("'jineng2.png'");
@@ -643,7 +646,7 @@ void BaseLevelScene::initUI()
         jineng2Button->setScale(1.9);
         menu->addChild(jineng2Button);
     }
-    auto jineng3Button = MenuItemImage::create("Carrot/jineng3.png", "Carrot/jineng3_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng3, this));
+    auto jineng3Button = EnglishUI::menuItem("Carrot/jineng3.png", "Carrot/jineng3_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng3, this));
     if (jineng3Button == nullptr)
     {
         problemLoading("'jineng3.png'");
@@ -654,7 +657,7 @@ void BaseLevelScene::initUI()
         jineng3Button->setScale(1.7);
         menu->addChild(jineng3Button);
     }
-    auto jineng4Button = MenuItemImage::create("Carrot/jineng4.png", "Carrot/jineng4_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng4, this));
+    auto jineng4Button = EnglishUI::menuItem("Carrot/jineng4.png", "Carrot/jineng4_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng4, this));
     if (jineng4Button == nullptr)
     {
         problemLoading("'jineng4.png'");
@@ -665,7 +668,7 @@ void BaseLevelScene::initUI()
         jineng4Button->setScale(1.7);
         menu->addChild(jineng4Button);
     }
-    auto jineng5Button = MenuItemImage::create("Carrot/jineng5.png", "Carrot/jineng5_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng5, this));
+    auto jineng5Button = EnglishUI::menuItem("Carrot/jineng5.png", "Carrot/jineng5_1.png", CC_CALLBACK_1(BaseLevelScene::Jineng5, this));
     if (jineng5Button == nullptr)
     {
         problemLoading("'jineng5.png'");
@@ -677,19 +680,19 @@ void BaseLevelScene::initUI()
         menu->addChild(jineng5Button);
     }
 
-    auto jinengtiao = Sprite::create("Carrot/jinengtiao.png");
+    auto jinengtiao = EnglishUI::sprite("Carrot/jinengtiao.png");
     jinengtiao->setPosition(480, 30);
     jinengtiao->setScale(0.7);
     this->addChild(jinengtiao, 1);
 }
-//¿ª¾Öµ¹¼ÆÊ±
+//å¼€å±€å€’è®¡æ—¶
 void BaseLevelScene::CountDown(std::function<void()> onComplete)
 {
-    auto countBackground = Sprite::create("CarrotGuardRes/UI/countBackground.png");
-    auto count1 = Sprite::create("CarrotGuardRes/UI/countOne.png");
-    auto count2 = Sprite::create("CarrotGuardRes/UI/countTwo.png");
-    auto count3 = Sprite::create("CarrotGuardRes/UI/countThree.png");
-    Label* count0 = Label::createWithSystemFont("GO", "Arial-BoldMT", 100);
+    auto countBackground = EnglishUI::sprite("CarrotGuardRes/UI/countBackground.PNG");
+    auto count1 = EnglishUI::sprite("CarrotGuardRes/UI/countOne.PNG");
+    auto count2 = EnglishUI::sprite("CarrotGuardRes/UI/countTwo.PNG");
+    auto count3 = EnglishUI::sprite("CarrotGuardRes/UI/countThree.PNG");
+    Label* count0 = Label::createWithSystemFont(EnglishUI::text("game.go"), "Arial-BoldMT", 100);
 
     countBackground->setPosition(480, 320);
     count1->setPosition(480, 320);
@@ -708,7 +711,7 @@ void BaseLevelScene::CountDown(std::function<void()> onComplete)
     this->addChild(count2, 2);
     this->addChild(count3, 2);
     this->addChild(count0, 2);
-    // ÉèÖÃµ¹Êısequence¶¯×÷
+    // è®¾ç½®å€’æ•°sequenceåŠ¨ä½œ
     auto countdown = Sequence::create(
         CallFunc::create([=] {
             countBackground->setVisible(true);
@@ -746,17 +749,17 @@ void BaseLevelScene::CountDown(std::function<void()> onComplete)
             this->removeChild(count0);
             this->removeChild(countBackground);
 
-            // µ¹¼ÆÊ±½áÊø£¬´¥·¢»Øµ÷
+            // å€’è®¡æ—¶ç»“æŸï¼Œè§¦å‘å›è°ƒ
             if (onComplete) {
-                onComplete();  // Ö´ĞĞ»Øµ÷º¯Êı
+                onComplete();  // æ‰§è¡Œå›è°ƒå‡½æ•°
             }
             }),
-        nullptr  // Sequence½áÊø
+        nullptr  // Sequenceç»“æŸ
     );
-    // ÔËĞĞµ¹¼ÆÊ±¶¯×÷
+    // è¿è¡Œå€’è®¡æ—¶åŠ¨ä½œ
     this->runAction(countdown);
 }
-//³õÊ¼»¯¹Ø¿¨
+//åˆå§‹åŒ–å…³å¡
 bool BaseLevelScene::initWithLevel(int level)
 {
     if (!Scene::init())
@@ -764,17 +767,17 @@ bool BaseLevelScene::initWithLevel(int level)
         return false;
     }
     Director::getInstance()->resume();
-    this->levelId = level;                     //´æ´¢¹Ø¿¨±àºÅ
-    this->loadMap();                           // ¼ÓÔØ¶ÔÓ¦¹Ø¿¨µÄµØÍ¼
-    manager = GameManager::getInstance(this);  // ³õÊ¼»¯GameManager
-    manager->initLevel(level, !isNewGame[levelId - 1]);          //³õÊ¼»¯¹ÖÊŞ Â·¾¶ºÍ´æµµµÈ×ÊÔ´
-    initUI();                                 //³õÊ¼»¯ui
+    this->levelId = level;                     //å­˜å‚¨å…³å¡ç¼–å·
+    this->loadMap();                           // åŠ è½½å¯¹åº”å…³å¡çš„åœ°å›¾
+    manager = GameManager::getInstance(this);  // åˆå§‹åŒ–GameManager
+    manager->initLevel(level, !isNewGame[levelId - 1]);          //åˆå§‹åŒ–æ€ªå…½ è·¯å¾„å’Œå­˜æ¡£ç­‰èµ„æº
+    initUI();                                 //åˆå§‹åŒ–ui
 
 
-    // 1. ´´½¨Ö²ÎïÍ¼²ã
-    plantsLayer = Layer::create();  // ´´½¨Ò»¸öĞÂµÄÍ¼²ã£¬ÓÃÓÚ´æ·ÅÖ²Îï
-    this->addChild(plantsLayer, 10); // ½«Ö²ÎïÍ¼²ãÌí¼Óµ½³¡¾°£¬zOrderÎª3£¬È·±£ËüÎ»ÓÚÆäËû²ãÖ®ÉÏ
-    addMouseListener();  // Ìí¼ÓÊó±ê¼àÌı
+    // 1. åˆ›å»ºæ¤ç‰©å›¾å±‚
+    plantsLayer = Layer::create();  // åˆ›å»ºä¸€ä¸ªæ–°çš„å›¾å±‚ï¼Œç”¨äºå­˜æ”¾æ¤ç‰©
+    this->addChild(plantsLayer, 10); // å°†æ¤ç‰©å›¾å±‚æ·»åŠ åˆ°åœºæ™¯ï¼ŒzOrderä¸º3ï¼Œç¡®ä¿å®ƒä½äºå…¶ä»–å±‚ä¹‹ä¸Š
+    addMouseListener();  // æ·»åŠ é¼ æ ‡ç›‘å¬
 
     cell_flag = 1;
     buy_tower[0].push_back("Towers/affordhuo.png"); buy_tower[1].push_back("Towers/unaffordhuo.png");
@@ -796,32 +799,32 @@ bool BaseLevelScene::initWithLevel(int level)
     tower_jiasu = 0.01;
     beishu = 1;
 
-    // µ÷ÓÃµ¹¼ÆÊ±º¯Êı²¢´«µİ»Øµ÷
+    // è°ƒç”¨å€’è®¡æ—¶å‡½æ•°å¹¶ä¼ é€’å›è°ƒ
     CountDown([=] {
         CCLOG("READY");
-        //¼ÆÊ±½áÊøºó²ÅÄÜ¿ªÊ¼¹ÖÊŞ²¨
+        //è®¡æ—¶ç»“æŸåæ‰èƒ½å¼€å§‹æ€ªå…½æ³¢
         manager->startMonsterWaves();
         tower_jiasu = 1;
         });
 
-    this->scheduleUpdate();                    //Æô¶¯¸üĞÂÂß¼­
+    this->scheduleUpdate();                    //å¯åŠ¨æ›´æ–°é€»è¾‘
 
 
     return true;
 }
-// Ä¬ÈÏµÄ init ·½·¨
+// é»˜è®¤çš„ init æ–¹æ³•
 bool BaseLevelScene::init() {
     if (!Scene::init()) {
         return false;
     }
     return true;
 }
-//¸üĞÂÓÎÏ·×´Ì¬
+//æ›´æ–°æ¸¸æˆçŠ¶æ€
 void BaseLevelScene::update(float deltaTime) {
-    
-    //¸üĞÂµ±Ç°²¨Êı
+
+    //æ›´æ–°å½“å‰æ³¢æ•°
     updateCurrentWaveLabe();
-    //¸üĞÂÅÚËşºÍ¹ÖÊŞ½»»¥
+    //æ›´æ–°ç‚®å¡”å’Œæ€ªå…½äº¤äº’
     for (auto it = towers.begin(); it != towers.end(); it++) {
 
         if (it->second->interval >= it->second->interval_table[it->second->GetIndex()]) {
@@ -831,12 +834,12 @@ void BaseLevelScene::update(float deltaTime) {
 
         it->second->interval += deltaTime*tower_jiasu;
     }
-    //¸üĞÂ¼ìÑéÊä×´Ì¬
+    //æ›´æ–°æ£€éªŒè¾“çŠ¶æ€
     if(manager->CheckLose())
     {
        gameover(false,manager->getCurrentWaveNum(), manager->getAllWaveNum());
     }
-    //¸üĞÂ¼ìÑéÓ®×´Ì¬
+    //æ›´æ–°æ£€éªŒèµ¢çŠ¶æ€
     if(manager->CheckWin())
     {
         gameover(true, manager->getCurrentWaveNum(), manager->getAllWaveNum());
@@ -847,29 +850,29 @@ void BaseLevelScene::update(float deltaTime) {
         manager->doudong();
     }
 }
-//³õÊ¼»¯map
-void BaseLevelScene::InitMapData()//³õÊ¼»¯µØÍ¼Êı¾İ
+//åˆå§‹åŒ–map
+void BaseLevelScene::InitMapData()//åˆå§‹åŒ–åœ°å›¾æ•°æ®
 {
     for (int i = 0; i < X; i++)
         for (int j = 0; j < Y; j++) {
             map_data[i][j].flag = obpos[levelId - 1][i][j];
             map_data[i][j].key = Y * i + j;
-        }//3±íÊ¾´ËµØ¿ÉÓÃÓÚÉú³ÉÕÏ°­Îï£¬ÔÚºóÃæÉú³ÉÕÏ°­ÎïÊ±»áÓÃµ½ 
+        }//3è¡¨ç¤ºæ­¤åœ°å¯ç”¨äºç”Ÿæˆéšœç¢ç‰©ï¼Œåœ¨åé¢ç”Ÿæˆéšœç¢ç‰©æ—¶ä¼šç”¨åˆ°
 }
-//²úÉúÕÏ°­Îï
-void BaseLevelScene::ProduceObstacles()//ÔÚ³¡¾°ÖĞÉú³ÉÕÏ°­Îï
+//äº§ç”Ÿéšœç¢ç‰©
+void BaseLevelScene::ProduceObstacles()//åœ¨åœºæ™¯ä¸­ç”Ÿæˆéšœç¢ç‰©
 {
     srand(time(0));
     for (int i = 0; i < X; i++)
         for (int j = 0; j < Y; j++) {
             if (map_data[i][j].flag == 3) {
-                int rd;//Ëæ»úÒò×Ó
+                int rd;//éšæœºå› å­
                 if (i + 1 < X && j + 1 < Y && map_data[i + 1][j].flag == 3 && map_data[i][j + 1].flag == 3 && map_data[i + 1][j + 1].flag == 3)
                     rd = 10;
                 else if (i + 1 < X && map_data[i + 1][j].flag == 3) rd = 6;
                 else rd = 5;
                 int index = rand() % (rd + 5);
-                if (index >= rd) {//²¢²»ÊÇÔÚÃ¿¸ö¿ÉÉú³ÉÕÏ°­ÎïµÄµØ·½¶¼Éú³ÉÕÏ°­Îï
+                if (index >= rd) {//å¹¶ä¸æ˜¯åœ¨æ¯ä¸ªå¯ç”Ÿæˆéšœç¢ç‰©çš„åœ°æ–¹éƒ½ç”Ÿæˆéšœç¢ç‰©
                     map_data[i][j].flag = 0;
                     continue;
                 }
@@ -890,32 +893,32 @@ void BaseLevelScene::ProduceObstacles()//ÔÚ³¡¾°ÖĞÉú³ÉÕÏ°­Îï
 }
 /******************************************/
 
-/*****************ÅÚËşÏà¹Ø*************************/
- //¿ªÆôÊó±ê¼àÌı
+/*****************ç‚®å¡”ç›¸å…³*************************/
+ //å¼€å¯é¼ æ ‡ç›‘å¬
 void BaseLevelScene::addMouseListener() {
     auto listener = EventListenerMouse::create();
-    listener->onMouseDown = CC_CALLBACK_1(BaseLevelScene::handleMouseDown, this); // Êó±ê°´ÏÂÊ±µÄ»Øµ÷
+    listener->onMouseDown = CC_CALLBACK_1(BaseLevelScene::handleMouseDown, this); // é¼ æ ‡æŒ‰ä¸‹æ—¶çš„å›è°ƒ
 
-    // ½«¼àÌıÆ÷Ìí¼Óµ½ÊÂ¼şÅÉ·¢Æ÷
+    // å°†ç›‘å¬å™¨æ·»åŠ åˆ°äº‹ä»¶æ´¾å‘å™¨
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
-//´¦ÀíÊó±êµã»÷ÊÂ¼ş
+//å¤„ç†é¼ æ ‡ç‚¹å‡»äº‹ä»¶
 void BaseLevelScene::handleMouseDown(EventMouse* event) {
-    // »ñÈ¡Êó±êµã»÷Î»ÖÃ
+    // è·å–é¼ æ ‡ç‚¹å‡»ä½ç½®
     Vec2 mousePos = event->getLocation();
     CCLOG("Mouse clicked at screen position: (%f, %f)", mousePos.x, mousePos.y);
-    // µ÷ÓÃ handlePlant ·½·¨À´´¦ÀíÖÖÖ²
+    // è°ƒç”¨ handlePlant æ–¹æ³•æ¥å¤„ç†ç§æ¤
     handlePlant(mousePos);
 }
-//´¦ÀíÖÖÖ²ÅÚËşµÄÅĞ¶Ï
+//å¤„ç†ç§æ¤ç‚®å¡”çš„åˆ¤æ–­
 void BaseLevelScene::handlePlant(const Vec2& position) {
     CCLOG("position: (%f, %f)", position.x, position.y);
-    // ½«Êó±êµã»÷µÄÆÁÄ»×ø±ê×ª»»ÎªÍßÆ¬×ø±ê
+    // å°†é¼ æ ‡ç‚¹å‡»çš„å±å¹•åæ ‡è½¬æ¢ä¸ºç“¦ç‰‡åæ ‡
     Vec2 tileCoord = Vec2(floor(position.x / tileSize.width), floor(position.y / tileSize.height));
-    //ÏÂÃæÈÕÖ¾Ö¤Ã÷ÒÑ¾­ÊµÏÖÁËÍø¸ñµÄ×ª»¯
+    //ä¸‹é¢æ—¥å¿—è¯æ˜å·²ç»å®ç°äº†ç½‘æ ¼çš„è½¬åŒ–
     CCLOG("tileCoord: (%f, %f)", tileCoord.x, tileCoord.y);
 
-    // ±ß½ç¼ì²é
+    // è¾¹ç•Œæ£€æŸ¥
     if (tileCoord.x < 0 || tileCoord.y < 0 ||
         tileCoord.x >= tileMap->getMapSize().width ||
         tileCoord.y >= tileMap->getMapSize().height) {
@@ -923,7 +926,7 @@ void BaseLevelScene::handlePlant(const Vec2& position) {
         return;
     }
 
-    if (isTarget != 0) {//Èç¹ûÔÚÓĞËø¶¨ÆÚ¼äµã»÷Ëø¶¨Ä¿±ê£¬ÔòÈ¡ÏûËø¶¨
+    if (isTarget != 0) {//å¦‚æœåœ¨æœ‰é”å®šæœŸé—´ç‚¹å‡»é”å®šç›®æ ‡ï¼Œåˆ™å–æ¶ˆé”å®š
         Vec2 pos = Vec2(position.x, Director::getInstance()->getVisibleSize().height - position.y);
         if (isTarget == 1) {
             auto m_pos = tar_m->getPosition(); auto m_size = tar_m->getContentSize();
@@ -947,10 +950,10 @@ void BaseLevelScene::handlePlant(const Vec2& position) {
         }
     }
 
-    // ÅĞ¶Ï¸ÃÍßÆ¬ÊÇ·ñ¿ÉÖÖÖ²
+    // åˆ¤æ–­è¯¥ç“¦ç‰‡æ˜¯å¦å¯ç§æ¤
     auto tileGID = tileMap->getLayer("plantable")->getTileGIDAt(tileCoord);
 
-    if (!cell_flag) {//Èç¹ûÒÑ¾­³öÏÖÖÖÖ²»òÕßÉı¼¶²Ëµ¥£¬ÔòÔÙ´Îµã»÷Ê±ÅĞ¶ÏÊÇ·ñ½øĞĞÖÖÖ²»òÉı¼¶(É¾³ı)²Ù×÷£¬²¢Ê¹²Ëµ¥ÏûÊ§
+    if (!cell_flag) {//å¦‚æœå·²ç»å‡ºç°ç§æ¤æˆ–è€…å‡çº§èœå•ï¼Œåˆ™å†æ¬¡ç‚¹å‡»æ—¶åˆ¤æ–­æ˜¯å¦è¿›è¡Œç§æ¤æˆ–å‡çº§(åˆ é™¤)æ“ä½œï¼Œå¹¶ä½¿èœå•æ¶ˆå¤±
         if (map_data[int(last_position.x / CELL_SIZE)][int(last_position.y / CELL_SIZE)].flag == 0)
             PlantMenuGone(Vec2(position.x, Director::getInstance()->getVisibleSize().height - position.y));
         else if (map_data[int(last_position.x / CELL_SIZE)][int(last_position.y / CELL_SIZE)].flag == 1)
@@ -960,21 +963,21 @@ void BaseLevelScene::handlePlant(const Vec2& position) {
 
     if (tileGID != 0) {
         CCLOG("Tile at (%f, %f) is plantable.", tileCoord.x, tileCoord.y);
-        // ÕâÀïÊµÏÖÖÖÖ²Âß¼­
-       // ½«ÍßÆ¬×ø±ê×ª»»ÎªÆÁÄ»×ø±ê
-       // »ñÈ¡µØÍ¼µÄ¸ß¶È£¨ÍßÆ¬µÄĞĞÊı£©
+        // è¿™é‡Œå®ç°ç§æ¤é€»è¾‘
+       // å°†ç“¦ç‰‡åæ ‡è½¬æ¢ä¸ºå±å¹•åæ ‡
+       // è·å–åœ°å›¾çš„é«˜åº¦ï¼ˆç“¦ç‰‡çš„è¡Œæ•°ï¼‰
         float mapHeight = tileMap->getMapSize().height;
 
-        // ×ª»»ÎªÆÁÄ»×ø±ê
+        // è½¬æ¢ä¸ºå±å¹•åæ ‡
         float screenX = tileCoord.x * tileSize.width + tileSize.width / 2;
         float screenY = (mapHeight - tileCoord.y - 1) * tileSize.height + tileSize.height / 2;
 
         Vec2 mapPos = Vec2(screenX, screenY);
 
-        // Êä³öÆÁÄ»×ø±ê
+        // è¾“å‡ºå±å¹•åæ ‡
         CCLOG("Screen Position: (%f, %f)", mapPos.x, mapPos.y);
 
-        //Èç¹ûÕâµØ·½Ã»ÓĞËş£¬ÄÇÃ´´ò¿ªÖÖÖ²²Ëµ¥£¬·ñÔò´ò¿ªÉı¼¶²Ëµ¥
+        //å¦‚æœè¿™åœ°æ–¹æ²¡æœ‰å¡”ï¼Œé‚£ä¹ˆæ‰“å¼€ç§æ¤èœå•ï¼Œå¦åˆ™æ‰“å¼€å‡çº§èœå•
         if (map_data[int(mapPos.x / CELL_SIZE)][int(mapPos.y / CELL_SIZE)].flag == 0)
             PlantMenuAppear(mapPos);
         else if (map_data[int(mapPos.x / CELL_SIZE)][int(mapPos.y / CELL_SIZE)].flag == 1)
@@ -985,7 +988,7 @@ void BaseLevelScene::handlePlant(const Vec2& position) {
             isTarget = 2;
             tar_m = nullptr;
             tar_o = Obstacles[map_data[int(mapPos.x / CELL_SIZE)][int(mapPos.y / CELL_SIZE)].key];
-            lock = Sprite::create("Towers/chosed.png");
+            lock = EnglishUI::sprite("Towers/chosed.png");
             Vec2 o_pos = tar_o->getPosition();
             lock->setPosition(Vec2(o_pos.x, o_pos.y + tar_o->curr->getContentSize().height * 1.0));
             this->addChild(lock);
@@ -1001,7 +1004,7 @@ void BaseLevelScene::handlePlant(const Vec2& position) {
             isTarget = 1;
             tar_m = tool;
             tar_o = nullptr;
-            lock = Sprite::create("Towers/chosed.png");
+            lock = EnglishUI::sprite("Towers/chosed.png");
             lock->setPosition(Vec2(tar_m->getContentSize().width * 0.6, tar_m->getContentSize().height * 1.4));
             tar_m->addChild(lock, 100);
             CCLOG("-------------------------------------------------locked");
@@ -1010,25 +1013,25 @@ void BaseLevelScene::handlePlant(const Vec2& position) {
     }
 
 }
-//ÖÖÖ²½çÃæ³öÏÖ
+//ç§æ¤ç•Œé¢å‡ºç°
 void BaseLevelScene::PlantMenuAppear(Vec2 mapPos)
 {
     cell_flag = 0;
     auto location = mapPos;
     last_position = location;
-    auto cell = Sprite::create("Towers/cell.png");
+    auto cell = EnglishUI::sprite("Towers/cell.png");
     cell->setScale((float)64 / 200);
     cell->setPosition(location);
     this->addChild(cell); curr_cell = cell;
     for (int i = 0, size = buy_tower[0].size(); i < size; i++) {
         int tool = Tower::build_cost[index_table[i]] > money ? 1 : 0;
-        auto tower_graph = Sprite::create(buy_tower[tool][i]);
+        auto tower_graph = EnglishUI::sprite(buy_tower[tool][i]);
         tower_graph->setScale((float)CELL_SIZE / tower_graph->getContentSize().width);
         tower_graph->setPosition(Vec2(location.x - CELL_SIZE * (size - 1) / 2 + CELL_SIZE * i, location.y + CELL_SIZE));
         this->addChild(tower_graph); remove_table.push_back(tower_graph);
     }
 }
-//ÖÖÖ²½çÃæÏûÊ§
+//ç§æ¤ç•Œé¢æ¶ˆå¤±
 void BaseLevelScene::PlantMenuGone(Vec2 position)
 {
     auto location = position;
@@ -1051,8 +1054,8 @@ void BaseLevelScene::PlantMenuGone(Vec2 position)
     remove_table.clear();
     cell_flag = 1;
 }
-//ÅĞ¶Ï¹ÖÊŞÊÇ·ñ±»Ëø¶¨
-Monster* BaseLevelScene::IsTargetMonster(const Vec2& pos)//ÅĞ¶ÏÊÇ·ñÓĞ¹ÖÎï±»Ëø¶¨
+//åˆ¤æ–­æ€ªå…½æ˜¯å¦è¢«é”å®š
+Monster* BaseLevelScene::IsTargetMonster(const Vec2& pos)//åˆ¤æ–­æ˜¯å¦æœ‰æ€ªç‰©è¢«é”å®š
 {
     for (auto it = GameManager::getInstance()->monsters.begin(); it != GameManager::getInstance()->monsters.end(); it++) {
         if ((*it)->getHealth() <= 0)continue;
@@ -1065,35 +1068,35 @@ Monster* BaseLevelScene::IsTargetMonster(const Vec2& pos)//ÅĞ¶ÏÊÇ·ñÓĞ¹ÖÎï±»Ëø¶¨
 }
 /******************************************/
 
-/*****************¹¤¾ßº¯Êı*************************/
- //»­Íø¸ñÏß
+/*****************å·¥å…·å‡½æ•°*************************/
+ //ç”»ç½‘æ ¼çº¿
 //#ifdef DEBUG_MODE
 void BaseLevelScene::drawGrid() {
-    // »ñÈ¡µØÍ¼µÄ´óĞ¡ºÍÍßÆ¬µÄ´óĞ¡
+    // è·å–åœ°å›¾çš„å¤§å°å’Œç“¦ç‰‡çš„å¤§å°
     Size mapSize = tileMap->getContentSize();
-    float tileWidth = 64.0f;  // ¼ÙÉèÃ¿¸öÍßÆ¬¿í¶ÈÎª 64 ÏñËØ
-    float tileHeight = 64.0f; // ¼ÙÉèÃ¿¸öÍßÆ¬¸ß¶ÈÎª 64 ÏñËØ
+    float tileWidth = 64.0f;  // å‡è®¾æ¯ä¸ªç“¦ç‰‡å®½åº¦ä¸º 64 åƒç´ 
+    float tileHeight = 64.0f; // å‡è®¾æ¯ä¸ªç“¦ç‰‡é«˜åº¦ä¸º 64 åƒç´ 
 
-    // ´´½¨Ò»¸ö DrawNode ÓÃÓÚ»æÖÆÍø¸ñ
+    // åˆ›å»ºä¸€ä¸ª DrawNode ç”¨äºç»˜åˆ¶ç½‘æ ¼
     auto drawNode = DrawNode::create();
-    this->addChild(drawNode, 100);  // ½« DrawNode Ìí¼Óµ½³¡¾°ÖĞ£¬²ã¼¶ÉèÖÃÎª 100£¬È·±£ÔÚµØÍ¼Ö®ÉÏ
+    this->addChild(drawNode, 100);  // å°† DrawNode æ·»åŠ åˆ°åœºæ™¯ä¸­ï¼Œå±‚çº§è®¾ç½®ä¸º 100ï¼Œç¡®ä¿åœ¨åœ°å›¾ä¹‹ä¸Š
 
-    // »æÖÆ´¹Ö±Ïß
+    // ç»˜åˆ¶å‚ç›´çº¿
     for (float x = 0; x <= mapSize.width; x += tileWidth) {
         drawNode->drawLine(Vec2(x, 0), Vec2(x, mapSize.height), Color4F::WHITE);
     }
 
-    // »æÖÆË®Æ½Ïß
+    // ç»˜åˆ¶æ°´å¹³çº¿
     for (float y = 0; y <= mapSize.height; y += tileHeight) {
         drawNode->drawLine(Vec2(0, y), Vec2(mapSize.width, y), Color4F::WHITE);
     }
 }
 //#endif // DEBUG_MODE
-//Íß¸ñ×ø±ê×ªµØÍ¼×ø±êµÄ¹¤¾ßº¯Êı
+//ç“¦æ ¼åæ ‡è½¬åœ°å›¾åæ ‡çš„å·¥å…·å‡½æ•°
 Vec2 BaseLevelScene::gridToScreenCenter(const Vec2& gridPoint) {
-    // ´Ó tileMap »ñÈ¡µØÍ¼¸ß¶È£¨Íø¸ñÊıÁ¿£©
+    // ä» tileMap è·å–åœ°å›¾é«˜åº¦ï¼ˆç½‘æ ¼æ•°é‡ï¼‰
     float mapHeight = tileMap->getMapSize().height;
-    // ×ª»»ÎªÆÁÄ»×ø±ê
+    // è½¬æ¢ä¸ºå±å¹•åæ ‡
     float screenX = gridPoint.x * tileSize.height + tileSize.width / 2;
     float screenY = (mapHeight - gridPoint.y - 1) * tileSize.height + tileSize.height / 2;
     return Vec2(screenX, screenY);
@@ -1101,66 +1104,66 @@ Vec2 BaseLevelScene::gridToScreenCenter(const Vec2& gridPoint) {
 /************************************************/
 
 
-/*****************´æµµÏà¹Ø*************************/
-// ¹Ø¿¨´æµµº¯Êı
+/*****************å­˜æ¡£ç›¸å…³*************************/
+// å…³å¡å­˜æ¡£å‡½æ•°
 void BaseLevelScene::saveGameState() {
 
-    // ´´½¨ JSON ÎÄµµ¶ÔÏó
+    // åˆ›å»º JSON æ–‡æ¡£å¯¹è±¡
     Document document;
-    document.SetObject();  // ÉèÖÃÎª JSON ¶ÔÏó
+    document.SetObject();  // è®¾ç½®ä¸º JSON å¯¹è±¡
 
-    // ´´½¨Ò»¸ö JSON Êı×é£¬ÓÃÀ´´æ´¢¹Ø¿¨×´Ì¬
+    // åˆ›å»ºä¸€ä¸ª JSON æ•°ç»„ï¼Œç”¨æ¥å­˜å‚¨å…³å¡çŠ¶æ€
     rapidjson::Value GameState(kArrayType);
 
-    // ½«¹Ø¿¨×´Ì¬Öğ¸öÌí¼Óµ½ GameState Êı×éÖĞ
+    // å°†å…³å¡çŠ¶æ€é€ä¸ªæ·»åŠ åˆ° GameState æ•°ç»„ä¸­
     for (auto level : level_is_win) {
         GameState.PushBack(rapidjson::Value(level), document.GetAllocator());
     }
 
-    // ½« GameState Êı×éÌí¼Óµ½ JSON ÎÄµµ¶ÔÏóÖĞ
+    // å°† GameState æ•°ç»„æ·»åŠ åˆ° JSON æ–‡æ¡£å¯¹è±¡ä¸­
     document.AddMember("levels", GameState, document.GetAllocator());
 
-    // ½« JSON ¶ÔÏó×ª»»Îª×Ö·û´®
+    // å°† JSON å¯¹è±¡è½¬æ¢ä¸ºå­—ç¬¦ä¸²
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
-    document.Accept(writer);  // Ğ´Èë JSON ×Ö·û´®
+    document.Accept(writer);  // å†™å…¥ JSON å­—ç¬¦ä¸²
 
-    // »ñÈ¡¿ÉĞ´Â·¾¶
-    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // »ñÈ¡¿ÉĞ´Â·¾¶
+    // è·å–å¯å†™è·¯å¾„
+    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // è·å–å¯å†™è·¯å¾„
 
-    // ¹¹ÔìÎÄ¼şÂ·¾¶£¨¼ÙÉèÎÄ¼şÃûÊÇ level_state.json£©
-    std::string filePath = writablePath + "level_state.json";  // Éú³ÉÍêÕûÎÄ¼şÂ·¾¶
+    // æ„é€ æ–‡ä»¶è·¯å¾„ï¼ˆå‡è®¾æ–‡ä»¶åæ˜¯ level_state.jsonï¼‰
+    std::string filePath = writablePath + "level_state.json";  // ç”Ÿæˆå®Œæ•´æ–‡ä»¶è·¯å¾„
 
-    // Ğ´ÈëÎÄ¼ş
-    std::ofstream ofs(filePath);  // Ê¹ÓÃ¿ÉĞ´Â·¾¶
+    // å†™å…¥æ–‡ä»¶
+    std::ofstream ofs(filePath);  // ä½¿ç”¨å¯å†™è·¯å¾„
     if (ofs.is_open()) {
-        ofs << buffer.GetString();  // Ğ´Èë JSON Êı¾İ
-        ofs.close();  // ¹Ø±ÕÎÄ¼ş
-        CCLOG("´æµµ³É¹¦£º%s", filePath.c_str());
+        ofs << buffer.GetString();  // å†™å…¥ JSON æ•°æ®
+        ofs.close();  // å…³é—­æ–‡ä»¶
+        CCLOG("å­˜æ¡£æˆåŠŸï¼š%s", filePath.c_str());
     }
     else {
-        CCLOG("´æµµÊ§°Ü£º%s", filePath.c_str());
+        CCLOG("å­˜æ¡£å¤±è´¥ï¼š%s", filePath.c_str());
     }
 }
-//ÅÚËş´æµµº¯Êı
+//ç‚®å¡”å­˜æ¡£å‡½æ•°
 void BaseLevelScene::saveTowerData()
 {
-    // ´´½¨ JSON ÎÄµµ¶ÔÏó
+    // åˆ›å»º JSON æ–‡æ¡£å¯¹è±¡
     Document document;
-    document.SetObject();  // ÉèÖÃÎª JSON ¶ÔÏó
-    //´´½¨Ò»¸örapidjsonÊı×é´æ´¢ËùÓĞĞÅÏ¢
+    document.SetObject();  // è®¾ç½®ä¸º JSON å¯¹è±¡
+    //åˆ›å»ºä¸€ä¸ªrapidjsonæ•°ç»„å­˜å‚¨æ‰€æœ‰ä¿¡æ¯
     rapidjson::Value towerArray(rapidjson::kArrayType);
     for(int i=0;i<X;i++)
     {
-        //´´½¨Ò»¸örapidjsonÊı×é´æ´¢Ã¿ĞĞĞÅÏ¢
+        //åˆ›å»ºä¸€ä¸ªrapidjsonæ•°ç»„å­˜å‚¨æ¯è¡Œä¿¡æ¯
      rapidjson::Value rowArray(rapidjson::kArrayType);
      for (int j = 0; j < Y; j++)
      {
      rapidjson::Value towerObj(rapidjson::kObjectType);
-     //Ìî³äµ¥¸öµ¥Ôª
-     //´æ´¢flag
+     //å¡«å……å•ä¸ªå•å…ƒ
+     //å­˜å‚¨flag
      towerObj.AddMember("flag",map_data[i][j].flag, document.GetAllocator());
-     //´æ´¢index
+     //å­˜å‚¨index
      if(map_data[i][j].flag==1)
      {
         towerObj.AddMember("index", towers[map_data[i][j].key]->GetIndex(), document.GetAllocator());
@@ -1175,53 +1178,53 @@ void BaseLevelScene::saveTowerData()
          towerObj.AddMember("index", 0, document.GetAllocator());
          towerObj.AddMember("data", 0, document.GetAllocator());
      }
-     //Ìî³äĞĞ
+     //å¡«å……è¡Œ
      rowArray.PushBack(towerObj, document.GetAllocator());
      }
-     //Ìî³äÎÄµµ
+     //å¡«å……æ–‡æ¡£
      towerArray.PushBack(rowArray, document.GetAllocator());
     }
     document.AddMember("towers", towerArray,document.GetAllocator());
-    document.AddMember("money", money, document.GetAllocator()); // ´æÈëµ±Ç°²¨Ë÷Òı
-    // ½« JSON ¶ÔÏó×ª»»Îª×Ö·û´®
+    document.AddMember("money", money, document.GetAllocator()); // å­˜å…¥å½“å‰æ³¢ç´¢å¼•
+    // å°† JSON å¯¹è±¡è½¬æ¢ä¸ºå­—ç¬¦ä¸²
     StringBuffer buffer;
     Writer<StringBuffer> writer(buffer);
-    document.Accept(writer);  // Ğ´Èë JSON ×Ö·û´®
+    document.Accept(writer);  // å†™å…¥ JSON å­—ç¬¦ä¸²
 
-    // »ñÈ¡¿ÉĞ´Â·¾¶
-    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // »ñÈ¡¿ÉĞ´Â·¾¶
+    // è·å–å¯å†™è·¯å¾„
+    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // è·å–å¯å†™è·¯å¾„
 
-    // ¹¹ÔìÎÄ¼şÂ·¾¶£¨¼ÙÉèÎÄ¼şÃûÊÇ level_state.json£©
-    std::string filePath = writablePath + "level"+std::to_string(levelId)+"_tower.json";  // Éú³ÉÍêÕûÎÄ¼şÂ·¾¶
+    // æ„é€ æ–‡ä»¶è·¯å¾„ï¼ˆå‡è®¾æ–‡ä»¶åæ˜¯ level_state.jsonï¼‰
+    std::string filePath = writablePath + "level"+std::to_string(levelId)+"_tower.json";  // ç”Ÿæˆå®Œæ•´æ–‡ä»¶è·¯å¾„
 
-    // Ğ´ÈëÎÄ¼ş
-    std::ofstream ofs(filePath);  // Ê¹ÓÃ¿ÉĞ´Â·¾¶
+    // å†™å…¥æ–‡ä»¶
+    std::ofstream ofs(filePath);  // ä½¿ç”¨å¯å†™è·¯å¾„
     if (ofs.is_open()) {
-        ofs << buffer.GetString();  // Ğ´Èë JSON Êı¾İ
-        ofs.close();  // ¹Ø±ÕÎÄ¼ş
-        CCLOG("´æµµ³É¹¦£º%s", filePath.c_str());
+        ofs << buffer.GetString();  // å†™å…¥ JSON æ•°æ®
+        ofs.close();  // å…³é—­æ–‡ä»¶
+        CCLOG("å­˜æ¡£æˆåŠŸï¼š%s", filePath.c_str());
     }
     else {
-        CCLOG("´æµµÊ§°Ü£º%s", filePath.c_str());
+        CCLOG("å­˜æ¡£å¤±è´¥ï¼š%s", filePath.c_str());
     }
 }
-//ÅÚËş¶Áµµº¯Êı
+//ç‚®å¡”è¯»æ¡£å‡½æ•°
 bool BaseLevelScene::loadTowerData(const std::string& filename)
 {
-    // ´ò¿ª JSON ÎÄ¼ş
-    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // »ñÈ¡¿ÉĞ´Â·¾¶
-    std::string path = writablePath + filename ;//ÍêÕûÎÄ¼şÂ·¾¶
+    // æ‰“å¼€ JSON æ–‡ä»¶
+    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // è·å–å¯å†™è·¯å¾„
+    std::string path = writablePath + filename ;//å®Œæ•´æ–‡ä»¶è·¯å¾„
     std::string fileContent = FileUtils::getInstance()->getStringFromFile(path);
-    // Ê¹ÓÃ rapidjson ½âÎöÎÄ¼şÄÚÈİ
+    // ä½¿ç”¨ rapidjson è§£ææ–‡ä»¶å†…å®¹
     rapidjson::Document doc;
     doc.Parse(fileContent.c_str());
     if (doc.HasParseError()) {
         CCLOG("Error parsing JSON file: %s", filename.c_str());
         return false;
     }
-    // ¼ì²éÊÇ·ñ´æÔÚÅäÖÃ
+    // æ£€æŸ¥æ˜¯å¦å­˜åœ¨é…ç½®
     if (doc.HasMember("towers") && doc["towers"].IsArray()) {
-        // »ñÈ¡ towerÊı×é
+        // è·å– toweræ•°ç»„
         const rapidjson::Value& towersArray = doc["towers"];
             if (towersArray.IsArray()) {
                 for (rapidjson::SizeType i = 0; i < towersArray.Size(); ++i) {
@@ -1230,11 +1233,11 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
                         for (rapidjson::SizeType j = 0; j < row.Size(); ++j) {
                             const rapidjson::Value& towerObj = row[j];
                             if (towerObj.IsObject()) {
-                                // ¶ÁÈ¡Ã¿¸öËşµÄ "flag"¡¢"index" ºÍ "data"
+                                // è¯»å–æ¯ä¸ªå¡”çš„ "flag"ã€"index" å’Œ "data"
                                 int flag = towerObj["flag"].GetInt();
                                 int index = towerObj["index"].GetInt();
                                 int data = towerObj["data"].GetInt();
-                                
+
                                if(flag==1){
                                    Vec2 pos= pos = Vec2((i+ 0.5) * CELL_SIZE, (j+0.5) * CELL_SIZE);
                                    auto tower=createTower(index,data);
@@ -1266,9 +1269,9 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
                 CCLOG("Towers data is not an array in level");
                 return false;
             }
-        
+
     }
-    //¶Á½ğ±Ò
+    //è¯»é‡‘å¸
     if (doc.HasMember("money") && doc["money"].IsInt()) {
         money = doc["money"].GetInt();
         updateMoney(0);

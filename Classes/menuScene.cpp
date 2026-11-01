@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"menuScene.h"
 #include"setScene.h"
 #include"advantureScene.h"
@@ -14,13 +15,13 @@ static void problemLoading(const char* filename)
 bool MenuScene::init() {
     if (!Scene::init())
         return false;
-    auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óÐ¡
+    auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨çŽ‡å¤§å°
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-    Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óÐ¡
-	
-	//·Å±³¾°
-	auto backgroundImage = Sprite::create("CarrotGuardRes/UI/BasicBackground.png");
-	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //»ñµÃËõ·Å±¶Êý
+    Size screenSize = Director::getInstance()->getWinSize();    //èŽ·å–å±å¹•å¤§å°
+
+	//æ”¾èƒŒæ™¯
+	auto backgroundImage = EnglishUI::sprite("CarrotGuardRes/UI/BasicBackground.png");
+	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //èŽ·å¾—ç¼©æ”¾å€æ•°
 	float scaleY = screenSize.height / backgroundImage->getContentSize().height;
 	if (backgroundImage == nullptr)
 		problemLoading("'BasicBackground.png'");
@@ -32,8 +33,8 @@ bool MenuScene::init() {
 		this->addChild(backgroundImage, 0);
 	}
 
-	//Ìí¼Ó±³¾°×óÒ¶×ÓÍ¼Æ¬
-	auto leaf1 = Sprite::create("CarrotGuardRes/UI/LeafBackground_1.png");
+	//æ·»åŠ èƒŒæ™¯å·¦å¶å­å›¾ç‰‡
+	auto leaf1 = EnglishUI::sprite("CarrotGuardRes/UI/LeafBackground_1.png");
 	if (leaf1 == nullptr)
 		problemLoading("'LeafBackground_1.png'");
 	else
@@ -43,8 +44,8 @@ bool MenuScene::init() {
 		this->addChild(leaf1, 0);
 	}
 
-	//Ìí¼Ó±³¾°ÖÐ¼äÒ¶×ÓÍ¼Æ¬
-	auto leaf2 = Sprite::create("CarrotGuardRes/UI/LeafBackground_2.png");
+	//æ·»åŠ èƒŒæ™¯ä¸­é—´å¶å­å›¾ç‰‡
+	auto leaf2 = EnglishUI::sprite("CarrotGuardRes/UI/LeafBackground_2.png");
 	if (leaf2 == nullptr)
 	{
 		problemLoading("'LeafBackground_2.png'");
@@ -56,8 +57,8 @@ bool MenuScene::init() {
 		this->addChild(leaf2, 0);
 	}
 
-	//Ìí¼Ó±³¾°ÓÒÒ¶×ÓÍ¼Æ¬
-	auto leaf3 = Sprite::create("CarrotGuardRes/UI/LeafBackground_3.png");
+	//æ·»åŠ èƒŒæ™¯å³å¶å­å›¾ç‰‡
+	auto leaf3 = EnglishUI::sprite("CarrotGuardRes/UI/LeafBackground_3.png");
 	if (leaf3 == nullptr)
 	{
 		problemLoading("'LeafBackground_3.png'");
@@ -69,8 +70,8 @@ bool MenuScene::init() {
 		this->addChild(leaf3, 0);
 	}
 
-	//Ìí¼Ó±³¾°ÂÜ²·Í¼Æ¬
-	auto carrot = Sprite::create("CarrotGuardRes/UI/CarrotBackground.png");
+	//æ·»åŠ èƒŒæ™¯èåœå›¾ç‰‡
+	auto carrot = EnglishUI::sprite("CarrotGuardRes/UI/CarrotBackground.png");
 	if (carrot == nullptr)
 		problemLoading("'CarrotBackground.png'");
 	else
@@ -80,8 +81,8 @@ bool MenuScene::init() {
 		this->addChild(carrot, 0);
 	}
 
-	//Ìí¼Ó±³¾°Ãû³ÆÍ¼Æ¬
-	auto NameImage = Sprite::create("CarrotGuardRes/UI/NameBackground.png");
+	//æ·»åŠ èƒŒæ™¯åç§°å›¾ç‰‡
+	auto NameImage = EnglishUI::sprite("CarrotGuardRes/UI/NameBackground.png");
 	if (NameImage == nullptr)
 		problemLoading("'NameBackground.png'");
 	else
@@ -91,15 +92,15 @@ bool MenuScene::init() {
 		this->addChild(NameImage, 0);
 	}
 
-	// create menu, it's an autorelease object,Ìí¼Ó²Ëµ¥
+	// create menu, it's an autorelease object,æ·»åŠ èœå•
 	auto menu = Menu::create(NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
 
 
-	//Ìí¼Ó¹Ø±Õ°´Å¥
-	auto close = MenuItemImage::create("CarrotGuardRes/UI/CloseNormal.png", "CarrotGuardRes/UI/CloseSelected.png", CC_CALLBACK_1(MenuScene::menuCloseCallback, this));
+	//æ·»åŠ å…³é—­æŒ‰é’®
+	auto close = EnglishUI::menuItem("CarrotGuardRes/UI/CloseNormal.png", "CarrotGuardRes/UI/CloseSelected.png", CC_CALLBACK_1(MenuScene::menuCloseCallback, this));
 	if (close == nullptr ||
 		close->getContentSize().width <= 0 ||
 		close->getContentSize().height <= 0)
@@ -112,13 +113,13 @@ bool MenuScene::init() {
 		float y = origin.y + close->getContentSize().height / 2;
 		close->setScale(scaleX);
 		close->setPosition(Vec2(x, y));
-		menu->addChild(close);  //¼ÓÈëµ½²Ëµ¥ÖÐ
+		menu->addChild(close);  //åŠ å…¥åˆ°èœå•ä¸­
 
 	}
 
 
-	//Ìí¼ÓÃ°ÏÕÄ£Ê½°´Å¥
-	auto advanture = MenuItemImage::create("CarrotGuardRes/UI/AdvantureButtonNormal.png", "CarrotGuardRes/UI/AdvantureButtonSelected.png", CC_CALLBACK_1(MenuScene::to_AdvantureScene, this));
+	//æ·»åŠ å†’é™©æ¨¡å¼æŒ‰é’®
+	auto advanture = EnglishUI::menuItem("CarrotGuardRes/UI/AdvantureButtonNormal.png", "CarrotGuardRes/UI/AdvantureButtonSelected.png", CC_CALLBACK_1(MenuScene::to_AdvantureScene, this));
 	if (advanture == nullptr ||
 		advanture->getContentSize().width <= 0 ||
 		advanture->getContentSize().height <= 0)
@@ -134,8 +135,8 @@ bool MenuScene::init() {
 		menu->addChild(advanture);
 	}
 
-	//Ìí¼ÓbossÄ£Ê½°´Å¥
-	auto boss = MenuItemImage::create("CarrotGuardRes/UI/BossButtonNormal.png", "CarrotGuardRes/UI/BossButtonSelected.png", CC_CALLBACK_1(MenuScene::to_boss, this));
+	//æ·»åŠ bossæ¨¡å¼æŒ‰é’®
+	auto boss = EnglishUI::menuItem("CarrotGuardRes/UI/BossButtonNormal.PNG", "CarrotGuardRes/UI/BossButtonSelected.png", CC_CALLBACK_1(MenuScene::to_boss, this));
 	if (boss == nullptr ||
 		boss->getContentSize().width <= 0 ||
 		boss->getContentSize().height <= 0)
@@ -151,8 +152,8 @@ bool MenuScene::init() {
 		menu->addChild(boss);
 	}
 
-	//Ìí¼Ó¹ÛÕ½Ä£Ê½°´Å¥
-	auto see = MenuItemImage::create("CarrotGuardRes/UI/WitnessButtonNormal.png", "CarrotGuardRes/UI/WitnessButtonSelected.png", CC_CALLBACK_1(MenuScene::to_seeScene, this));
+	//æ·»åŠ è§‚æˆ˜æ¨¡å¼æŒ‰é’®
+	auto see = EnglishUI::menuItem("CarrotGuardRes/UI/WitnessButtonNormal.png", "CarrotGuardRes/UI/WitnessButtonSelected.png", CC_CALLBACK_1(MenuScene::to_seeScene, this));
 	if (see == nullptr ||
 		see->getContentSize().width <= 0 ||
 		see->getContentSize().height <= 0)
@@ -168,8 +169,8 @@ bool MenuScene::init() {
 		menu->addChild(see);
 	}
 
-	//ÉèÖÃ½çÃæ°´Å¥
-	auto set = MenuItemImage::create("CarrotGuardRes/UI/SettingNormal.png", "SettingSelected.png", CC_CALLBACK_1(MenuScene::to_SetScene, this));
+	//è®¾ç½®ç•Œé¢æŒ‰é’®
+	auto set = EnglishUI::menuItem("CarrotGuardRes/UI/SettingNormal.png", "CarrotGuardRes/UI/SettingSelected.png", CC_CALLBACK_1(MenuScene::to_SetScene, this));
 	if (set == nullptr||
 		set->getContentSize().width <= 0 ||
 		set->getContentSize().height <= 0)
@@ -191,21 +192,21 @@ void MenuScene::menuCloseCallback(Ref* pSender) {
 	Director::getInstance()->end();
 }
 
-//È¥¹Ø¿¨Ñ¡Ôñ½çÃæ
+//åŽ»å…³å¡é€‰æ‹©ç•Œé¢
 void MenuScene::to_AdvantureScene(Ref* pSender) {
 	a.button_music();
 	auto advantureScene = advanturescene::createScene();
 	Director::getInstance()->pushScene(advantureScene);
 }
 
-//È¥ÉèÖÃ½çÃæ
+//åŽ»è®¾ç½®ç•Œé¢
 void MenuScene::to_SetScene(Ref* pSender) {
 	a.button_music();
 	auto settingScene = setscene::createScene();
 	Director::getInstance()->pushScene(settingScene);
 }
 
-//ÕâÊÇ¹ÛÕ½µ¼Ïò£¬ÏÈ²»Åª
+//è¿™æ˜¯è§‚æˆ˜å¯¼å‘ï¼Œå…ˆä¸å¼„
 void MenuScene::to_seeScene(Ref* pSender) {
 	a.button_music();
 	auto witnessScene = seescene::createScene();
@@ -213,10 +214,10 @@ void MenuScene::to_seeScene(Ref* pSender) {
 }
 void MenuScene::to_boss(Ref* pSender) {
 	a.button_music();
-	auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óÐ¡
+	auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨çŽ‡å¤§å°
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	//Ìí¼Óboss½çÃæ
-	auto boss1 = Sprite::create("CarrotGuardRes/UI/un_select1.png");
+	//æ·»åŠ bossç•Œé¢
+	auto boss1 = EnglishUI::sprite("CarrotGuardRes/UI/un_select1.png");
 	boss1->setTag(100);
 	if (boss1 == nullptr)
 		problemLoading("'un_select1.png'");
@@ -229,7 +230,7 @@ void MenuScene::to_boss(Ref* pSender) {
 	auto menu1 = Menu::create(NULL);
 	menu1->setPosition(Vec2::ZERO);
 	this->addChild(menu1, 3);
-	auto know = MenuItemImage::create("CarrotGuardRes/UI/know.png", "CarrotGuardRes/UI/know.png", CC_CALLBACK_1(MenuScene::know_Callback, this));
+	auto know = EnglishUI::menuItem("CarrotGuardRes/UI/know.png", "CarrotGuardRes/UI/know.png", CC_CALLBACK_1(MenuScene::know_Callback, this));
 	if (know == nullptr ||
 		know->getContentSize().width <= 0 ||
 		know->getContentSize().height <= 0)
@@ -242,16 +243,16 @@ void MenuScene::to_boss(Ref* pSender) {
 		float y = origin.y + visibleSize.width / 3.8;
 		know->setScale(1);
 		know->setPosition(Vec2(x, y));
-		menu1->addChild(know);  //¼ÓÈëµ½²Ëµ¥ÖÐ
+		menu1->addChild(know);  //åŠ å…¥åˆ°èœå•ä¸­
 	}
 }
 
 void MenuScene::know_Callback(Ref* pSender) {
 	auto sprite = this->getChildByTag(100);
-	// Èç¹ûÕÒµ½ÁË¾«Áé£¬¾Í´ÓÆäËùÔÚ¸¸½ÚµãÖÐÒÆ³ýËü
+	// å¦‚æžœæ‰¾åˆ°äº†ç²¾çµï¼Œå°±ä»Žå…¶æ‰€åœ¨çˆ¶èŠ‚ç‚¹ä¸­ç§»é™¤å®ƒ
 	if (sprite)
 		this->removeChild(sprite);
 	auto menu = ((MenuItem*)pSender)->getParent();
-	// ´Ó²Ëµ¥ÖÐÒÆ³ý°´Å¥
+	// ä»Žèœå•ä¸­ç§»é™¤æŒ‰é’®
 	menu->removeChild((MenuItem*)pSender);
 }

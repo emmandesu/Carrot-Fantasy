@@ -1,3 +1,4 @@
+#include "EnglishUI.h"
 #include"menuScene.h"
 #include"setScene.h"
 #include"music.h"
@@ -14,13 +15,13 @@ bool setscene::init() {
 	if (!Layer::init())
 		return false;
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();//·Ö±æÂÊ´óÐ¡
+	auto visibleSize = Director::getInstance()->getVisibleSize();//åˆ†è¾¨çŽ‡å¤§å°
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	Size screenSize = Director::getInstance()->getWinSize();    //»ñÈ¡ÆÁÄ»´óÐ¡
+	Size screenSize = Director::getInstance()->getWinSize();    //èŽ·å–å±å¹•å¤§å°
 
-	//·Å±³¾°
-	auto backgroundImage = Sprite::create("CarrotGuardRes/UI/SettingBackground.png");
-	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //»ñµÃËõ·Å±¶Êý
+	//æ”¾èƒŒæ™¯
+	auto backgroundImage = EnglishUI::sprite("CarrotGuardRes/UI/SettingBackground.png");
+	float scaleX = screenSize.width / backgroundImage->getContentSize().width;     //èŽ·å¾—ç¼©æ”¾å€æ•°
 	float scaleY = screenSize.height / backgroundImage->getContentSize().height;
 	if (backgroundImage == nullptr)
 		problemLoading("'SettingBackground.png'");
@@ -32,12 +33,12 @@ bool setscene::init() {
 		this->addChild(backgroundImage, 0);
 	}
 
-	//Ìí¼Ó·µ»Ø°´Å¥
+	//æ·»åŠ è¿”å›žæŒ‰é’®
 	auto menu = Menu::create();
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	auto returnButton = MenuItemImage::create("CarrotGuardRes/UI/SettingReturnNormal.png", "CarrotGuardRes/UI/SettingReturnSelected.png", CC_CALLBACK_1(setscene::to_menuScene, this));
+	auto returnButton = EnglishUI::menuItem("CarrotGuardRes/UI/SettingReturnNormal.png", "CarrotGuardRes/UI/SettingReturnSelected.png", CC_CALLBACK_1(setscene::to_menuScene, this));
 	if (returnButton == nullptr ||
 		returnButton->getContentSize().width <= 0 ||
 		returnButton->getContentSize().height <= 0)
@@ -53,12 +54,12 @@ bool setscene::init() {
 		menu->addChild(returnButton);
 	}
 
-	//Ìí¼ÓÒôÀÖ°´Å¥
-	auto musicLabel_1 = Label::createWithSystemFont(StringUtils::format("music"), "Arial", 27);
+	//æ·»åŠ éŸ³ä¹æŒ‰é’®
+	auto musicLabel_1 = Label::createWithSystemFont(EnglishUI::text("settings.audio"), "Arial", 27);
 	musicLabel_1->setPosition(Vec2(visibleSize.width * 0.5, visibleSize.height * 0.75));
 	musicLabel_1->setColor(Color3B::BLACK);
 	this->addChild(musicLabel_1, 2);
-	auto playMusicButton = MenuItemImage::create("CarrotGuardRes/UI/MusicOn.png", "CarrotGuardRes/UI/MusicClose.png", CC_CALLBACK_1(setscene::paly_music, this));
+	auto playMusicButton = EnglishUI::menuItem("CarrotGuardRes/UI/MusicOn.png", "CarrotGuardRes/UI/MusicClose.png", CC_CALLBACK_1(setscene::paly_music, this));
 	if (playMusicButton == nullptr)
 	{
 		problemLoading("'MusicOn.png' and 'MusicClose.png'");
@@ -69,19 +70,19 @@ bool setscene::init() {
 		playMusicButton->setScale(1.7f * scaleX);
 		menu->addChild(playMusicButton);
 		if (a.is_play()) {
-			playMusicButton->setNormalImage(Sprite::create("CarrotGuardRes/UI/MusicOn.png"));
-			playMusicButton->setSelectedImage(Sprite::create("CarrotGuardRes/UI/MusicOn.png"));
+			playMusicButton->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/MusicOn.png"));
+			playMusicButton->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/MusicOn.png"));
 		}
 		else {
-			playMusicButton->setNormalImage(Sprite::create("CarrotGuardRes/UI/MusicClose.png"));
-			playMusicButton->setSelectedImage(Sprite::create("CarrotGuardRes/UI/MusicClose.png"));
+			playMusicButton->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/MusicClose.png"));
+			playMusicButton->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/MusicClose.png"));
 		}
 	}
 
-	// Ìí¼Ó×÷ÕßÐÅÏ¢
-	auto authorLabel_1 = Label::createWithSystemFont(StringUtils::format("Developers: zhou,yu,guan"), "Arial", 27);
-	auto authorLabel_2 = Label::createWithSystemFont(StringUtils::format("Development time: 2024/11/26"), "Arial", 27);
-	auto authorLabel_3 = Label::createWithSystemFont(StringUtils::format("Fuck you"), "Arial", 27);
+	// æ·»åŠ ä½œè€…ä¿¡æ¯
+	auto authorLabel_1 = Label::createWithSystemFont(EnglishUI::text("settings.developers"), "Arial", 27);
+	auto authorLabel_2 = Label::createWithSystemFont(EnglishUI::text("settings.date"), "Arial", 27);
+	auto authorLabel_3 = Label::createWithSystemFont(EnglishUI::text("settings.edition"), "Arial", 27);
 	authorLabel_1->setPosition(Vec2(visibleSize.width * 0.5, visibleSize.height * 0.4));
 	authorLabel_2->setPosition(Vec2(visibleSize.width * 0.5, visibleSize.height * 0.3));
 	authorLabel_3->setPosition(Vec2(visibleSize.width * 0.5, visibleSize.height * 0.5));
@@ -102,17 +103,17 @@ void setscene::to_menuScene(Ref* pSender) {
 void setscene::paly_music(Ref* pSender) {
 	a.button_music();
 	MenuItemImage* button = static_cast<MenuItemImage*>(pSender);
-	//µãÖ®Ç°Ã»ÓÐÒôÐ§
+	//ç‚¹ä¹‹å‰æ²¡æœ‰éŸ³æ•ˆ
 	if (!a.is_play()) {
-		button->setNormalImage(Sprite::create("CarrotGuardRes/UI/soundOn.png"));
-		button->setSelectedImage(Sprite::create("CarrotGuardRes/UI/soundOn.png"));
+		button->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/soundOn.png"));
+		button->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/soundOn.png"));
 		a.set_music(1);
 		a.background_music();
 	}
-	//µãÖ®Ç°ÉèÖÃÒôÐ§
+	//ç‚¹ä¹‹å‰è®¾ç½®éŸ³æ•ˆ
 	else {
-		button->setNormalImage(Sprite::create("CarrotGuardRes/UI/soundClose.png"));
-		button->setSelectedImage(Sprite::create("CarrotGuardRes/UI/soundClose.png"));
+		button->setNormalImage(EnglishUI::sprite("CarrotGuardRes/UI/soundClose.png"));
+		button->setSelectedImage(EnglishUI::sprite("CarrotGuardRes/UI/soundClose.png"));
 		a.set_music(0);
 		a.background_music();
 	}
