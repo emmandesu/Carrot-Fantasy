@@ -7,22 +7,22 @@
 
 #include "cocos2d.h"
 
-class Carrot : public cocos2d::Node  // ¼Ì³ĞNode
+class Carrot : public cocos2d::Node  // ç»§æ‰¿Node
 {
 public:
-    // Ê¹ÓÃcreate¾²Ì¬·½·¨½øĞĞ¶ÔÏó´´½¨
+    // ä½¿ç”¨createé™æ€æ–¹æ³•è¿›è¡Œå¯¹è±¡åˆ›å»º
     static Carrot* create(int initialHP, const cocos2d::Vec2& carrotPos, const cocos2d::Vec2& hpPos);
     virtual bool init(int initialHP, const cocos2d::Vec2& carrotPos, const cocos2d::Vec2& hpPos);
-    void changeHP(int change); // ¸Ä±äÑªÁ¿
-    void getDamage(int damage);          // ÊÜÉË
-    void getRecover();         //ÖÎÁÆ
-    int getHP() const;         // »ñÈ¡µ±Ç°µÄÂÜ²·ÑªÁ¿
-    int hp;                         // ÑªÁ¿
+    void changeHP(int change); // æ”¹å˜è¡€é‡
+    void getDamage(int damage);          // å—ä¼¤
+    void getRecover();         //æ²»ç–—
+    int getHP() const;         // è·å–å½“å‰çš„èåœè¡€é‡
+    int hp;                         // è¡€é‡
 private:
-    cocos2d::Sprite* carrotSprite;  // ÂÜ²·µÄÍ¼Æ¬
-    cocos2d::Sprite* hpSprite;      // ÑªÌõµÄÍ¼Æ¬
-    void updateHPDisplay();         // ¸üĞÂÑªÌõºÍÂÜ²·µÄÍ¼Æ¬ÏÔÊ¾
-    void gameOver();                // ÓÎÏ·½áÊø
+    cocos2d::Sprite* carrotSprite;  // èåœçš„å›¾ç‰‡
+    cocos2d::Sprite* hpSprite;      // è¡€æ¡çš„å›¾ç‰‡
+    void updateHPDisplay();         // æ›´æ–°è¡€æ¡å’Œèåœçš„å›¾ç‰‡æ˜¾ç¤º
+    void gameOver();                // æ¸¸æˆç»“æŸ
 };
 
 #endif

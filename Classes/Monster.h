@@ -11,59 +11,59 @@ class BaseLevelScene;
 
 class Monster : public cocos2d::Sprite {
 protected:
-    Vec2  endPos;                   //ÖÕÖ¹Î»ÖÃ
-    int startPosIndex;              //ÆğÊ¼Ë÷Òı
-    int PathIndex = 0;              //Â·¾¶Ë÷Òı
-    std::string name;               //¹ÖÊŞÃû
-    int maxHp;                      //×î´óÑªÁ¿
-    int damage;                     //¹¥»÷Á¦
-    LoadingBar* _HP;                // ½ø¶ÈÌõĞ§¹û±íÊ¾ÑªÌõ
-    Sprite* hpback;                 //ÑªÌõ±³¾°
-    bool ishpvs = false;            //HPÊÇ·ñ¿É¼û
-    float  speed;                   // ÒÆ¶¯ËÙ¶È
-    bool pause;                     //ÔİÍ£
-    int   reward;                   // »÷É±½±Àø
-    int   health;                   // ÉúÃüÖµ
-    bool  isDead = false;           //ÊÇ·ñËÀÍö
+    Vec2  endPos;                   //ç»ˆæ­¢ä½ç½®
+    int startPosIndex;              //èµ·å§‹ç´¢å¼•
+    int PathIndex = 0;              //è·¯å¾„ç´¢å¼•
+    std::string name;               //æ€ªå…½å
+    int maxHp;                      //æœ€å¤§è¡€é‡
+    int damage;                     //æ”»å‡»åŠ›
+    LoadingBar* _HP;                // è¿›åº¦æ¡æ•ˆæœè¡¨ç¤ºè¡€æ¡
+    Sprite* hpback;                 //è¡€æ¡èƒŒæ™¯
+    bool ishpvs = false;            //HPæ˜¯å¦å¯è§
+    float  speed;                   // ç§»åŠ¨é€Ÿåº¦
+    bool pause;                     //æš‚åœ
+    int   reward;                   // å‡»æ€å¥–åŠ±
+    int   health;                   // ç”Ÿå‘½å€¼
+    bool  isDead = false;           //æ˜¯å¦æ­»äº¡
 public:
     Speed* speedaction;
-    static Monster* create(const std::string& monsterName,  
-        const std::vector<Vec2>& path, int startIndex,bool pause); //¾²Ì¬´´½¨·½·¨£¬¸ù¾İ¹ÖÊŞÃû²¢½áºÏÅäÖÃÎÄ¼şÉú³ÉÒ»¸ö¹ÖÎï¶ÔÏó
-    bool initWithPath(const std::string& monsterName,  
-        const std::vector<Vec2>& path, int startIndex,bool pause); //ÓÃ¹ÖÎïÃûºÍ¹Ø¿¨Â·¾¶À´³õÊ¼»¯¹ÖÎïµÄÊôĞÔ
-    void moveAlongPath(const std::vector<Vec2>& path);             //¹ÖÎïµÄÒÆ¶¯Âß¼­
-    void toDie(BaseLevelScene* my_scene);                          //ÈÃ¹ÖÊŞËÀÍö
-    void getHurt(int value);                                       //ÈÃ¹ÖÊŞÊÜÉË
-    void updateHealthBar();                                        //¸üĞÂÑªÌõ
-    bool checkLive()const { return (!isDead); };                   //¼ì²é¹ÖÊŞÊÇ·ñËÀÍö
-    //setº¯Êı
-    //ÉèÖÃ¹ÖÎïÑªÁ¿
+    static Monster* create(const std::string& monsterName,
+        const std::vector<Vec2>& path, int startIndex,bool pause); //é™æ€åˆ›å»ºæ–¹æ³•ï¼Œæ ¹æ®æ€ªå…½åå¹¶ç»“åˆé…ç½®æ–‡ä»¶ç”Ÿæˆä¸€ä¸ªæ€ªç‰©å¯¹è±¡
+    bool initWithPath(const std::string& monsterName,
+        const std::vector<Vec2>& path, int startIndex,bool pause); //ç”¨æ€ªç‰©åå’Œå…³å¡è·¯å¾„æ¥åˆå§‹åŒ–æ€ªç‰©çš„å±æ€§
+    void moveAlongPath(const std::vector<Vec2>& path);             //æ€ªç‰©çš„ç§»åŠ¨é€»è¾‘
+    void toDie(BaseLevelScene* my_scene);                          //è®©æ€ªå…½æ­»äº¡
+    void getHurt(int value);                                       //è®©æ€ªå…½å—ä¼¤
+    void updateHealthBar();                                        //æ›´æ–°è¡€æ¡
+    bool checkLive()const { return (!isDead); };                   //æ£€æŸ¥æ€ªå…½æ˜¯å¦æ­»äº¡
+    //setå‡½æ•°
+    //è®¾ç½®æ€ªç‰©è¡€é‡
     void setHealth(int health) { this->health = health; };
-    void setHpVisible(bool isVisible);                         //ÉèÖÃÑªÌõ¿É¼û
-    void setDamage(int value) { this->damage = value; }        //ÉèÖÃ¹ÖÊŞÉËº¦ÊıÖµ
-    void setSpeed(int value) { this->speed = value; }          //ÉèÖÃ¹ÖÊŞËÙ¶È
-    void setPause(bool isPause){this->pause=isPause;}          //ÉèÖÃÔİÍ£×´Ì¬
-    void setReward(int reward) { this->reward=reward; }        //ÉèÖÃÔİÍ£×´Ì¬
-    //getº¯Êı
-    //»ñÈ¡¹ÖÊŞÉúÃüÖµ
-    int getHealth()const{return health;}                       //»ñÈ¡ÑªÁ¿
-    bool getHpVisibleState()const{return ishpvs;}              //»ñÈ¡ÑªÌõÏÔÊ¾×´Ì¬
-    std::string getMonsterName()const { return name; }         //»ñÈ¡¹ÖÊŞµÄÃû×Ö
-    int getDamage()const{return damage;}                       //»ñÈ¡¹ÖÊŞÉËº¦ÊıÖµ
-    int getPathIndex()const{return PathIndex;}                 //»ñÈ¡¹ÖÎïµ±Ç°µÄÂ·¾¶Ë÷Òı
-    int getSpeed()const { return speed; }                      //»ñÈ¡¹ÖÊŞËÙ¶È
-    bool getPause()const {return pause;}                       //»ñÈ¡ÔİÍ£×´Ì¬
+    void setHpVisible(bool isVisible);                         //è®¾ç½®è¡€æ¡å¯è§
+    void setDamage(int value) { this->damage = value; }        //è®¾ç½®æ€ªå…½ä¼¤å®³æ•°å€¼
+    void setSpeed(int value) { this->speed = value; }          //è®¾ç½®æ€ªå…½é€Ÿåº¦
+    void setPause(bool isPause){this->pause=isPause;}          //è®¾ç½®æš‚åœçŠ¶æ€
+    void setReward(int reward) { this->reward=reward; }        //è®¾ç½®æš‚åœçŠ¶æ€
+    //getå‡½æ•°
+    //è·å–æ€ªå…½ç”Ÿå‘½å€¼
+    int getHealth()const{return health;}                       //è·å–è¡€é‡
+    bool getHpVisibleState()const{return ishpvs;}              //è·å–è¡€æ¡æ˜¾ç¤ºçŠ¶æ€
+    std::string getMonsterName()const { return name; }         //è·å–æ€ªå…½çš„åå­—
+    int getDamage()const{return damage;}                       //è·å–æ€ªå…½ä¼¤å®³æ•°å€¼
+    int getPathIndex()const{return PathIndex;}                 //è·å–æ€ªç‰©å½“å‰çš„è·¯å¾„ç´¢å¼•
+    int getSpeed()const { return speed; }                      //è·å–æ€ªå…½é€Ÿåº¦
+    bool getPause()const {return pause;}                       //è·å–æš‚åœçŠ¶æ€
     int  getReward()const{ return reward;}
     virtual void SpecialAttack() {  }
-    
+
 };
-//BossYellowÀà
+//BossYellowç±»
 class BossYellow :public Monster
 {
 public:
     void SpecialAttack()override;
 };
-//BossSheepÀà
+//BossSheepç±»
 class BossSheep :public Monster
 {
 public:

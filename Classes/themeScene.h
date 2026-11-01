@@ -3,7 +3,7 @@
 #define __THEME_SCENE_H__
 #include "cocos2d.h"
 USING_NS_CC;
-class themescene : public Layer  //类似hellowordScene
+class themescene : public Layer  //绫讳技hellowordScene
 {
 public:
 	static Scene* createScene() {
@@ -13,7 +13,7 @@ public:
 		return scene;
 	};
 	virtual bool init();
-	void clearRelatedButtons();  //清除按钮
+	void clearRelatedButtons();  //娓呴櫎鎸夐挳
 	// a selector callback
 	void to_advantureScene(Ref* pSender);
 	void know_Callback(Ref* pSender);
@@ -22,4 +22,3 @@ public:
 };
 
 #endif // __THEME_SCENE_H__
-

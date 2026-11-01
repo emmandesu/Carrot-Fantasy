@@ -70,7 +70,8 @@ bool Monster::initWithPath(const std::string& monsterName, const std::vector<Vec
     }
     // 加载怪物配置
     MonsterConfig config = MonsterManager::getMonsterConfigByName(monsterName);
-    this->startPosIndex=startIndex;
+    this->startPosIndex = std::max(0, std::min(startIndex, static_cast<int>(path.size()) - 1));
+    this->PathIndex = this->startPosIndex;
     this->maxHp=this->health=config.health;
     this->speed=config.speed;
     this->damage=config.damage;
@@ -200,7 +201,6 @@ void Monster::toDie(BaseLevelScene*my_scene)
     deathSprite->runAction(cocos2d::Sequence::create(animate, onDeathComplete, nullptr));
     a.normalSound();
     // 9. 删除怪物本身
-    this->retain();
     my_scene->removeChild(this);
     if (my_scene->tar_m == this) {//如果是这个怪被锁定，那么它被打死后，锁定解除
         my_scene->isTarget = 0;
@@ -283,8 +283,6 @@ void BossSheep::SpecialAttack()
                 if (num % 2 == 0) {
                     manager->getScene()->removeChild(it->second->sprite_mark);
                     manager->getScene()->removeChild(it->second->sp_base);
-                    it->second->sprite_mark->release();
-                    it->second->sp_base->release();
                     auto tool = ++it;
                     it--;
                     manager->getScene()->map_data[int(it->second->pos.x / CELL_SIZE)][int(it->second->pos.y / CELL_SIZE)].flag=0;
@@ -330,4 +328,3 @@ void showBossSkill(const std::string& skillText) {
     // 运行动作
     skillLabel->runAction(sequence);
 }
-

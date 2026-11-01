@@ -3,7 +3,7 @@
 #define __SET_SCENE_H__
 #include "cocos2d.h"
 USING_NS_CC;
-class setscene : public Layer  //¿‡À∆hellowordScene
+class setscene : public Layer  //Á±ª‰ººhellowordScene
 {
 public:
 	static Scene* createScene() {
@@ -21,9 +21,3 @@ public:
 };
 
 #endif // __SET_SCENE_H__
-
-
-
-
-
-

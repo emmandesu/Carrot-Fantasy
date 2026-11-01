@@ -14,89 +14,94 @@ USING_NS_CC;
 #define Y 9
 #define X 15
 
-//ÓÃÀ´±íÊ¾µØÍ¼¸ñ×ÓĞÅÏ¢µÄ½á¹¹Ìå
+//ç”¨æ¥è¡¨ç¤ºåœ°å›¾æ ¼å­ä¿¡æ¯çš„ç»“æ„ä½“
 struct Cell {
     char flag;
     int key;
 };
 class BaseLevelScene : public cocos2d::Scene {
 private:
-    cocos2d::Node* plantsLayer;                              //Ö²ÎïÍ¼²ã
-    TMXLayer* plantableLayer = nullptr;                      // plantable ²ã
-    static const std::vector<std::string> mapFiles;          // ´æ´¢µØÍ¼ÎÄ¼şµÄÂ·¾¶
-    int levelId;                                             //¹Ø¿¨±àºÅ
-    //±êÇ©Ïà¹Ø
-    Label* moneyLable;                                       //ÏÔÊ¾µ±Ç°½ğÇ®
-    Label* _numberLabel;                                     // ÏÔÊ¾¹ÖÎï²¨Êı
-    Label* _curNumberLabel;                                  // ÏÔÊ¾µ±Ç°¹ÖÎï²¨Êı
-    //ËÙ¶È¿ØÖÆÏà¹Ø
-    bool isDoubleSpeed = false;                              // ³õÊ¼»¯Îªfalse£¬±íÊ¾ÓÎÏ·³õÊ¼²»ÊÇ¶ş±¶ËÙ×´Ì¬
-    bool isPaused = false;                                   // ³õÊ¼»¯Îªfalse£¬±íÊ¾ÓÎÏ·³õÊ¼²»ÊÇÔİÍ£×´Ì¬
+    cocos2d::Node* plantsLayer;                              //æ¤ç‰©å›¾å±‚
+    TMXLayer* plantableLayer = nullptr;                      // plantable å±‚
+    static const std::vector<std::string> mapFiles;          // å­˜å‚¨åœ°å›¾æ–‡ä»¶çš„è·¯å¾„
+    int levelId = 0;
+    bool gameFinished = false;
+    bool levelReady = false;
+    bool menuVisible = false;                                             //å…³å¡ç¼–å·
+    //æ ‡ç­¾ç›¸å…³
+    Label* moneyLable;                                       //æ˜¾ç¤ºå½“å‰é‡‘é’±
+    Label* _numberLabel;                                     // æ˜¾ç¤ºæ€ªç‰©æ³¢æ•°
+    Label* _curNumberLabel;                                  // æ˜¾ç¤ºå½“å‰æ€ªç‰©æ³¢æ•°
+    //é€Ÿåº¦æ§åˆ¶ç›¸å…³
+    bool isDoubleSpeed = false;                              // åˆå§‹åŒ–ä¸ºfalseï¼Œè¡¨ç¤ºæ¸¸æˆåˆå§‹ä¸æ˜¯äºŒå€é€ŸçŠ¶æ€
+    bool isPaused = false;                                   // åˆå§‹åŒ–ä¸ºfalseï¼Œè¡¨ç¤ºæ¸¸æˆåˆå§‹ä¸æ˜¯æš‚åœçŠ¶æ€
 
-    //ÅÚËşÏà¹Ø
-    std::vector<Sprite*>remove_table;                        //removeÊ±µÄ·½¸ñ
-    Sprite* curr_cell;                                       //ÖÖÖ²µÄ·½¸ñ
-    std::vector<std::string>buy_tower[2];                    //´æ·ÅÅÚËşµÄ¹ºÂòÍ¼
-    std::vector<int>index_table;                             //¼ÇÂ¼±¾¹ØÓÃµ½µÄÅÚËşµÄĞòºÅ
-    int cell_flag;       
-    Vec2 last_position;                                      //¼ÇÂ¼ÉÏÒ»´ÎµÄÎ»ÖÃ
+    //ç‚®å¡”ç›¸å…³
+    std::vector<Sprite*>remove_table;                        //removeæ—¶çš„æ–¹æ ¼
+    Sprite* curr_cell;                                       //ç§æ¤çš„æ–¹æ ¼
+    std::vector<std::string>buy_tower[2];                    //å­˜æ”¾ç‚®å¡”çš„è´­ä¹°å›¾
+    std::vector<int>index_table;                             //è®°å½•æœ¬å…³ç”¨åˆ°çš„ç‚®å¡”çš„åºå·
+    int cell_flag;
+    Vec2 last_position;                                      //è®°å½•ä¸Šä¸€æ¬¡çš„ä½ç½®
 
     Scheduler* scheduler = Director::getInstance()->getScheduler();
-    float time_total=0;                                      //ÓÃÓÚÂÜ²·¶¶¶¯
-    int money = 1000;                                        //Ç®
+    float time_total=0;                                      //ç”¨äºèåœæŠ–åŠ¨
+    int money = 1000;                                        //é’±
 public:
-    std::map<int, Tower*> towers;                            //¼ÇÂ¼³¡ÉÏµÄËşµÄĞÅÏ¢
-    std::map<int, Obstacle*> Obstacles;                      //ÕÏ°­ÎïÊı×é
+    ~BaseLevelScene() override;
+    std::map<int, Tower*> towers;                            //è®°å½•åœºä¸Šçš„å¡”çš„ä¿¡æ¯
+    std::map<int, Obstacle*> Obstacles;                      //éšœç¢ç‰©æ•°ç»„
     Monster* tar_m = nullptr;
-    Obstacle* tar_o = nullptr;                               //Ö¸Ïò±»±ê¼ÇµÄ¶ÔÏó
-    char isTarget = 0;                                       //0´ú±íÃ»ÓĞ±»±ê¼ÇµÄ£¬1´ú±í¹ÖÎï±»±ê¼Ç£¬2´ú±íÕÏ°­Îï±»±ê¼Ç
-    Cell map_data[X][Y];                                     //µØÍ¼¹ÜÀí
-    Sprite* lock;                                          //Ëø¶¨±êÖ¾£¬ÒòÎªÍ¬Ò»Ê±¼äÖ»ÄÜÓĞÒ»¸ö¶ÔÏó±»Ëø¶¨£¬ËùÒÔ½«Æä·ÅÔÚBaseLevelSceneÖĞ
+    Obstacle* tar_o = nullptr;                               //æŒ‡å‘è¢«æ ‡è®°çš„å¯¹è±¡
+    char isTarget = 0;                                       //0ä»£è¡¨æ²¡æœ‰è¢«æ ‡è®°çš„ï¼Œ1ä»£è¡¨æ€ªç‰©è¢«æ ‡è®°ï¼Œ2ä»£è¡¨éšœç¢ç‰©è¢«æ ‡è®°
+    Cell map_data[X][Y];                                     //åœ°å›¾ç®¡ç†
+    Sprite* lock;                                          //é”å®šæ ‡å¿—ï¼Œå› ä¸ºåŒä¸€æ—¶é—´åªèƒ½æœ‰ä¸€ä¸ªå¯¹è±¡è¢«é”å®šï¼Œæ‰€ä»¥å°†å…¶æ”¾åœ¨BaseLevelSceneä¸­
     int getMoney()const{return money;}
     virtual void update(float deltaTime) override;
-    cocos2d::TMXTiledMap* tileMap = nullptr;                // µØÍ¼¶ÔÏó
-    cocos2d::Size tileSize;                                 //Ã¿¸öÍßÆ¬µÄ´óĞ¡
+    cocos2d::TMXTiledMap* tileMap = nullptr;                // åœ°å›¾å¯¹è±¡
+    cocos2d::Size tileSize;                                 //æ¯ä¸ªç“¦ç‰‡çš„å¤§å°
 
-    //³õÊ¼»¯·½·¨
-    static cocos2d::Scene* createScene(int level);          // ´´½¨³¡¾°Ê±´«Èë¹Ø¿¨±àºÅ
-    virtual bool init();                                    // Ä¬ÈÏµÄ init() ·½·¨
-    void initUI();                                          //³õÊ¼»¯ui
-    bool initWithLevel(int level);                          //ÖØĞ´µÄinitº¯Êı
+    //åˆå§‹åŒ–æ–¹æ³•
+    static cocos2d::Scene* createScene(int level);          // åˆ›å»ºåœºæ™¯æ—¶ä¼ å…¥å…³å¡ç¼–å·
+    bool init() override;                                    // é»˜è®¤çš„ init() æ–¹æ³•
+    void initUI();                                          //åˆå§‹åŒ–ui
+    bool initWithLevel(int level);                          //é‡å†™çš„initå‡½æ•°
     CREATE_FUNC(BaseLevelScene);
-    void loadMap();                                         // ¼ÓÔØµØÍ¼µÄº¯Êı
-    void addMouseListener();                                // Ìí¼ÓÊó±ê¼àÌıÆ÷
-    void InitMapData();                                     //³õÊ¼»¯µØÍ¼ĞÅÏ¢
-    void ProduceObstacles();                                //²úÉúÕÏ°­Îï
-    //ÅÚËşÏà¹Ø
-    void handleMouseDown(EventMouse* event);                //Êó±êµã»÷Ê±¼äÅĞ¶ÏÊÇ·ñÖÖÖ²
-    void handlePlant(const Vec2& position);                 // ÖÖÖ²ÅĞ¶Ï
-    void PlantMenuAppear(Vec2 mapPos);                      //³öÏÖÖÖÖ²²Ëµ¥
-    void PlantMenuGone(Vec2 position);                      //ÖÖÖ²²Ëµ¥ÏûÊ§
-    void drawGrid();                                        //»­Íø¸ñÏß
-    void UpMenuAppear(Vec2& position);                      //Éı¼¶²Ëµ¥³öÏÖ
-    void UpMenuGone(Vec2& position);                        //Éı¼¶²Ëµ¥ÏûÊ§
+    void loadMap();                                         // åŠ è½½åœ°å›¾çš„å‡½æ•°
+    void addMouseListener();                                // æ·»åŠ é¼ æ ‡ç›‘å¬å™¨
+    void InitMapData();                                     //åˆå§‹åŒ–åœ°å›¾ä¿¡æ¯
+    void ProduceObstacles();                                //äº§ç”Ÿéšœç¢ç‰©
+    //ç‚®å¡”ç›¸å…³
+    void handleMouseDown(EventMouse* event);                //é¼ æ ‡ç‚¹å‡»æ—¶é—´åˆ¤æ–­æ˜¯å¦ç§æ¤
+    void handlePlant(const Vec2& position);                 // ç§æ¤åˆ¤æ–­
+    void PlantMenuAppear(Vec2 mapPos);                      //å‡ºç°ç§æ¤èœå•
+    void PlantMenuGone(Vec2 position);                      //ç§æ¤èœå•æ¶ˆå¤±
+    void drawGrid();                                        //ç”»ç½‘æ ¼çº¿
+    void UpMenuAppear(const Vec2& position);                      //å‡çº§èœå•å‡ºç°
+    void UpMenuGone(const Vec2& position);                        //å‡çº§èœå•æ¶ˆå¤±
     void saveTowerData();
     bool loadTowerData(const std::string& filename);
-    Vec2 gridToScreenCenter(const Vec2& gridPoint);         //½«Íø¸ñ×ø±ê×ª³ÉÆÁÄ»×ø±êµÄ¹¤¾ßº¯Êı
+    Vec2 gridToScreenCenter(const Vec2& gridPoint);         //å°†ç½‘æ ¼åæ ‡è½¬æˆå±å¹•åæ ‡çš„å·¥å…·å‡½æ•°
 
-    //°´Å¥
-    void updateMoney(int add);                                   //¸üĞÂmoney£¬addÎª±ä»¯Á¿
+    //æŒ‰é’®
+    void updateMoney(int add);                                   //æ›´æ–°moneyï¼Œaddä¸ºå˜åŒ–é‡
     void doublespeed(Ref* pSender);
     void pause_all(Ref* pSender);
     void menu_all(Ref* pSender);
     void updateCurrentWaveLabe();
     void wenhao(Ref* pSender);
-    void CountDown(std::function<void()> onComplete);            //µ¹¼ÆÊ±
-    void gameover(bool is_win,int currentWaveNum,int allWaveNum);//½áÊøÓÎÏ·
-    void Jineng1(Ref* pSender);                                  //ÂÜ²·ÑªÁ¿¼Ó1
-    void Jineng2(Ref* pSender);                                  //±ù¶³£¬¹ÖÊŞÍ£Ö¹
-    void Jineng3(Ref* pSender);                                  //Õ¨µ¯£¬ÏûÃğËùÓĞ¹ÖÊŞ
-    void Jineng4(Ref* pSender);                                  //Ö²Îï¹¥ËÙ¼Ó±¶
-    void Jineng5(Ref* pSender);                                  //¹ÖÊŞ¼õËÙ
+    void CountDown(std::function<void()> onComplete);            //å€’è®¡æ—¶
+    void gameover(bool is_win,int currentWaveNum,int allWaveNum);//ç»“æŸæ¸¸æˆ
+    void Jineng1(Ref* pSender);                                  //èåœè¡€é‡åŠ 1
+    void Jineng2(Ref* pSender);                                  //å†°å†»ï¼Œæ€ªå…½åœæ­¢
+    void Jineng3(Ref* pSender);                                  //ç‚¸å¼¹ï¼Œæ¶ˆç­æ‰€æœ‰æ€ªå…½
+    void Jineng4(Ref* pSender);                                  //æ¤ç‰©æ”»é€ŸåŠ å€
+    void Jineng5(Ref* pSender);                                  //æ€ªå…½å‡é€Ÿ
     void guaisou_jiansu(float guai_jiansu);
 
-    void saveGameState();                                        //Í¨¹ØÇé¿ö´æµµ
-    Monster* IsTargetMonster(const Vec2& pos);                   //¼ì²âÊÇ·ñÓĞ¹ÖÎï±»Ëø¶¨
-   
+    void checkpoint();
+    void saveGameState();                                        //é€šå…³æƒ…å†µå­˜æ¡£
+    Monster* IsTargetMonster(const Vec2& pos);                   //æ£€æµ‹æ˜¯å¦æœ‰æ€ªç‰©è¢«é”å®š
+
 };
-#endif 
+#endif

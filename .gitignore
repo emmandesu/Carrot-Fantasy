@@ -1,0 +1,7 @@
+/proj.android/.gradle/
+/proj.android/local.properties
+/proj.android/app/.cxx/
+/proj.android/app/build/
+/build-android/
+/android-output/
+*.keystore

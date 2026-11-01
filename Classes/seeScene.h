@@ -3,7 +3,7 @@
 #define __SEE_MENU_H__
 #include "cocos2d.h"
 USING_NS_CC;
-class seescene : public Layer  //¿‡À∆hellowordScene
+class seescene : public Layer  //Á±ª‰ººhellowordScene
 {
 public:
 	static Scene* createScene() {
@@ -19,4 +19,3 @@ public:
 };
 
 #endif // __SEE_MENU_H__
-

@@ -15,34 +15,35 @@ class Obstacle;
 
 class Tower {
 protected:
-	int index, grade;//ÅÚËşĞòºÅºÍµÈ¼¶
-	int range, demage;//µ±Ç°·ÀÓùËş¿É¹¥»÷µÄ·¶Î§ºÍÉËº¦
+	int index, grade;//ç‚®å¡”åºå·å’Œç­‰çº§
+	int range, demage;//å½“å‰é˜²å¾¡å¡”å¯æ”»å‡»çš„èŒƒå›´å’Œä¼¤å®³
 public:
+	virtual ~Tower() = default;
 	Tower(int index_,int _grade=0) :index(index_), grade(_grade) { range = range_table[index][grade]; demage = demage_table[index][grade]; }
-	static std::string tower_table[TOWER_NUM][3];//¼ÇÂ¼ËùÓĞÅÚËşµÄÍ¼Æ¬Â·¾¶
-	static std::string base_table[TOWER_NUM];//ËùÓĞÅÚËşµ××ùµÄÍ¼Æ¬Â·¾¶
-	static Vec2 anchorpoint_table[TOWER_NUM][2];//ËùÓĞÅÚËşºÍµ××ùÃªµãµÄÉè¶¨
-	static int build_cost[TOWER_NUM];//ËùÓĞ·ÀÓùËşµÄ½¨Ôì»¨·Ñ
-	static int up_cost[TOWER_NUM][2];//ËùÓĞ·ÀÓùËşµÄÉı¼¶»¨·Ñ
-	static int range_table[TOWER_NUM][3];//ËùÓĞ·ÀÓùËşµÄ·¶Î§
-	static int demage_table[TOWER_NUM][3];//ËùÓĞ·ÀÓùËşµÄÉËº¦
-	static int sell_money[TOWER_NUM][3];//ÂôµôÃ¿×ùËşºóÔö¼ÓµÄÇ®
-	static std::map<int, std::string>sale_graph;//ÂôµôµÄÍ¼±ê
-	static std::map<int, std::string>up_graph;//ÄÜÂòµÃÆğµÄÍ¼±ê
-	static std::map<int, std::string>noup_graph;//Âò²»ÆğµÄÍ¼±ê
+	static std::string tower_table[TOWER_NUM][3];//è®°å½•æ‰€æœ‰ç‚®å¡”çš„å›¾ç‰‡è·¯å¾„
+	static std::string base_table[TOWER_NUM];//æ‰€æœ‰ç‚®å¡”åº•åº§çš„å›¾ç‰‡è·¯å¾„
+	static Vec2 anchorpoint_table[TOWER_NUM][2];//æ‰€æœ‰ç‚®å¡”å’Œåº•åº§é”šç‚¹çš„è®¾å®š
+	static int build_cost[TOWER_NUM];//æ‰€æœ‰é˜²å¾¡å¡”çš„å»ºé€ èŠ±è´¹
+	static int up_cost[TOWER_NUM][2];//æ‰€æœ‰é˜²å¾¡å¡”çš„å‡çº§èŠ±è´¹
+	static int range_table[TOWER_NUM][3];//æ‰€æœ‰é˜²å¾¡å¡”çš„èŒƒå›´
+	static int demage_table[TOWER_NUM][3];//æ‰€æœ‰é˜²å¾¡å¡”çš„ä¼¤å®³
+	static int sell_money[TOWER_NUM][3];//å–æ‰æ¯åº§å¡”åå¢åŠ çš„é’±
+	static std::map<int, std::string>sale_graph;//å–æ‰çš„å›¾æ ‡
+	static std::map<int, std::string>up_graph;//èƒ½ä¹°å¾—èµ·çš„å›¾æ ‡
+	static std::map<int, std::string>noup_graph;//ä¹°ä¸èµ·çš„å›¾æ ‡
 	static float interval_table[TOWER_NUM];
 
 	Sprite* sprite_mark, * sp_base;
-	Vec2 pos;//×ø±ê
-	float interval;//¹¥»÷¼ä¸ôÊ±¼ä
+	Vec2 pos;//åæ ‡
+	float interval;//æ”»å‡»é—´éš”æ—¶é—´
 
 	void build(BaseLevelScene*, Vec2);
 	void destroy(BaseLevelScene*);
-	//Éı¼¶ÓëÂôµô²¿·Ö
+	//å‡çº§ä¸å–æ‰éƒ¨åˆ†
 	static Sprite* curr_up, * curr_sale, * curr_range;
 	void update(BaseLevelScene*, Vec2);
-	void UpMenuAppear(BaseLevelScene* my_scene, Vec2& position);//Éı¼¶²Ëµ¥³öÏÖ
-	void UpMenuGone(BaseLevelScene*);//Éı¼¶²Ëµ¥ÏûÊ§
+	void UpMenuAppear(BaseLevelScene* my_scene, const Vec2& position);//å‡çº§èœå•å‡ºç°
+	void UpMenuGone(BaseLevelScene*);//å‡çº§èœå•æ¶ˆå¤±
 	int GetIndex()const { return index; }
 	int GetGrade()const {return grade;}
 
@@ -56,25 +57,25 @@ Tower* createTower(int index,int grade=0);
 
 class Bottle :public Tower {
 protected:
-	static const float speed;//ÅÚµ¯µÄËÙ¶È,Ã¿Ãë¶àÉÙÏñËØ
-	float tower_angle;//ÅÚËş³¯ÏòµÄ½Ç¶È£¬ÒÔÏòÓÒÎª0¶È£¬ÄæÊ±ÕëÔö¼Ó
-	Sprite* curr_shell;//Ö¸Ïò×Óµ¯
+	static const float speed;//ç‚®å¼¹çš„é€Ÿåº¦,æ¯ç§’å¤šå°‘åƒç´ 
+	float tower_angle;//ç‚®å¡”æœå‘çš„è§’åº¦ï¼Œä»¥å‘å³ä¸º0åº¦ï¼Œé€†æ—¶é’ˆå¢åŠ 
+	Sprite* curr_shell;//æŒ‡å‘å­å¼¹
 	float curr_dis, de_time;
-	//bool Clockwise;//ÊÇ·ñË³Ê±Õë×ª¶¯
+	//bool Clockwise;//æ˜¯å¦é¡ºæ—¶é’ˆè½¬åŠ¨
 public:
 
-	//¹¹Ôìº¯Êı
+	//æ„é€ å‡½æ•°
 	Bottle(int index_,int grade	) :Tower(index_,grade), tower_angle(0) { }
 
-	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//¹¥»÷
+	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//æ”»å‡»
 
-	void ShellProduct(Scene* my_scene);//²úÉúÅÚµ¯
+	void ShellProduct(Scene* my_scene);//äº§ç”Ÿç‚®å¼¹
 
 	template<class T>
 	void ShellDemage(BaseLevelScene* my_scene, T* sp);
 
 	template<class T>
-	bool  AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu);//¹¥»÷Ä³¸ö¾«Áé
+	bool  AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu);//æ”»å‡»æŸä¸ªç²¾çµ
 	static std::string bottle_shell[3];
 };
 
@@ -84,7 +85,7 @@ private:
 	Sprite* curr_halo;
 public:
 	Sun(int index_, int grade) :Tower(index_, grade) {}
-	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//¹¥»÷¹ÖÎï
+	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//æ”»å‡»æ€ªç‰©
 	void SunAttack(BaseLevelScene* my_scene, std::vector<Monster*>& monsters, float jiasu);
 
 };
@@ -94,14 +95,14 @@ public:
 class MyPlane :public Tower {
 private:
 	Sprite* curr_ray;
-	float tower_angle;//ÅÚËş³¯ÏòµÄ½Ç¶È£¬ÒÔÏòÓÒÎª0¶È£¬ÄæÊ±ÕëÔö¼Ó
+	float tower_angle;//ç‚®å¡”æœå‘çš„è§’åº¦ï¼Œä»¥å‘å³ä¸º0åº¦ï¼Œé€†æ—¶é’ˆå¢åŠ 
 	float de_ang;
 public:
 	MyPlane(int index_, int grade) :Tower(index_, grade), tower_angle(90) {}
-	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//¹¥»÷¹ÖÎï
+	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//æ”»å‡»æ€ªç‰©
 
 	template<class T>
-	bool  AttackSprite(T* sp, BaseLevelScene* my_scene, std::vector<Monster*>& monsters, float jiasu);//¹¥»÷Ä³¸ö¾«Áé
+	bool  AttackSprite(T* sp, BaseLevelScene* my_scene, std::vector<Monster*>& monsters, float jiasu);//æ”»å‡»æŸä¸ªç²¾çµ
 
 	void PlaneDemage(BaseLevelScene* my_scene, std::vector<Monster*>& monsters);
 	static std::string ray[3];
@@ -115,13 +116,13 @@ class Shit :public Tower {
 	static const float speed;
 public:
 	Shit(int index_, int grade) :Tower(index_, grade) {}
-	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//¹¥»÷¹ÖÎï
+	virtual void attack(BaseLevelScene*, std::vector<Monster*>&, char isTarget, Monster* tar_m, Obstacle* tar_o, float jiasu);//æ”»å‡»æ€ªç‰©
 	static std::string shit_shell[3];
 
-	void ShellProduct(Scene* my_scene);//²úÉúÅÚµ¯
+	void ShellProduct(Scene* my_scene);//äº§ç”Ÿç‚®å¼¹
 	template<class T>
 	void ShellDemage(BaseLevelScene* my_scene, T* sp);
 
 	template<class T>
-	bool  AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu);//¹¥»÷Ä³¸ö¾«Áé
+	bool  AttackSprite(T* sp, BaseLevelScene* my_scene, float jiasu);//æ”»å‡»æŸä¸ªç²¾çµ
 };

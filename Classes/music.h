@@ -6,53 +6,53 @@
 USING_NS_CC;
 class Music {
 private:
-	int music_play=1;  //ÒôÀÖ×Ü¿ª¹Ø£¬Ä¬ÈÏ¿ª
+	int music_play=1;  //éŸ³ä¹æ€»å¼€å…³ï¼Œé»˜è®¤å¼€
 	int soundEffectID;
 public:
 	Music() {};
 	~Music() {};
-	void Music::preloadSoundEffect(const std::string& music_file) {
+	void preloadSoundEffect(const std::string& music_file) {
 		AudioEngine::preload(music_file);
 	}
-	int is_play() { return music_play; };  //·µ»ØÒôÀÖ¿ª¹Ø
-	void set_music(int option) { music_play = option; };  //ÉèÖÃÒôÀÖ¿ª¹Ø
-	void background_music() {   //±³¾°ÒôÀÖ
+	int is_play() { return music_play; };  //è¿”å›éŸ³ä¹å¼€å…³
+	void set_music(int option) { music_play = option; };  //è®¾ç½®éŸ³ä¹å¼€å…³
+	void background_music() {   //èƒŒæ™¯éŸ³ä¹
 		if (music_play)
 			soundEffectID = AudioEngine::play2d("Music/bgm.mp3", true, 0.5f);
 		else
 			AudioEngine::pause(soundEffectID);
 	}
 
-	void button_music(){        //°´Å¥ÒôÀÖ
+	void button_music(){        //æŒ‰é’®éŸ³ä¹
 		if(music_play)
 		AudioEngine::play2d("Music/button.mp3", false, 0.5f);
 	}
-	void page_music() {        //·­Ò³ÒôÀÖ
+	void page_music() {        //ç¿»é¡µéŸ³ä¹
 		if (music_play)
 			AudioEngine::play2d("Music/page.mp3", false, 0.2f);
 	}
-	void build_music() {        //½¨ÖşÖ²ÎïÊ±ÒôÀÖ
+	void build_music() {        //å»ºç­‘æ¤ç‰©æ—¶éŸ³ä¹
 		if (music_play)
 			AudioEngine::play2d("Music/build.mp3", false, 1.0f);
 	}
-	void sell_music() {        //³öÊÛÒôÀÖ
+	void sell_music() {        //å‡ºå”®éŸ³ä¹
 		if (music_play)
 			AudioEngine::play2d("Music/sell.mp3", false, 1.0f);
 	}
-	void born_music() {        //²úÉúÒôÀÖ
+	void born_music() {        //äº§ç”ŸéŸ³ä¹
 		if (music_play)
 			AudioEngine::play2d("Music/born.mp3", false, 2.0f);
 	}
-	void upgrade_music() {        //Éı¼¶ÒôÀÖ
+	void upgrade_music() {        //å‡çº§éŸ³ä¹
 		if (music_play)
 			AudioEngine::play2d("Music/upgrade.mp3", false, 1.0f);
 	}
-	//²¥·ÅÂÜ²·±»³ÔÒôĞ§
+	//æ’­æ”¾èåœè¢«åƒéŸ³æ•ˆ
 	void  carrotSound() {
 		if (music_play)
 			AudioEngine::play2d("Music/carrot.mp3", false, 1.0f);
 	}
-	//²¥·ÅÆÕÍ¨¹ÖËÀÍöÒôĞ§
+	//æ’­æ”¾æ™®é€šæ€ªæ­»äº¡éŸ³æ•ˆ
 	void normalSound() {
 		if (music_play)
 			AudioEngine::play2d("Music/dead.mp3", false, 1.0f);
@@ -81,17 +81,17 @@ public:
 		if (music_play)
 			AudioEngine::play2d("Music/duan.mp3", false, 1.0f);
 	}
-	//Ö²Îï£¬¿ÉÌí¼Ó
+	//æ¤ç‰©ï¼Œå¯æ·»åŠ 
 	void  sunSound() {
 		if (music_play)
 			AudioEngine::play2d("Music/sun.mp3", false, 1.0f);
 	}
-	//²¥·ÅÆ¿×Ó¹¥»÷ÒôĞ§
+	//æ’­æ”¾ç“¶å­æ”»å‡»éŸ³æ•ˆ
 	void  bottleSound() {
 		if (music_play)
 			AudioEngine::play2d("Music/bottle.mp3", false, 1.0f);
 	}
-	//²¥·Å·É»ú¹¥»÷ÒôĞ§
+	//æ’­æ”¾é£æœºæ”»å‡»éŸ³æ•ˆ
 	void  planeSound() {
 		if (music_play)
 			AudioEngine::play2d("Music/Plane.mp3", false, 1.0f);
@@ -117,7 +117,7 @@ public:
 			AudioEngine::play2d("Music/TowerUpdata.mp3", false, 1.0f);
 	}
 
-	void Object() {//ÕÏ°­Îï±»´İ»ÙÊ±
+	void Object() {//éšœç¢ç‰©è¢«æ‘§æ¯æ—¶
 		if (music_play)
 			AudioEngine::play2d("Music/Object.mp3", false, 1.0f);
 	}
@@ -127,4 +127,4 @@ public:
 			AudioEngine::play2d("Music/Shit.mp3", false, 1.0f);
 	}
 };
-#endif __music_H__
+#endif // _music_H_

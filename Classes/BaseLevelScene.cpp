@@ -1,3 +1,5 @@
+#include "SaveIO.h"
+#include <set>
 #include "EnglishUI.h"
 #include "BaseLevelScene.h"
 #include<vector>
@@ -186,6 +188,8 @@ void BaseLevelScene::wenhao(Ref* pSender) {
 }
 //菜单按钮
 void BaseLevelScene::menu_all(Ref* pSender) {
+    if (menuVisible || gameFinished) return;
+    menuVisible = true;
     a.button_music();
     Director::getInstance()->pause();
     auto visibleSize = Director::getInstance()->getVisibleSize();//分辨率大小
@@ -223,6 +227,7 @@ void BaseLevelScene::menu_all(Ref* pSender) {
     continueButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
         this->removeChild(menuLayer);
+        menuVisible = false;
         // 判断在点击菜单按钮之前是否点击过暂停按钮，防止出现bug
         if (isPaused == 0) {
             Director::getInstance()->resume();
@@ -245,11 +250,7 @@ void BaseLevelScene::menu_all(Ref* pSender) {
     //选择关卡选项
     chooseButton->setCallback([this, menuLayer](Ref* psender) {
         a.button_music();
-        saveGameState();
-        //怪兽存档
-        manager->saveMonstersDataToJson("level"+std::to_string(levelId)+"Monster.json");
-        //植物存档
-        saveTowerData();
+        checkpoint();
         this->removeChild(menuLayer);
         // 取消与 GameManager 相关的所有调度器
         GameManager::getInstance()->stopAllSchedulers();
@@ -361,14 +362,14 @@ void BaseLevelScene::Jineng5(Ref* pSender) {
         this->runAction(delayaction);
     }
 }
-void BaseLevelScene::UpMenuAppear(Vec2& position)
+void BaseLevelScene::UpMenuAppear(const Vec2& position)
 {
     last_position = position;
     int key = map_data[int(position.x / CELL_SIZE)][int(position.y / CELL_SIZE)].key;
     towers[key]->UpMenuAppear(this, position);
     cell_flag = 0;
 }
-void BaseLevelScene::UpMenuGone(Vec2& position)
+void BaseLevelScene::UpMenuGone(const Vec2& position)
 {
     int key = BaseLevelScene::map_data[int(last_position.x / CELL_SIZE)][int(last_position.y / CELL_SIZE)].key;
     towers[key]->UpMenuGone(this);
@@ -387,6 +388,11 @@ void BaseLevelScene::UpMenuGone(Vec2& position)
 }
 //游戏结束的界面处理
 void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
+    if (gameFinished) return;
+    gameFinished = true;
+    unscheduleUpdate();
+    manager->stopAllSchedulers();
+    Director::getInstance()->pause();
     //Director::getInstance()->pause();
     // 设置灰色遮罩层
     auto menuLayer = LayerColor::create(Color4B(0, 0, 0, 0));
@@ -413,7 +419,7 @@ void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
 
         // 胜利的相关提示语
 
-        _curNumberLabel = Label::createWithSystemFont(StringUtils::format("%d", currentWaveNum > allWaveNum ? allWaveNum + 1 : currentWaveNum + 1), "Arial", 32);
+        _curNumberLabel = Label::createWithSystemFont(StringUtils::format("%d", std::min(currentWaveNum + 1, allWaveNum)), "Arial", 32);
         _curNumberLabel->setColor(Color3B::YELLOW);
         _curNumberLabel->setPosition(960 * 0.51, 640 * 0.54);
         Label* loseWordLeft = Label::createWithSystemFont(EnglishUI::text("game.fought_off"), "Arial", 30);
@@ -437,6 +443,7 @@ void BaseLevelScene::gameover(bool is_win, int currentWaveNum, int allWaveNum) {
             }
             //若当前已经是开放的最后一关，则返回选择关卡界面
             else {
+                Director::getInstance()->resume();
                 auto themeScene = themescene::createScene();
                 Director::getInstance()->replaceScene(themeScene);
             }
@@ -807,6 +814,7 @@ bool BaseLevelScene::initWithLevel(int level)
         tower_jiasu = 1;
         });
 
+    levelReady = true;
     this->scheduleUpdate();                    //启动更新逻辑
 
 
@@ -821,6 +829,7 @@ bool BaseLevelScene::init() {
 }
 //更新游戏状态
 void BaseLevelScene::update(float deltaTime) {
+    if (gameFinished) return;
 
     //更新当前波数
     updateCurrentWaveLabe();
@@ -838,11 +847,13 @@ void BaseLevelScene::update(float deltaTime) {
     if(manager->CheckLose())
     {
        gameover(false,manager->getCurrentWaveNum(), manager->getAllWaveNum());
+       return;
     }
     //更新检验赢状态
     if(manager->CheckWin())
     {
         gameover(true, manager->getCurrentWaveNum(), manager->getAllWaveNum());
+        return;
     }
     time_total += deltaTime;
     if (time_total >= 5) {
@@ -896,10 +907,22 @@ void BaseLevelScene::ProduceObstacles()//在场景中生成障碍物
 /*****************炮塔相关*************************/
  //开启鼠标监听
 void BaseLevelScene::addMouseListener() {
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+    auto listener = EventListenerTouchOneByOne::create();
+    listener->setSwallowTouches(true);
+    listener->onTouchBegan = [this](Touch* touch, Event*) {
+        const auto point = touch->getLocation();
+        // Leave the HUD and skill row to their menu widgets, even when paused.
+        if (gameFinished || Director::getInstance()->isPaused() ||
+            point.x < 0 || point.x >= 960 || point.y < 70 || point.y >= 575)
+            return false;
+        handlePlant(Vec2(point.x, 640 - point.y));
+        return true;
+    };
+#else
     auto listener = EventListenerMouse::create();
-    listener->onMouseDown = CC_CALLBACK_1(BaseLevelScene::handleMouseDown, this); // 鼠标按下时的回调
-
-    // 将监听器添加到事件派发器
+    listener->onMouseDown = CC_CALLBACK_1(BaseLevelScene::handleMouseDown, this);
+#endif
     _eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
 }
 //处理鼠标点击事件
@@ -1049,8 +1072,8 @@ void BaseLevelScene::PlantMenuGone(Vec2 position)
             map_data[x][y].flag = 1;
         }
     }
-    this->removeChild(curr_cell); curr_cell->release();
-    for (int i = 0; i < remove_table.size(); i++) { this->removeChild(remove_table[i]); remove_table[i]->release(); }
+    this->removeChild(curr_cell); curr_cell = nullptr;
+    for (int i = 0; i < remove_table.size(); i++) { this->removeChild(remove_table[i]); }
     remove_table.clear();
     cell_flag = 1;
 }
@@ -1135,10 +1158,7 @@ void BaseLevelScene::saveGameState() {
     std::string filePath = writablePath + "level_state.json";  // 生成完整文件路径
 
     // 写入文件
-    std::ofstream ofs(filePath);  // 使用可写路径
-    if (ofs.is_open()) {
-        ofs << buffer.GetString();  // 写入 JSON 数据
-        ofs.close();  // 关闭文件
+    if (SaveIO::writeJSON(filePath, buffer.GetString())) {
         CCLOG("存档成功：%s", filePath.c_str());
     }
     else {
@@ -1185,6 +1205,7 @@ void BaseLevelScene::saveTowerData()
      towerArray.PushBack(rowArray, document.GetAllocator());
     }
     document.AddMember("towers", towerArray,document.GetAllocator());
+    document.AddMember("carrotHealth", manager->getCarrotHealth(), document.GetAllocator());
     document.AddMember("money", money, document.GetAllocator()); // 存入当前波索引
     // 将 JSON 对象转换为字符串
     StringBuffer buffer;
@@ -1198,10 +1219,7 @@ void BaseLevelScene::saveTowerData()
     std::string filePath = writablePath + "level"+std::to_string(levelId)+"_tower.json";  // 生成完整文件路径
 
     // 写入文件
-    std::ofstream ofs(filePath);  // 使用可写路径
-    if (ofs.is_open()) {
-        ofs << buffer.GetString();  // 写入 JSON 数据
-        ofs.close();  // 关闭文件
+    if (SaveIO::writeJSON(filePath, buffer.GetString())) {
         CCLOG("存档成功：%s", filePath.c_str());
     }
     else {
@@ -1218,7 +1236,7 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
     // 使用 rapidjson 解析文件内容
     rapidjson::Document doc;
     doc.Parse(fileContent.c_str());
-    if (doc.HasParseError()) {
+    if (doc.HasParseError() || !doc.IsObject()) {
         CCLOG("Error parsing JSON file: %s", filename.c_str());
         return false;
     }
@@ -1227,10 +1245,10 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
         // 获取 tower数组
         const rapidjson::Value& towersArray = doc["towers"];
             if (towersArray.IsArray()) {
-                for (rapidjson::SizeType i = 0; i < towersArray.Size(); ++i) {
+                for (rapidjson::SizeType i = 0; i < towersArray.Size() && i < X; ++i) {
                     const rapidjson::Value& row = towersArray[i];
                     if (row.IsArray()) {
-                        for (rapidjson::SizeType j = 0; j < row.Size(); ++j) {
+                        for (rapidjson::SizeType j = 0; j < row.Size() && j < Y; ++j) {
                             const rapidjson::Value& towerObj = row[j];
                             if (towerObj.IsObject()) {
                                 // 读取每个塔的 "flag"、"index" 和 "data"
@@ -1239,7 +1257,7 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
                                 int data = towerObj["data"].GetInt();
 
                                if(flag==1){
-                                   Vec2 pos= pos = Vec2((i+ 0.5) * CELL_SIZE, (j+0.5) * CELL_SIZE);
+                                   Vec2 pos = Vec2((i+ 0.5) * CELL_SIZE, (j+0.5) * CELL_SIZE);
                                    auto tower=createTower(index,data);
                                    tower->build(this,pos);
                                    towers[map_data[i][j].key]=tower;
@@ -1271,6 +1289,8 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
             }
 
     }
+    if (doc.HasMember("carrotHealth") && doc["carrotHealth"].IsInt())
+        manager->restoreCarrotHealth(doc["carrotHealth"].GetInt());
     //读金币
     if (doc.HasMember("money") && doc["money"].IsInt()) {
         money = doc["money"].GetInt();
@@ -1284,3 +1304,18 @@ bool BaseLevelScene::loadTowerData(const std::string& filename)
     return true;
 }
 /************************************************/
+
+// Called on the Cocos GL thread before Android suspends rendering.
+void BaseLevelScene::checkpoint() {
+    if (!levelReady || gameFinished || levelId < 1 || levelId > 3) return;
+    saveGameState();
+    saveTowerData();
+    manager->saveMonstersDataToJson("level" + std::to_string(levelId) + "Monster.json");
+}
+
+BaseLevelScene::~BaseLevelScene() {
+    for (const auto& entry : towers) delete entry.second;
+    std::set<Obstacle*> unique;
+    for (const auto& entry : Obstacles) unique.insert(entry.second);
+    for (auto obstacle : unique) delete obstacle;
+}

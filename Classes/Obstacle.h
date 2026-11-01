@@ -6,53 +6,51 @@ USING_NS_CC;
 using namespace cocos2d::ui;
 
 
-//ÕÏ°­Îï
+//éšœç¢ç‰©
 class BaseLevelScene;
 
 struct ObData {
-	std::string road_path;//Í¼Æ¬Â·¾¶
-	int size;//³ß´ç,1´ú±í1*1£¬2´ú±í1*2£¬4´ú±í2*2
-	int money;//´ò±¬ºóËùµÃµÄÇ®
-	int hp;//ÑªÁ¿
+	std::string road_path;//å›¾ç‰‡è·¯å¾„
+	int size;//å°ºå¯¸,1ä»£è¡¨1*1ï¼Œ2ä»£è¡¨1*2ï¼Œ4ä»£è¡¨2*2
+	int money;//æ‰“çˆ†åŽæ‰€å¾—çš„é’±
+	int hp;//è¡€é‡
 };
 
 class Obstacle {
 private:
-	
+
 	int index;
-	int size;//³ß´ç,1´ú±í1*1£¬2´ú±í1*2£¬4´ú±í2*2
-	int health;//ÑªÁ¿
+	int size;//å°ºå¯¸,1ä»£è¡¨1*1ï¼Œ2ä»£è¡¨1*2ï¼Œ4ä»£è¡¨2*2
+	int health;//è¡€é‡
 	int maxHp;
-	int x, y;//Ö¸µÄÊÇ×óÏÂ½ÇÔÚµØÍ¼Êý×éÖÐµÄÎ»ÖÃ
+	int x, y;//æŒ‡çš„æ˜¯å·¦ä¸‹è§’åœ¨åœ°å›¾æ•°ç»„ä¸­çš„ä½ç½®
 	bool isDead = false;
-	LoadingBar* _HP;       // ½ø¶ÈÌõÐ§¹û±íÊ¾ÑªÌõ
+	LoadingBar* _HP;       // è¿›åº¦æ¡æ•ˆæžœè¡¨ç¤ºè¡€æ¡
 public:
-	
+
 	Sprite* hpback;
-	bool ishpvs=false;//HPÊÇ·ñ¿É¼û
+	bool ishpvs=false;//HPæ˜¯å¦å¯è§
 	Sprite* curr;
-	int reward;//´ò±¬ºóËùµÃµÄÇ®
+	int reward;//æ‰“çˆ†åŽæ‰€å¾—çš„é’±
 	static ObData Ob[10];
 	int GetIndex(){return index;}
 	Obstacle(int index) :index(index),size(Ob[index].size),maxHp(Ob[index].hp), reward(Ob[index].money), health(Ob[index].hp) {}
-	void Produce(Scene* my_scene, int x_, int y_);//²úÉúÕÏ°­Îï
+	void Produce(Scene* my_scene, int x_, int y_);//äº§ç”Ÿéšœç¢ç‰©
 
 	Vec2 getPosition() { return curr->getPosition(); }
 
 	void toDie(BaseLevelScene* my_scene);
 
-	void updateHealthBar(); 
+	void updateHealthBar();
 
 	void addChild(Sprite* c) {
 		curr->addChild(c);
 	}
 	void setHpVisible(bool isVisible){ _HP->setVisible(isVisible); hpback->setVisible(isVisible); ishpvs = true;
-	}	//ÉèÖÃÑªÌõ¿É¼û
+	}	//è®¾ç½®è¡€æ¡å¯è§
 	bool getHpVisibleState()const { return ishpvs; }
 	int  GetSize()const{return size;}
 	void getHurt(int value){health-=value;}
-	int getHealth()const { return health; }                       //»ñÈ¡ÑªÁ¿
+	int getHealth()const { return health; }                       //èŽ·å–è¡€é‡
 	 void setHealth(int health) { this->health = health; };
 };
-
-

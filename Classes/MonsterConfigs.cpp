@@ -2,20 +2,20 @@
 
  MonsterConfig MonsterManager::getMonsterConfigByName(const std::string& monsterName)
  {
-     // »ñÈ¡ÎÄ¼şÂ·¾¶
+     // è·å–æ–‡ä»¶è·¯å¾„
      std::string filePath = "monsters_config.json";
 
-     // ¶ÁÈ¡ JSON ÎÄ¼ş
+     // è¯»å– JSON æ–‡ä»¶
      std::string fileContent = cocos2d::FileUtils::getInstance()->getStringFromFile(filePath);
      rapidjson::Document doc;
      doc.Parse(fileContent.c_str());
      MonsterConfig config;
 
-     // ¼ì²éÎÄ¼şÖĞÊÇ·ñ°üº¬¸Ã¹ÖÎïµÄÅäÖÃ
+     // æ£€æŸ¥æ–‡ä»¶ä¸­æ˜¯å¦åŒ…å«è¯¥æ€ªç‰©çš„é…ç½®
      if (doc.HasMember(monsterName.c_str()) && doc[monsterName.c_str()].IsObject()) {
          rapidjson::Value& monsterData = doc[monsterName.c_str()];
 
-         // »ñÈ¡¹ÖÎïÊôĞÔ
+         // è·å–æ€ªç‰©å±æ€§
          if (monsterData.HasMember("spriteFrameName")) {
              config.spriteFrameName = monsterData["spriteFrameName"].GetString();
          }

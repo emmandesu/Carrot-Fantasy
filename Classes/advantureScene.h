@@ -3,7 +3,7 @@
 #define __ADVANTURE_SCENE_H__
 #include "cocos2d.h"
 USING_NS_CC;
-class advanturescene : public Layer  //类似hellowordScene
+class advanturescene : public Layer  //绫讳技hellowordScene
 {
 public:
 	static Scene* createScene() {
@@ -14,10 +14,9 @@ public:
 	};
 	virtual bool init();
 	void clearRelatedButtons();
-	void to_menuScene(Ref* pSender);//回到菜单
+	void to_menuScene(Ref* pSender);//鍥炲埌鑿滃崟
 	void know_Callback(Ref* pSender);
 	CREATE_FUNC(advanturescene);
 };
 
 #endif // _ADVANTURE_SCENE_H__
-

@@ -1,3 +1,4 @@
+#include "SaveIO.h"
 #include"GameManager.h"
 #include<vector>
 #include "json/document.h"
@@ -6,35 +7,35 @@
 #include "json/stringbuffer.h"
 #include<fstream>
 #include <sstream>
-#include"Music.h"
+#include"music.h"
 
 USING_NS_CC;
 extern Music a;
 extern int DeadCount;
 
-/*****************GameManagerÏà¹Ø**********************/
-//¾²Ì¬³ÉÔ±±äÁ¿µÄ¶¨ÒåºÍ³õÊ¼»¯
+/*****************GameManagerç›¸å…³**********************/
+//é™æ€æˆå‘˜å˜é‡çš„å®šä¹‰å’Œåˆå§‹åŒ–
 GameManager* GameManager::instance = nullptr;
-//´´½¨µ¥ÀıÊµÀı
+//åˆ›å»ºå•ä¾‹å®ä¾‹
 GameManager* GameManager::getInstance(BaseLevelScene* scene) {
     if (!instance) {
         instance = new GameManager();
     }
-    // Èç¹û´«ÈëÁË³¡¾°£¬Ôò¸üĞÂ¹ØÁªµÄ³¡¾°
+    // å¦‚æœä¼ å…¥äº†åœºæ™¯ï¼Œåˆ™æ›´æ–°å…³è”çš„åœºæ™¯
     if (scene) {
         instance->setScene(scene);
     }
     return instance;
 }
-// ÉèÖÃµ±Ç°³¡¾°
+// è®¾ç½®å½“å‰åœºæ™¯
 void GameManager::setScene(BaseLevelScene* scene) {
     currentScene = scene;
 }
-// »ñÈ¡µ±Ç°³¡¾°
+// è·å–å½“å‰åœºæ™¯
 BaseLevelScene* GameManager::getScene() const {
     return currentScene;
 }
-// ÊÍ·Åµ¥ÀıÊµÀı
+// é‡Šæ”¾å•ä¾‹å®ä¾‹
 void GameManager::destroyInstance() {
     if (instance) {
         delete instance;
@@ -42,13 +43,13 @@ void GameManager::destroyInstance() {
     }
 }
 
-/*****************¸üĞÂ**********************/
-//ÖğÖ¡¸üĞÂ×´Ì¬
+/*****************æ›´æ–°**********************/
+//é€å¸§æ›´æ–°çŠ¶æ€
 void GameManager::update(float deltaTime) {
     CCLOG("monsters size %d", monsters.size());
     CCLOG("monsters DEAD NUM %d", DeadCount);
 }
-//¼ì²éÊä×´Ì¬
+//æ£€æŸ¥è¾“çŠ¶æ€
 bool GameManager::CheckLose()
 {
     if (carrot->getHP() <= 0)
@@ -58,7 +59,7 @@ bool GameManager::CheckLose()
     }
     return false;
 }
-//¼ì²éÓ®×´Ì¬
+//æ£€æŸ¥èµ¢çŠ¶æ€
 bool GameManager::CheckWin()
 {
     if (waveIndex + 1 < AllWaveNum) return false;
@@ -72,54 +73,48 @@ bool GameManager::CheckWin()
     CCLOG("WIN THE GAME!");
     return true;
 }
-/*****************¹Ø¿¨Ïà¹Ø**********************/
-//³õÊ¼»¯¹Ø¿¨Êı¾İ
+/*****************å…³å¡ç›¸å…³**********************/
+//åˆå§‹åŒ–å…³å¡æ•°æ®
 void GameManager::initLevel(int level,bool initMode)
 {
+    stopAllSchedulers();
+    removeListener();
+    ClearMonsters();
     levelId=level;
     path.clear();
     screenPath.clear();
-    monsters.clear();
     waveConfigs.clear();
     waveIndex=0;
-    ClearMonsters();
     AllMonsterNum=0;
     DeadCount=0;
-    //³õÊ¼»¯Â·¾¶
+    //åˆå§‹åŒ–è·¯å¾„
     initPath();
-    //³õÊ¼»¯¹ÖÊŞÍ¼Ïñ×ÊÔ´
+    //åˆå§‹åŒ–æ€ªå…½å›¾åƒèµ„æº
     loadMonsterResources();
-    //³õÊ¼»¯ÂÜ²·
+    //åˆå§‹åŒ–èåœ
     initCarrot();
-    // ×¢²áÊÂ¼ş¼àÌıÆ÷
+    // æ³¨å†Œäº‹ä»¶ç›‘å¬å™¨
      registerListener();
-    //¼ÓÔØ¹ÖÊŞÊı¾İ×ÊÔ´
-     //Èç¹û²»ÊÇ³õÊ¼Ä£Ê½,¾Í¶ÁÈ¡³õÊ¼Êı¾İ
-     
-     if(!initMode)
-     {
-    loadMonsterWaveConfig("MonsterWaves.json", "level"+std::to_string(level));
-     }
-     //·ñÔò£¬¶Á´æµµÊı¾İ
-     else
-     {
-        if (!loadGameData("level" + std::to_string(levelId) + "Monster.json"))
-        {
-            loadMonsterWaveConfig("MonsterWaves.json", "level" + std::to_string(level));
-        }
-     }
+    //åŠ è½½æ€ªå…½æ•°æ®èµ„æº
+     //å¦‚æœä¸æ˜¯åˆå§‹æ¨¡å¼,å°±è¯»å–åˆå§‹æ•°æ®
+
+    loadMonsterWaveConfig("MonsterWaves.json", "level" + std::to_string(level));
+    pendingCounts.clear();
+    for (const auto& wave : waveConfigs) pendingCounts.push_back(wave.count);
+    if (initMode) loadGameData("level" + std::to_string(levelId) + "Monster.json");
+
 }
-//³õÊ¼»¯Ä³Ò»¹Ø¿¨¹Ø¿¨Â·¾¶
+//åˆå§‹åŒ–æŸä¸€å…³å¡å…³å¡è·¯å¾„
 void GameManager::initPath()
 {
-    // ¼ÓÔØÂ·¾¶
+    // åŠ è½½è·¯å¾„
     if (pathsCache.find(levelId) == pathsCache.end()) {
         if (!loadPathForLevel(levelId, "paths.json")) {
             CCLOG("Failed to load path for level %d.", levelId);
             return;
         }
     }
-    // »ñÈ¡±¾¹Ø¿¨Â·¾¶
+    // è·å–æœ¬å…³å¡è·¯å¾„
     path = pathsCache[levelId];
     CCLOG("Path for level %d:", levelId);
     for (const auto& point : path) {
@@ -127,24 +122,24 @@ void GameManager::initPath()
     }
     CCLOG("%f", currentScene->tileMap->getMapSize().height);
     for (const auto& gridPoint : path) {
-        // Ê¹ÓÃ gridToScreenCenter º¯Êı½«Íø¸ñ×ø±ê×ªÎªÆÁÄ»×ø±ê
+        // ä½¿ç”¨ gridToScreenCenter å‡½æ•°å°†ç½‘æ ¼åæ ‡è½¬ä¸ºå±å¹•åæ ‡
         screenPath.push_back(gridToScreenCenter(gridPoint));
         float x = gridToScreenCenter(gridPoint).x;
         float y = gridToScreenCenter(gridPoint).y;
         CCLOG("ScreenPoint: (%f, %f)", x, y);
     }
 }
-//¶ÁÈ¡ËùÓĞ¹Ø¿¨Â·¾¶
+//è¯»å–æ‰€æœ‰å…³å¡è·¯å¾„
 bool GameManager::loadPathForLevel(int levelId, const std::string& filePath)
 {
-    // Èç¹ûÒÑ¾­¼ÓÔØ¹ı¸Ã¹Ø¿¨µÄÂ·¾¶£¬ÔòÖ±½Ó·µ»Ø
+    // å¦‚æœå·²ç»åŠ è½½è¿‡è¯¥å…³å¡çš„è·¯å¾„ï¼Œåˆ™ç›´æ¥è¿”å›
     if (pathsCache.find(levelId) != pathsCache.end()) {
         return true;
     }
 
-    // ´ÓÎÄ¼şÖĞ¶ÁÈ¡ JSON Êı¾İ
+    // ä»æ–‡ä»¶ä¸­è¯»å– JSON æ•°æ®
     std::string fileContent = cocos2d::FileUtils::getInstance()->getStringFromFile(filePath);
-    if (fileContent.empty()) { // ¼ì²éÎÄ¼şÊÇ·ñ¶ÁÈ¡³É¹¦
+    if (fileContent.empty()) { // æ£€æŸ¥æ–‡ä»¶æ˜¯å¦è¯»å–æˆåŠŸ
         CCLOG("Failed to load JSON file: %s", filePath.c_str());
         return false;
     }
@@ -152,59 +147,59 @@ bool GameManager::loadPathForLevel(int levelId, const std::string& filePath)
     rapidjson::Document document;
     document.Parse(fileContent.c_str());
 
-    // ¼ì²é JSON ¸ñÊ½ÊÇ·ñÓĞĞ§
+    // æ£€æŸ¥ JSON æ ¼å¼æ˜¯å¦æœ‰æ•ˆ
     if (document.HasParseError() || !document.IsObject()) {
         CCLOG("Failed to parse JSON or invalid format: %s", filePath.c_str());
         return false;
     }
 
-    // ±éÀú JSON ¶ÔÏó£¬ÌáÈ¡Ö¸¶¨¹Ø¿¨µÄÂ·¾¶
+    // éå† JSON å¯¹è±¡ï¼Œæå–æŒ‡å®šå…³å¡çš„è·¯å¾„
     for (auto& level : document.GetObject()) {
-        int levelIdInFile = std::stoi(level.name.GetString()); // »ñÈ¡ÎÄ¼şÖĞµÄ¹Ø¿¨±àºÅ
-        if (levelIdInFile == levelId) { // Æ¥Åä¹Ø¿¨±àºÅ
+        int levelIdInFile = std::stoi(level.name.GetString()); // è·å–æ–‡ä»¶ä¸­çš„å…³å¡ç¼–å·
+        if (levelIdInFile == levelId) { // åŒ¹é…å…³å¡ç¼–å·
 
-            if (!level.value.IsArray()) { // ¼ì²éÂ·¾¶Êı¾İÊÇ·ñÊÇÊı×é
+            if (!level.value.IsArray()) { // æ£€æŸ¥è·¯å¾„æ•°æ®æ˜¯å¦æ˜¯æ•°ç»„
                 CCLOG("Path data for level %d is not an array.", levelId);
                 return false;
             }
 
-            const auto& points = level.value.GetArray(); // Â·¾¶µãÊı×é
+            const auto& points = level.value.GetArray(); // è·¯å¾„ç‚¹æ•°ç»„
             std::vector<cocos2d::Vec2> path;
 
-            // Ê¹ÓÃÊı×éµü´úÆ÷±éÀú
+            // ä½¿ç”¨æ•°ç»„è¿­ä»£å™¨éå†
             for (rapidjson::Value::ConstValueIterator it = points.Begin(); it != points.End(); ++it) {
-                if (!it->IsArray() || it->Size() != 2) { // ¼ì²éµãµÄ¸ñÊ½
+                if (!it->IsArray() || it->Size() != 2) { // æ£€æŸ¥ç‚¹çš„æ ¼å¼
                     CCLOG("Invalid point format in level %d.", levelId);
                     continue;
                 }
 
                 float x = (*it)[0].GetFloat();
                 float y = (*it)[1].GetFloat();
-                path.emplace_back(x, y); // ×ª»»Îª Vec2 ²¢´æÈëÂ·¾¶
+                path.emplace_back(x, y); // è½¬æ¢ä¸º Vec2 å¹¶å­˜å…¥è·¯å¾„
             }
 
-            if (path.empty()) { // ¼ì²éÂ·¾¶ÊÇ·ñÎª¿Õ
+            if (path.empty()) { // æ£€æŸ¥è·¯å¾„æ˜¯å¦ä¸ºç©º
                 CCLOG("No valid points found for level %d.", levelId);
                 return false;
             }
 
-            pathsCache[levelId] = path; // »º´æÂ·¾¶Êı¾İ
-            // ±éÀúÍø¸ñÂ·¾¶µã
+            pathsCache[levelId] = path; // ç¼“å­˜è·¯å¾„æ•°æ®
+            // éå†ç½‘æ ¼è·¯å¾„ç‚¹
             for (const auto& point : pathsCache[levelId]) {
-                CCLOG("Grid Point: (%f, %f)", point.x, point.y);  // Êä³öÍø¸ñ×ø±ê
+                CCLOG("Grid Point: (%f, %f)", point.x, point.y);  // è¾“å‡ºç½‘æ ¼åæ ‡
                 Vec2 screenCenter = gridToScreenCenter(point);
-                ScreenPaths[levelId].emplace_back(screenCenter);  // ´æ´¢ÖĞĞÄµãÆÁÄ»×ø±ê
-                CCLOG("Center Screen Point: (%f, %f)", screenCenter.x, screenCenter.y);  // Êä³öÆÁÄ»×ø±ê
+                ScreenPaths[levelId].emplace_back(screenCenter);  // å­˜å‚¨ä¸­å¿ƒç‚¹å±å¹•åæ ‡
+                CCLOG("Center Screen Point: (%f, %f)", screenCenter.x, screenCenter.y);  // è¾“å‡ºå±å¹•åæ ‡
             }
-            return true; // ¼ÓÔØ³É¹¦
+            return true; // åŠ è½½æˆåŠŸ
         }
     }
 
     CCLOG("Path for level %d not found in file: %s", levelId, filePath.c_str());
-    return false; // Î´ÕÒµ½¸Ã¹Ø¿¨Â·¾¶
+    return false; // æœªæ‰¾åˆ°è¯¥å…³å¡è·¯å¾„
 }
-/*****************¹ÖÊŞÏà¹Ø**********************/
-//¼ÓÔØ¹ÖÊŞÍ¼Ïñ×ÊÔ´
+/*****************æ€ªå…½ç›¸å…³**********************/
+//åŠ è½½æ€ªå…½å›¾åƒèµ„æº
 void GameManager::loadMonsterResources() {
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/pig.plist");
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/yellowbat.plist");
@@ -217,8 +212,6 @@ void GameManager::loadMonsterResources() {
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/star.plist");
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/bubble.plist");
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/fuck.plist");
-    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/xin.plist");
-    SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/yuxin.plist");
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/BossYellow.plist");
     SpriteFrameCache::getInstance()->addSpriteFramesWithFile("Monsters/BossSheep.plist");
     if (!SpriteFrameCache::getInstance()->getSpriteFrameByName("pig_0.png")) {
@@ -313,18 +306,19 @@ void GameManager::loadMonsterResources() {
         CCLOG("Failed to load SpriteFrame 'BossSheep_1.png'.");
     }
 }
-//µ¥¸ö¹ÖÊŞÉú²úº¯Êı
+//å•ä¸ªæ€ªå…½ç”Ÿäº§å‡½æ•°
 void GameManager::produceMonsters(const std::string monsterName, const int startIndex, int health, bool pause) {
     a.born_music();
     if (startIndex == 0)
         playSpawnEffect(screenPath[0]);
-    // ´´½¨¹ÖÎï²¢Ìí¼Óµ½³¡¾°
+    // åˆ›å»ºæ€ªç‰©å¹¶æ·»åŠ åˆ°åœºæ™¯
     auto Monster = Monster::create(monsterName, screenPath, startIndex, pause);
     if (!Monster) {
         CCLOG("Failed to create monster.");
         return;
     }
-    monsters.push_back(Monster); // ±£´æµ½¹ÖÎïÁĞ±í 
+    Monster->retain(); // The manager owns one reference until the next level.
+    monsters.push_back(Monster); // ä¿å­˜åˆ°æ€ªç‰©åˆ—è¡¨
     CCLOG("");
     currentScene->addChild(Monster);
     Monster->setPause(pause);
@@ -333,19 +327,19 @@ void GameManager::produceMonsters(const std::string monsterName, const int start
     {
         Monster->setHealth(health);
     }
-    if(monsterName.find("Boss") == 0)
+    if(health == -1 && monsterName.find("Boss") == 0)
     {
-      
+
     Monster->SpecialAttack();
     }
 }
-//¹ÖÊŞ²¨µÄÊı¾İÅäÖÃ
+//æ€ªå…½æ³¢çš„æ•°æ®é…ç½®
 void GameManager::loadMonsterWaveConfig(const std::string& filename, const std::string& levelName) {
-    // ´ò¿ª JSON ÎÄ¼ş
+    // æ‰“å¼€ JSON æ–‡ä»¶
     std::string path = FileUtils::getInstance()->fullPathForFilename(filename);
     std::string fileContent = FileUtils::getInstance()->getStringFromFile(path);
 
-    // Ê¹ÓÃ rapidjson ½âÎöÎÄ¼şÄÚÈİ
+    // ä½¿ç”¨ rapidjson è§£ææ–‡ä»¶å†…å®¹
     rapidjson::Document doc;
     doc.Parse(fileContent.c_str());
 
@@ -353,28 +347,28 @@ void GameManager::loadMonsterWaveConfig(const std::string& filename, const std::
         CCLOG("Error parsing JSON file: %s", filename.c_str());
         return;
     }
-    // ¼ì²éÊÇ·ñ´æÔÚÖ¸¶¨¹Ø¿¨µÄÅäÖÃ
+    // æ£€æŸ¥æ˜¯å¦å­˜åœ¨æŒ‡å®šå…³å¡çš„é…ç½®
     if (doc.HasMember(levelName.c_str())) {
         const rapidjson::Value& waves = doc[levelName.c_str()];
         for (rapidjson::SizeType i = 0; i < waves.Size(); ++i) {
             const rapidjson::Value& wave = waves[i];
             WaveConfig waveConfig;
-            // »ñÈ¡¹ÖÎï²¨´Î
+            // è·å–æ€ªç‰©æ³¢æ¬¡
             waveConfig.wave = wave["wave"].GetInt();
-            // »ñÈ¡¹ÖÎïÃû³Æ
+            // è·å–æ€ªç‰©åç§°
             waveConfig.monsterName = wave["monsterName"].GetString();
 
-            // »ñÈ¡¹ÖÎïÊıÁ¿
+            // è·å–æ€ªç‰©æ•°é‡
             waveConfig.count = wave["count"].GetInt();
 
-            // »ñÈ¡Éú³É¼ä¸ô
+            // è·å–ç”Ÿæˆé—´éš”
             const rapidjson::Value& spawnInterval = wave["spawnInterval"];
             waveConfig.spawnInterval[0] = spawnInterval[0].GetFloat();
             waveConfig.spawnInterval[1] = spawnInterval[1].GetFloat();
-            // Ìí¼Ó²¨ÅäÖÃ
+            // æ·»åŠ æ³¢é…ç½®
             waveConfigs.push_back(waveConfig);
             AllWaveNum = waveConfigs.size();
-            // ´òÓ¡²¨µÄÅäÖÃĞÅÏ¢
+            // æ‰“å°æ³¢çš„é…ç½®ä¿¡æ¯
             CCLOG("Wave %d - Monster: %s, Count: %d, Spawn Interval: %.2f - %.2f",
                 waveConfigs.size(),
                 waveConfig.monsterName.c_str(),
@@ -393,255 +387,172 @@ void GameManager::loadMonsterWaveConfig(const std::string& filename, const std::
     }
     CCLOG("All Num %d ", AllMonsterNum);
 }
-//²úÉúÒ»²¨¹ÖÊŞ
-void GameManager::produceMonsterWave(const WaveConfig& waveConfig) {
-    // Ã¿Ò»²¨¹ÖÎïµÄÉú³Éº¯Êı
+//äº§ç”Ÿä¸€æ³¢æ€ªå…½
+void GameManager::produceMonsterWave(const WaveConfig& waveConfig, int waveNumber) {
+    if (waveNumber < 0 || waveNumber >= static_cast<int>(pendingCounts.size())) return;
     float delay = 0;
-    CCLOG("%d   %d", waveIndex,AllWaveNum);
-    for (int i = 0; i < waveConfig.count; ++i) {
-        // Éú³ÉËæ»úÊ±¼ä
+    const int remaining = pendingCounts[waveNumber];
+    for (int i = 0; i < remaining; ++i) {
         delay += cocos2d::RandomHelper::random_real(waveConfig.spawnInterval[0], waveConfig.spawnInterval[1]);
-
-        // ÑÓ³ÙÉú³É¹ÖÎï£¬×¢ÒâÑÓ³ÙµÄÊ±³¤ÊÇÏà¶ÔÓÚµ±Ç°Ê±¼äµÄ
-        cocos2d::Director::getInstance()->getScheduler()->schedule([=](float) {
+        const auto key = "produceMonster_" + std::to_string(waveNumber) + "_" + std::to_string(i);
+        Director::getInstance()->getScheduler()->schedule([this, waveConfig, waveNumber](float) {
+            if (pendingCounts[waveNumber] > 0) --pendingCounts[waveNumber];
             produceMonsters(waveConfig.monsterName, 0, -1, false);
-            }, this, 0, 0, delay, false, "produceMonster" + std::to_string(i));
+        }, this, 0, 0, delay, false, key);
     }
 }
-//Éú³É¹ÖÊŞ²¨
+
 void GameManager::startMonsterWaves() {
-    CCLOG("Starting wave %d", waveIndex);
-    produceMonsterWave(waveConfigs[waveIndex]); // Éú³Éµ±Ç°²¨µÄ¹ÖÎï
-    cocos2d::Director::getInstance()->getScheduler()->schedule([this](float) {
-        if (waveIndex >= waveConfigs.size() - 1) {
-            CCLOG("All waves are complete.");
-            cocos2d::Director::getInstance()->getScheduler()->unschedule("startWave", this); // Í£Ö¹µ÷¶ÈÆ÷
+    if (waveConfigs.empty() || waveIndex < 0 || waveIndex >= static_cast<int>(waveConfigs.size())) return;
+    // A previous wave may still have pending spawns when the next wave starts.
+    for (int i = 0; i <= waveIndex; ++i) produceMonsterWave(waveConfigs[i], i);
+    Director::getInstance()->getScheduler()->schedule([this](float) {
+        if (waveIndex + 1 >= static_cast<int>(waveConfigs.size())) {
+            Director::getInstance()->getScheduler()->unschedule("startWave", this);
             return;
         }
-        ++waveIndex; // ½øÈëÏÂÒ»²¨
-        CCLOG("Starting wave %d", waveIndex);
-        produceMonsterWave(waveConfigs[waveIndex]); // Éú³Éµ±Ç°²¨µÄ¹ÖÎï
-
-        }, this, 15.0f, false, "startWave"); // Ã¿¸ô 15 Ãëµ÷¶ÈÒ»´Î
+        ++waveIndex;
+        produceMonsterWave(waveConfigs[waveIndex], waveIndex);
+    }, this, 15.0f, false, "startWave");
 }
-//¹ÖÊŞÈë³¡ÌØĞ§
+//æ€ªå…½å…¥åœºç‰¹æ•ˆ
 void GameManager::playSpawnEffect(const cocos2d::Vec2& spawnPosition) {
-    // 1. ´´½¨Ò»¸öÁÙÊ±µÄ¶¯»­¾«Áé (²»ÒÀ¸½ÓÚ¹ÖÎï)
-    auto spawnEffect = cocos2d::Sprite::create("Monsters/monster_start_1.png"); // ¶¯»­µÄµÚÒ»Ö¡
-    spawnEffect->setPosition(spawnPosition); // ¶¯»­ÏÔÊ¾ÔÚÉú³ÉÎ»ÖÃ
-    currentScene->addChild(spawnEffect); // °Ñ¶¯»­¾«Áé¼Óµ½³¡¾°
-    // 2. ¼ÓÔØ¶¯»­µÄÖ¡
+    // 1. åˆ›å»ºä¸€ä¸ªä¸´æ—¶çš„åŠ¨ç”»ç²¾çµ (ä¸ä¾é™„äºæ€ªç‰©)
+    auto spawnEffect = cocos2d::Sprite::create("Monsters/monster_start_1.png"); // åŠ¨ç”»çš„ç¬¬ä¸€å¸§
+    spawnEffect->setPosition(spawnPosition); // åŠ¨ç”»æ˜¾ç¤ºåœ¨ç”Ÿæˆä½ç½®
+    currentScene->addChild(spawnEffect); // æŠŠåŠ¨ç”»ç²¾çµåŠ åˆ°åœºæ™¯
+    // 2. åŠ è½½åŠ¨ç”»çš„å¸§
     cocos2d::Vector<cocos2d::SpriteFrame*> frames;
     frames.pushBack(cocos2d::SpriteFrame::create("Monsters/monster_start_1.png", cocos2d::Rect(0, 0, 64, 64)));
     frames.pushBack(cocos2d::SpriteFrame::create("Monsters/monster_start_2.png", cocos2d::Rect(0, 0, 64, 64)));
-    // 3. Éú³É 2 Ö¡µÄ¶¯»­ (0.2s Ã¿Ö¡)
+    // 3. ç”Ÿæˆ 2 å¸§çš„åŠ¨ç”» (0.2s æ¯å¸§)
     auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 0.2f);
     auto animate = cocos2d::Animate::create(animation);
-    // 4. Ñ­»·²¥·Å 2 ´Î
+    // 4. å¾ªç¯æ’­æ”¾ 2 æ¬¡
     auto repeatAnimation = cocos2d::Repeat::create(animate, 2);
-    // 5. ¶¯»­²¥·ÅÍê³Éºó£¬ÒÆ³ıÕâ¸öÁÙÊ±¶¯»­¾«Áé
+    // 5. åŠ¨ç”»æ’­æ”¾å®Œæˆåï¼Œç§»é™¤è¿™ä¸ªä¸´æ—¶åŠ¨ç”»ç²¾çµ
     auto removeEffect = cocos2d::CallFunc::create([spawnEffect]() {
-        spawnEffect->removeFromParent(); // ÒÆ³ı¶¯»­¾«Áé
+        spawnEffect->removeFromParent(); // ç§»é™¤åŠ¨ç”»ç²¾çµ
         });
-    // 6. ¶¯»­ĞòÁĞ (²¥·Å¶¯»­ + ÒÆ³ı)
-    spawnEffect->setScale(1.5f); // ·Å´ó¶¯»­
+    // 6. åŠ¨ç”»åºåˆ— (æ’­æ”¾åŠ¨ç”» + ç§»é™¤)
+    spawnEffect->setScale(1.5f); // æ”¾å¤§åŠ¨ç”»
     auto sequence = cocos2d::Sequence::create(repeatAnimation, removeEffect, nullptr);
-    spawnEffect->runAction(sequence); // ÔËĞĞ¶¯»­
+    spawnEffect->runAction(sequence); // è¿è¡ŒåŠ¨ç”»
 }
-//½ÓÊÕ¹ÖÊŞµ½´ïÖÕµãµÄÊ±¼äµÄĞÅºÅ£¬´¦Àí¹ÖÎïµ½´ïÖÕµãºóµÄÂß¼­
+//æ¥æ”¶æ€ªå…½åˆ°è¾¾ç»ˆç‚¹çš„æ—¶é—´çš„ä¿¡å·ï¼Œå¤„ç†æ€ªç‰©åˆ°è¾¾ç»ˆç‚¹åçš„é€»è¾‘
 void GameManager::onMonsterPathComplete(cocos2d::EventCustom* event)
 {
-    // ´ÓÊÂ¼şµÄ userdata »ñÈ¡¹ÖÊŞ¶ÔÏó
+    // ä»äº‹ä»¶çš„ userdata è·å–æ€ªå…½å¯¹è±¡
     Monster* monster = static_cast<Monster*>(event->getUserData());
 
     if (monster) {
         CCLOG("Monster has completed the path. Perform further actions here.");
-        if (monster->getHealth() > 0)//¹ÖÎïÓĞÑª¾Í¹¥»÷
+        if (monster->getHealth() > 0)//æ€ªç‰©æœ‰è¡€å°±æ”»å‡»
         {
             monster->setHealth(0);
             carrot->getDamage(monster->getDamage());
             CCLOG("carrot'HP    %d", carrot->getHP());
         }
-        monster->toDie(currentScene);  //¹ÖÊŞËÀÍö
+        monster->toDie(currentScene);  //æ€ªå…½æ­»äº¡
     }
 }
-//ÇåÀí¹ÖÊŞ
+//æ¸…ç†æ€ªå…½
 void GameManager::ClearMonsters()
 {
-    // ¼ÙÉè monsters ÊÇÒ»¸ö std::vector<Sprite*>
+    // å‡è®¾ monsters æ˜¯ä¸€ä¸ª std::vector<Sprite*>
     for (auto monster : monsters) {
-        // ´Ó¸¸½ÚµãÖĞÒÆ³ı¾«Áé
+        // ä»çˆ¶èŠ‚ç‚¹ä¸­ç§»é™¤ç²¾çµ
         if (monster->getParent()) {
             monster->getParent()->removeChild(monster);
         }
         monster->stopAllActions();
-        // ÊÍ·Å¾«Áé¶ÔÏóµÄÄÚ´æ
+        // é‡Šæ”¾ç²¾çµå¯¹è±¡çš„å†…å­˜
         monster->release();
     }
-    // Çå¿Õ vector
+    // æ¸…ç©º vector
     monsters.clear();
 }
 
-/*****************´æµµÓë¶ÁµµÏà¹Ø**********************/
-//¸ù¾İ´æµµ³õÊ¼»¯
+/*****************å­˜æ¡£ä¸è¯»æ¡£ç›¸å…³**********************/
+//æ ¹æ®å­˜æ¡£åˆå§‹åŒ–
 bool GameManager::loadGameData(const std::string& fileName) {
-    waveConfigs.clear();
-    WaveConfig waveConfig;
-    // 1. ¹¹ÔìÎÄ¼şÂ·¾¶£¨¿ÉĞ´Â·¾¶£©
-    std::string filePath = cocos2d::FileUtils::getInstance()->getWritablePath() + fileName;
-    CCLOG("ÕıÔÚ¼ÓÔØ´æµµÎÄ¼ş: %s", filePath.c_str());
-
-    // 2. ¶ÁÈ¡ÎÄ¼şÄÚÈİ
-    std::ifstream ifs(filePath);
-    if (!ifs.is_open()) {
-        CCLOG("ÎŞ·¨´ò¿ª´æµµÎÄ¼ş£º%s", filePath.c_str());
-        return false;
+    const auto path = FileUtils::getInstance()->getWritablePath() + fileName;
+    if (!FileUtils::getInstance()->isFileExist(path)) return false;
+    const auto json = FileUtils::getInstance()->getStringFromFile(path);
+    rapidjson::Document doc;
+    doc.Parse(json.c_str());
+    if (doc.HasParseError() || !doc.IsObject() ||
+        !doc.HasMember("schemaVersion") || !doc["schemaVersion"].IsInt() || doc["schemaVersion"].GetInt() != 2 ||
+        !doc.HasMember("waveIndex") || !doc["waveIndex"].IsInt() ||
+        !doc.HasMember("pendingCounts") || !doc["pendingCounts"].IsArray() ||
+        !doc.HasMember("livemonsters") || !doc["livemonsters"].IsArray()) return false;
+    const int savedIndex = doc["waveIndex"].GetInt();
+    if (savedIndex < 0 || savedIndex >= static_cast<int>(waveConfigs.size()) ||
+        doc["pendingCounts"].Size() != waveConfigs.size()) return false;
+    std::vector<int> pending;
+    int expected = 0;
+    for (rapidjson::SizeType i = 0; i < doc["pendingCounts"].Size(); ++i) {
+        const auto& value = doc["pendingCounts"][i];
+        if (!value.IsInt() || value.GetInt() < 0 || value.GetInt() > waveConfigs[i].count) return false;
+        pending.push_back(value.GetInt());
+        expected += value.GetInt();
     }
-
-    std::stringstream buffer;
-    buffer << ifs.rdbuf();  // ¶ÁÈ¡ÎÄ¼şÄÚÈİµ½×Ö·û´®
-    std::string fileContent = buffer.str();
-    ifs.close();
-    CCLOG("ÎÄ¼şÄÚÈİ: %s", fileContent.c_str());
-
-    // 3. Ê¹ÓÃ RapidJSON ½âÎö JSON
-    rapidjson::Document document;
-    if (document.Parse(fileContent.c_str()).HasParseError()) {
-        CCLOG("JSON ½âÎö´íÎó");
-        return false;
+    // Validate every monster before changing state or scheduling animations.
+    for (const auto& monster : doc["livemonsters"].GetArray()) {
+        if (!monster.IsObject() || !monster.HasMember("monsterName") || !monster["monsterName"].IsString() ||
+            !monster.HasMember("pathIndex") || !monster["pathIndex"].IsInt() ||
+            !monster.HasMember("health") || !monster["health"].IsInt() || monster["health"].GetInt() <= 0) return false;
+        bool known = false;
+        for (const auto& wave : waveConfigs) if (wave.monsterName == monster["monsterName"].GetString()) known = true;
+        if (!known || monster["pathIndex"].GetInt() < 0 ||
+            monster["pathIndex"].GetInt() >= static_cast<int>(screenPath.size())) return false;
     }
-
-    // 4. ¶ÁÈ¡µÚÒ»²¿·Ö: livemonsters
-    if (document.HasMember("livemonsters") && document["livemonsters"].IsArray()) {
-        const rapidjson::Value& livingMonsters = document["livemonsters"];
-        for (rapidjson::SizeType i = 0; i < livingMonsters.Size(); ++i) {
-            const rapidjson::Value& monsterData = livingMonsters[i];
-            if (monsterData.IsObject()) {
-                std::string monsterName = monsterData["monsterName"].GetString();
-                int pathIndex = monsterData["pathIndex"].GetInt();
-                int health = monsterData["health"].GetInt();
-                //ÖØĞÂ´´½¨¹ÖÊŞ
-                produceMonsters(monsterName, pathIndex,health,true);
-                CCLOG("readMonsters: name=%s, pathIndex=%d, health=%d", monsterName.c_str(), pathIndex, health);
-                AllMonsterNum++; 
-            }
-        }
+    waveIndex = savedIndex;
+    pendingCounts = pending;
+    AllMonsterNum = expected + doc["livemonsters"].Size();
+    for (const auto& monster : doc["livemonsters"].GetArray()) {
+        produceMonsters(monster["monsterName"].GetString(), monster["pathIndex"].GetInt(), monster["health"].GetInt(), true);
+        if (monster.HasMember("x") && monster["x"].IsNumber() && monster.HasMember("y") && monster["y"].IsNumber())
+            monsters.back()->setPosition(monster["x"].GetFloat(), monster["y"].GetFloat());
+        monsters.back()->updateHealthBar();
     }
-
-    // 5. ¶ÁÈ¡µÚ¶ş²¿·Ö: currentWave
-    if (document.HasMember("currentWave") && document["currentWave"].IsObject()) {
-        const rapidjson::Value& currentWave = document["currentWave"];
-        std::string monsterName = currentWave["monsterName"].GetString();
-        int count = currentWave["count"].GetInt();
-            // »ñÈ¡¹ÖÎïÃû³Æ
-            waveConfig.monsterName = monsterName;
-            // »ñÈ¡¹ÖÎïÊıÁ¿
-            waveConfig.count = count;
-            AllMonsterNum+=count;
-            // Ìí¼Ó²¨ÅäÖÃ
-            waveConfigs.push_back(waveConfig);
-            CCLOG("currentWave: name=%s, count=%d", monsterName.c_str(), count);
-    }
-
-    // 6. ¶ÁÈ¡µÚÈı²¿·Ö: waveIndex
-    if (document.HasMember("waveIndex") && document["waveIndex"].IsInt()) {
-        int waveIndex = document["waveIndex"].GetInt();
-        CCLOG("currentIndex: %d", waveIndex);
-        // Äã¿ÉÒÔÔÚÕâÀïÉèÖÃµ±Ç°µÄ²¨Ë÷Òı
-        this->waveIndex = waveIndex;
-    }
-    AllWaveNum= waveIndex+1;
-    // 7. ¶ÁÈ¡µÚËÄ²¿·Ö: upcomingWaves
-    if (document.HasMember("upcomingWaves") && document["upcomingWaves"].IsArray()) {
-        const rapidjson::Value& upcomingWaves = document["upcomingWaves"];
-        for (rapidjson::SizeType i = 0; i < upcomingWaves.Size(); ++i) {
-            const rapidjson::Value& waveData = upcomingWaves[i];
-            if (waveData.IsObject()) {
-                std::string monsterName = waveData["monsterName"].GetString();
-                int count = waveData["count"].GetInt();
-                // »ñÈ¡¹ÖÎïÃû³Æ
-                waveConfig.monsterName = monsterName;
-                // »ñÈ¡¹ÖÎïÊıÁ¿
-                waveConfig.count = count;
-               AllMonsterNum += count;
-                AllWaveNum++;
-                // Ìí¼Ó²¨ÅäÖÃ
-                waveConfigs.push_back(waveConfig);
-                CCLOG("upComingWave: name=%s, count=%d", monsterName.c_str(), count);
-            }
-        }
-    }
-    
-    CCLOG("Read All Data!");
     return true;
 }
-//¹ÖÊŞÊı¾İ´æµµº¯Êı
+
 void GameManager::saveMonstersDataToJson(const std::string& fileName) {
-    // ´´½¨ JSON ÎÄµµ¶ÔÏó
-    rapidjson::Document document;
-    document.SetObject();
-    // »ñÈ¡µ±Ç°²¨µÄË÷Òı
-    int currentWaveIndex = getCurrentWaveIndex();
-    // 1. ±£´æ»î×ÅµÄ¹ÖÎï
-    rapidjson::Value livingMonsters(rapidjson::kArrayType);
-    for (auto* monster : monsters) {
-        if (monster->checkLive()) {  // ÅĞ¶Ï¹ÖÎïÊÇ·ñ»î×Å
-            rapidjson::Value monsterData(rapidjson::kObjectType);
-            // monsterName
-            monsterData.AddMember("monsterName", rapidjson::Value(monster->getMonsterName().c_str(), document.GetAllocator()), document.GetAllocator());
-            // pathIndex
-            monsterData.AddMember("pathIndex", monster->getPathIndex(), document.GetAllocator());
-            // health
-            monsterData.AddMember("health", monster->getHealth(), document.GetAllocator());
-            // ½«¹ÖÎïÊı¾İÌí¼Óµ½Êı×éÖĞ
-            livingMonsters.PushBack(monsterData, document.GetAllocator());
-        }
+    if (waveConfigs.empty() || pendingCounts.size() != waveConfigs.size()) return;
+    rapidjson::Document doc;
+    doc.SetObject();
+    auto& allocator = doc.GetAllocator();
+    doc.AddMember("schemaVersion", 2, allocator);
+    doc.AddMember("waveIndex", waveIndex, allocator);
+    rapidjson::Value pending(rapidjson::kArrayType);
+    for (int count : pendingCounts) pending.PushBack(count, allocator);
+    doc.AddMember("pendingCounts", pending, allocator);
+    rapidjson::Value living(rapidjson::kArrayType);
+    for (const auto* monster : monsters) {
+        if (!monster || !monster->checkLive() || monster->getHealth() <= 0) continue;
+        rapidjson::Value value(rapidjson::kObjectType);
+        value.AddMember("monsterName", rapidjson::Value(monster->getMonsterName().c_str(), allocator), allocator);
+        value.AddMember("pathIndex", monster->getPathIndex(), allocator);
+        value.AddMember("health", monster->getHealth(), allocator);
+        value.AddMember("x", monster->getPositionX(), allocator);
+        value.AddMember("y", monster->getPositionY(), allocator);
+        living.PushBack(value, allocator);
     }
-    document.AddMember("livemonsters", livingMonsters, document.GetAllocator());
-    // 2. ±£´æµ±Ç°²¨ĞÅÏ¢
-    // ¼ÆËãµ±Ç°²¨Ê£ÓàµÄ¹ÖÎïÊıÁ¿
-    int totalMonstersCount = 0;
-    for (int i = 0; i <= currentWaveIndex; ++i) {
-        totalMonstersCount += waveConfigs[i].count;
-    }
-    int remainingCount = totalMonstersCount - monsters.size();
-    rapidjson::Value currentWave(rapidjson::kObjectType);
-    currentWave.AddMember("monsterName", rapidjson::Value(waveConfigs[currentWaveIndex].monsterName.c_str(), document.GetAllocator()), document.GetAllocator());
-    currentWave.AddMember("count", remainingCount, document.GetAllocator());
-    document.AddMember("currentWave", currentWave, document.GetAllocator());
-    //3.±£´æµ±Ç°²¨µÄ±àºÅ
-    document.AddMember("waveIndex", currentWaveIndex, document.GetAllocator()); // ´æÈëµ±Ç°²¨Ë÷Òı
-    // 4. ±£´æ½ÓÏÂÀ´µÄ²¨ĞÅÏ¢
-    rapidjson::Value upcomingWaves(rapidjson::kArrayType);
-    for (size_t i = currentWaveIndex + 1; i < waveConfigs.size(); ++i) {
-        rapidjson::Value waveData(rapidjson::kObjectType);
-        waveData.AddMember("monsterName", rapidjson::Value(waveConfigs[i].monsterName.c_str(), document.GetAllocator()), document.GetAllocator());
-        waveData.AddMember("count", waveConfigs[i].count, document.GetAllocator());
-        // ½«Ã¿²¨µÄÊı¾İÌí¼Óµ½Êı×éÖĞ
-        upcomingWaves.PushBack(waveData, document.GetAllocator());
-    }
-    document.AddMember("upcomingWaves", upcomingWaves, document.GetAllocator());
-    // »ñÈ¡¿ÉĞ´Â·¾¶
-    std::string writablePath = FileUtils::getInstance()->getWritablePath();  // »ñÈ¡¿ÉĞ´Â·¾¶
-    // ¹¹ÔìÎÄ¼şÂ·¾¶
-    std::string filePath = writablePath + fileName;
-    // ½«½á¹ûĞ´Èëµ½Ö¸¶¨ÎÄ¼şÂ·¾¶
+    doc.AddMember("livemonsters", living, allocator);
     rapidjson::StringBuffer buffer;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
-    document.Accept(writer);
-    // Ğ´ÈëÎÄ¼ş
-    std::ofstream ofs(filePath);  // Ê¹ÓÃ¿ÉĞ´Â·¾¶
-    if (ofs.is_open()) {
-        ofs << buffer.GetString();
-        ofs.close();
-        CCLOG("´æµµ³É¹¦£º%s", filePath.c_str());
-    }
-    else {
-        CCLOG("´æµµÊ§°Ü£º%s", filePath.c_str());
-    }
+    doc.Accept(writer);
+    SaveIO::writeJSON(FileUtils::getInstance()->getWritablePath() + fileName, buffer.GetString());
 }
-/*****************ÂÜ²·Ïà¹Ø**********************/
-//ÂÜ²·¶¶¶¯ÌØĞ§
+
+int GameManager::getCarrotHealth() const { return carrot ? carrot->getHP() : 10; }
+void GameManager::restoreCarrotHealth(int health) {
+    if (carrot) carrot->changeHP(std::max(1, std::min(10, health)) - carrot->getHP());
+}
+/*****************èåœç›¸å…³**********************/
+//èåœæŠ–åŠ¨ç‰¹æ•ˆ
 void GameManager::doudong() {
     if (carrot->hp == 10) {
         carrot->setVisible(false);
@@ -650,10 +561,10 @@ void GameManager::doudong() {
             CCLOG("Failed to create death sprite.");
             return;
         }
-        b->setPosition(dst1[levelId - 1]);  // ÉèÖÃËÀÍö¶¯»­¾«ÁéÎ»ÖÃÓë¹ÖÎïÏàÍ¬
+        b->setPosition(dst1[levelId - 1]);  // è®¾ç½®æ­»äº¡åŠ¨ç”»ç²¾çµä½ç½®ä¸æ€ªç‰©ç›¸åŒ
         b->setScale(1.5f);
         currentScene->addChild(b);
-        // ¸üĞÂÂß¼­
+        // æ›´æ–°é€»è¾‘
         cocos2d::Vector<cocos2d::SpriteFrame*> frames;
         for (int i = 0; i <= 2; ++i) {
             std::string frameName = "Carrot/dou_" + std::to_string(i) + ".png";
@@ -671,7 +582,7 @@ void GameManager::doudong() {
         }
         auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 0.5f);
         auto animate = cocos2d::Animate::create(animation);
-        // 7. ¶¯»­Íê³ÉºóÉ¾³ıÁÙÊ±µÄËÀÍö¶¯»­¾«Áé
+        // 7. åŠ¨ç”»å®Œæˆååˆ é™¤ä¸´æ—¶çš„æ­»äº¡åŠ¨ç”»ç²¾çµ
         auto onDeathComplete = cocos2d::CallFunc::create([b]() {
             CCLOG("Death animation completed, removing death sprite.");
             b->removeFromParent();
@@ -681,15 +592,15 @@ void GameManager::doudong() {
         carrot->setVisible(true);
     }
 }
-//³õÊ¼»¯ÂÜ²·
+//åˆå§‹åŒ–èåœ
 void GameManager::initCarrot() {
-    // Éú³ÉÂÜ²·£¬ÑªÁ¿Îª10
+    // ç”Ÿæˆèåœï¼Œè¡€é‡ä¸º10
     carrot = Carrot::create(10, dst1[levelId - 1], dst2[levelId - 1]);
-    currentScene->addChild(carrot); // Ö±½Ó½« Carrot ×÷ÎªÒ»¸öNode£¬Ìí¼Óµ½³¡¾°ÖĞ
+    currentScene->addChild(carrot); // ç›´æ¥å°† Carrot ä½œä¸ºä¸€ä¸ªNodeï¼Œæ·»åŠ åˆ°åœºæ™¯ä¸­
     CCLOG("CARROT READY!");
 }
 
-/*****************¼àÌıÆ÷Ïà¹Ø**********************/
+/*****************ç›‘å¬å™¨ç›¸å…³**********************/
 void GameManager::registerListener() {
     _listener = cocos2d::EventListenerCustom::create("monster_path_complete",
         CC_CALLBACK_1(GameManager::onMonsterPathComplete, this));
@@ -715,11 +626,11 @@ void GameManager::stopAllSchedulers() {
     CCLOG("Stopping all schedulers for GameManager.");
     cocos2d::Director::getInstance()->getScheduler()->unscheduleAllForTarget(this);
 }
-//Íß¸ñ×ø±ê×ªµØÍ¼×ø±êµÄ¹¤¾ßº¯Êı
+//ç“¦æ ¼åæ ‡è½¬åœ°å›¾åæ ‡çš„å·¥å…·å‡½æ•°
 Vec2 GameManager::gridToScreenCenter(const Vec2& gridPoint) {
-    // ´Ó tileMap »ñÈ¡µØÍ¼¸ß¶È£¨Íø¸ñÊıÁ¿£©
+    // ä» tileMap è·å–åœ°å›¾é«˜åº¦ï¼ˆç½‘æ ¼æ•°é‡ï¼‰
     float mapHeight = currentScene->tileMap->getMapSize().height;
-    // ×ª»»ÎªÆÁÄ»×ø±ê
+    // è½¬æ¢ä¸ºå±å¹•åæ ‡
     float screenX = gridPoint.x * (currentScene->tileSize.height) + (currentScene->tileSize.width) / 2;
     float screenY = (mapHeight - gridPoint.y - 1) * (currentScene->tileSize.height) + (currentScene->tileSize.height) / 2;
     return Vec2(screenX, screenY);

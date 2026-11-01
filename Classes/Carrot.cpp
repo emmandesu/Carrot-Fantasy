@@ -1,12 +1,12 @@
 #include "Carrot.h"
-#include"Music.h"
+#include"music.h"
 #define schedule_selector(_SELECTOR) static_cast<SEL_SCHEDULE>(&_SELECTOR)
 USING_NS_CC;
 extern Music a;
 Carrot* Carrot::create(int initialHP, const cocos2d::Vec2& carrotPos, const cocos2d::Vec2& hpPos) {
     Carrot* ret = new (std::nothrow) Carrot();
     if (ret && ret->init(initialHP, carrotPos, hpPos)) {
-        ret->autorelease();  // ½»¸øÄÚ´æ¹ÜÀí
+        ret->autorelease();  // äº¤ç»™å†…å­˜ç®¡ç†
         return ret;
     }
     else {
@@ -16,47 +16,41 @@ Carrot* Carrot::create(int initialHP, const cocos2d::Vec2& carrotPos, const coco
 }
 
 bool Carrot::init(int initialHP, const cocos2d::Vec2& carrotPos, const cocos2d::Vec2& hpPos) {
-    if (!Node::init()) { // È·±£¸¸ÀàµÄinit()µ÷ÓÃ³É¹¦
+    if (!Node::init()) { // ç¡®ä¿çˆ¶ç±»çš„init()è°ƒç”¨æˆåŠŸ
         return false;
     }
 
-    // ³õÊ¼»¯ÑªÁ¿
+    // åˆå§‹åŒ–è¡€é‡
     hp = initialHP;
 
-    // ÔØÈë¾«ÁéÖ¡»º´æ
+    // è½½å…¥ç²¾çµå¸§ç¼“å­˜
     auto frameCache = SpriteFrameCache::getInstance();
     frameCache->addSpriteFramesWithFile("CarrotGuardRes/Carrots.plist", "CarrotGuardRes/Carrots.png");
     frameCache->addSpriteFramesWithFile("CarrotGuardRes/Health.plist", "CarrotGuardRes/Health.png");
 
-    // ³õÊ¼»¯ÂÜ²·Í¼Æ¬
+    // åˆå§‹åŒ–èåœå›¾ç‰‡
     carrotSprite = Sprite::createWithSpriteFrameName(StringUtils::format("Carrot_%d.png", (hp+1)/2));
     carrotSprite->setScale(1.5);
     carrotSprite->setPosition(carrotPos);
-    this->addChild(carrotSprite, 2); // ½«ÂÜ²·Í¼Æ¬Ìí¼ÓÎªCarrotµÄ×Ó½Úµã
+    this->addChild(carrotSprite, 2); // å°†èåœå›¾ç‰‡æ·»åŠ ä¸ºCarrotçš„å­èŠ‚ç‚¹
 
-    // ³õÊ¼»¯ÑªÌõÍ¼Æ¬
-    hpSprite = Sprite::createWithSpriteFrameName(StringUtils::format("Health_%d.png", hp));
+    // åˆå§‹åŒ–è¡€æ¡å›¾ç‰‡
+    hpSprite = Sprite::createWithSpriteFrameName(StringUtils::format("Health_%d.png", std::max(1, hp)));
     hpSprite->setScale(1.5);
     hpSprite->setPosition(hpPos);
-    this->addChild(hpSprite, 2); // ½«ÑªÌõÍ¼Æ¬Ìí¼ÓÎªCarrotµÄ×Ó½Úµã
+    this->addChild(hpSprite, 2); // å°†è¡€æ¡å›¾ç‰‡æ·»åŠ ä¸ºCarrotçš„å­èŠ‚ç‚¹
 
     return true;
 }
 
 void Carrot::changeHP(int change) {
-    hp += change;
-    if (hp <= 0) {
-        hp == 0;
-        updateHPDisplay(); // ¸üĞÂÂÜ²·Í¼Æ¬ºÍÑªÌõÍ¼Æ¬
-    }
-    else if (hp > 0 && hp <= 10) {
-        updateHPDisplay(); // ¸üĞÂÂÜ²·Í¼Æ¬ºÍÑªÌõÍ¼Æ¬
-    }
+    hp = std::max(0, std::min(10, hp + change));
+    updateHPDisplay();
 }
 
 void Carrot::updateHPDisplay() {
-    carrotSprite->setSpriteFrame(StringUtils::format("Carrot_%d.png", (hp + 1) /2));
-    hpSprite->setSpriteFrame(StringUtils::format("Health_%d.png", hp));
+    carrotSprite->setSpriteFrame(StringUtils::format("Carrot_%d.png", std::max(1, (hp + 1) / 2)));
+    hpSprite->setSpriteFrame(StringUtils::format("Health_%d.png", std::max(1, hp)));
 }
 
 

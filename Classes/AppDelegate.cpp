@@ -24,6 +24,7 @@
  ****************************************************************************/
 
 #include "AppDelegate.h"
+#include "BaseLevelScene.h"
 #include "menuScene.h"
 #include "music.h"
 
@@ -97,30 +98,27 @@ bool AppDelegate::applicationDidFinishLaunching() {
     }
 
     // turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 
     // Set the design resolution
-    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::NO_BORDER);
-    auto frameSize = glview->getFrameSize();
-    // if the frame's height is larger than the height of medium size.
-    if (frameSize.height > mediumResolutionSize.height)
-    {
-        director->setContentScaleFactor(MIN(largeResolutionSize.height/designResolutionSize.height, largeResolutionSize.width/designResolutionSize.width));
-    }
-    // if the frame's height is larger than the height of small size.
-    else if (frameSize.height > smallResolutionSize.height)
-    {
-        director->setContentScaleFactor(MIN(mediumResolutionSize.height/designResolutionSize.height, mediumResolutionSize.width/designResolutionSize.width));
-    }
-    // if the frame's height is smaller than the height of medium size.
-    else
-    {
-        director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
-    }
+    glview->setDesignResolutionSize(designResolutionSize.width, designResolutionSize.height, ResolutionPolicy::SHOW_ALL);
+    // Resource pixels and gameplay coordinates use the same 960x640 space.
+    director->setContentScaleFactor(1.0f);
 
+#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+    auto keyboard = EventListenerKeyboard::create();
+    keyboard->onKeyReleased = [director](EventKeyboard::KeyCode key, Event*) {
+        if (key != EventKeyboard::KeyCode::KEY_BACK) return;
+        auto scene = director->getRunningScene();
+        if (auto level = dynamic_cast<BaseLevelScene*>(scene)) level->menu_all(nullptr);
+        else if (dynamic_cast<MenuScene*>(scene)) director->end();
+        else director->popScene();
+    };
+    director->getEventDispatcher()->addEventListenerWithFixedPriority(keyboard, 1);
+#endif
     register_all_packages();
 
     //先预加载
@@ -141,7 +139,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
 // This function will be called when the app is inactive. Note, when receiving a phone call it is invoked.
 void AppDelegate::applicationDidEnterBackground() {
-    Director::getInstance()->stopAnimation();
+    auto director = Director::getInstance();
+    if (auto level = dynamic_cast<BaseLevelScene*>(director->getRunningScene()))
+        level->checkpoint();
+    AudioEngine::pauseAll();
+    director->stopAnimation();
 
 #if USE_AUDIO_ENGINE
     AudioEngine::pauseAll();
@@ -151,6 +153,7 @@ void AppDelegate::applicationDidEnterBackground() {
 // this function will be called when the app is active again
 void AppDelegate::applicationWillEnterForeground() {
     Director::getInstance()->startAnimation();
+    if (a.is_play()) AudioEngine::resumeAll();
 
 #if USE_AUDIO_ENGINE
     AudioEngine::resumeAll();

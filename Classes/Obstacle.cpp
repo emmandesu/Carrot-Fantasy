@@ -1,5 +1,5 @@
 #include"Obstacle.h"
-#include"BaseLevelScene.h"//ÒòÎªBaseLevelSceneÖĞÓÃµ½ÁËObstacle,Îª·ÀÖ¹Ñ­»·Ç¶Ì×£¬ËùÒÔinclude·ÅÔÚÕâÀï¶ø·Ç.hÀï
+#include"BaseLevelScene.h"//å› ä¸ºBaseLevelSceneä¸­ç”¨åˆ°äº†Obstacle,ä¸ºé˜²æ­¢å¾ªç¯åµŒå¥—ï¼Œæ‰€ä»¥includeæ”¾åœ¨è¿™é‡Œè€Œé.hé‡Œ
 #include"music.h"
 extern Music a;
 #define CELL_SIZE 64
@@ -10,11 +10,11 @@ ObData Obstacle::Ob[10] = { {"Obstacles/obstacle1.png",1,50,300},{"Obstacles/obs
 {"Obstacles/obstacle10.png",4,200,600} };
 
 void Obstacle::Produce(Scene* my_scene, int x_, int y_) {
-	curr = Sprite::create(Ob[index].road_path);//¼ÓÔØÍ¼Æ¬
+	curr = Sprite::create(Ob[index].road_path);//åŠ è½½å›¾ç‰‡
 	x = x_; y = y_;
 	float scale;
 	Vec2 pos;
-	if (size == 4) {//¸ù¾İsize²»Í¬¾ö¶¨Î»ÖÃÓë´óĞ¡
+	if (size == 4) {//æ ¹æ®sizeä¸åŒå†³å®šä½ç½®ä¸å¤§å°
 		pos = Vec2((x + 1) * CELL_SIZE, (y + 1) * CELL_SIZE);
 		scale = CELL_SIZE * 2 / curr->getContentSize().width;
 	}
@@ -28,12 +28,12 @@ void Obstacle::Produce(Scene* my_scene, int x_, int y_) {
 	}
 	curr->setPosition(pos);
 	curr->setScale(scale);
-	my_scene->addChild(curr);//¼ÓÈë
+	my_scene->addChild(curr);//åŠ å…¥
 	_HP = cocos2d::ui::LoadingBar::create("Monsters/HPbar.png");
-	_HP->setPercent(100); // ³õÊ¼ÑªÁ¿ÎªÂúÑª
+	_HP->setPercent(100); // åˆå§‹è¡€é‡ä¸ºæ»¡è¡€
 	_HP->setPosition(Vec2(curr->getContentSize().width / 2, curr->getContentSize().height * 1.1f));
 	curr->addChild(_HP, 10);
-	//Ìí¼ÓÑªÌõ±³¾°
+	//æ·»åŠ è¡€æ¡èƒŒæ™¯
 	hpback= Sprite::create("Monsters/HPBackground.png");
 	hpback->setPosition(Vec2(curr->getContentSize().width / 2, curr->getContentSize().height * 1.1f));
 	curr->addChild(hpback, 9);
@@ -48,7 +48,7 @@ void Obstacle::toDie(BaseLevelScene*my_scene)
 	isDead = true;
 	my_scene->updateMoney(reward);
 	curr->retain();
-	my_scene->removeChild(curr);//ÕâÀïµÄÕÏ°­ÎïÊÇÍêÈ«¿ÉÒÔ´ÓmapÖĞÉ¾³ıµÄ
+	my_scene->removeChild(curr);//è¿™é‡Œçš„éšœç¢ç‰©æ˜¯å®Œå…¨å¯ä»¥ä»mapä¸­åˆ é™¤çš„
 	if (this == my_scene->tar_o) {
 		my_scene->isTarget = 0;
 		my_scene->tar_o = nullptr;
@@ -58,18 +58,18 @@ void Obstacle::toDie(BaseLevelScene*my_scene)
 	if (size == 2) my_scene->map_data[x + 1][y].flag = 0;
 	else if (size == 4) my_scene->map_data[x + 1][y].flag = my_scene->map_data[x][y + 1].flag = my_scene->map_data[x + 1][y + 1].flag = 0;
 
-	//ÕÏ°­Îï±¬Õ¨µÄ¶¯»­
-	 //  ´´½¨Ò»¸öĞÂµÄÁÙÊ±¾«ÁéÓÃÓÚ²¥·ÅËÀÍö¶¯»­
+	//éšœç¢ç‰©çˆ†ç‚¸çš„åŠ¨ç”»
+	 //  åˆ›å»ºä¸€ä¸ªæ–°çš„ä¸´æ—¶ç²¾çµç”¨äºæ’­æ”¾æ­»äº¡åŠ¨ç”»
 	auto deathSprite = cocos2d::Sprite::create();
 
 	my_scene->addChild(deathSprite);
-	deathSprite->setPosition(getPosition());  //Î»ÖÃÓëÕÏ°­ÎïÏàÍ¬
+	deathSprite->setPosition(getPosition());  //ä½ç½®ä¸éšœç¢ç‰©ç›¸åŒ
 	deathSprite->setScale(1.5f);
 
 	cocos2d::Vector<cocos2d::SpriteFrame*> frames;
 	for (int i = 1; i <= 4; ++i) {
 		std::string frameName = "Obstacles/obdead" + std::to_string(i) + ".png";
-		auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 163, 163)); // ¼ÙÉèÃ¿ÕÅÍ¼Æ¬µÄ´óĞ¡ÊÇ 64x64
+		auto frame = cocos2d::SpriteFrame::create(frameName, cocos2d::Rect(0, 0, 163, 163)); // å‡è®¾æ¯å¼ å›¾ç‰‡çš„å¤§å°æ˜¯ 64x64
 
 		if (frame) {
 			frames.pushBack(frame);
@@ -79,23 +79,23 @@ void Obstacle::toDie(BaseLevelScene*my_scene)
 		}
 	}
 
-	//  Èç¹ûÃ»ÓĞ¼ÓÔØµ½¶¯»­Ö¡£¬Ö±½Ó·µ»Ø
+	//  å¦‚æœæ²¡æœ‰åŠ è½½åˆ°åŠ¨ç”»å¸§ï¼Œç›´æ¥è¿”å›
 	if (frames.empty()) {
 		CCLOG("No frames found for death animation, skipping.");
 		return;
 	}
 
-	// 6. ´´½¨¶¯»­£¬Ã¿Ö¡³ÖĞø 0.2 Ãë
+	// 6. åˆ›å»ºåŠ¨ç”»ï¼Œæ¯å¸§æŒç»­ 0.2 ç§’
 	auto animation = cocos2d::Animation::createWithSpriteFrames(frames, 0.1f);
 	auto animate = cocos2d::Animate::create(animation);
 
-	// 7. ¶¯»­Íê³ÉºóÉ¾³ıÁÙÊ±µÄËÀÍö¶¯»­¾«Áé
+	// 7. åŠ¨ç”»å®Œæˆååˆ é™¤ä¸´æ—¶çš„æ­»äº¡åŠ¨ç”»ç²¾çµ
 	auto onDeathComplete = cocos2d::CallFunc::create([deathSprite]() {
 		CCLOG("Death animation completed, removing death obstacle.");
 		deathSprite->removeFromParent();
 		});
 
-	// 8. ²¥·ÅËÀÍö¶¯»­£¬¶¯»­½áÊøºóÇåÀíÁÙÊ±¾«Áé
+	// 8. æ’­æ”¾æ­»äº¡åŠ¨ç”»ï¼ŒåŠ¨ç”»ç»“æŸåæ¸…ç†ä¸´æ—¶ç²¾çµ
 	deathSprite->runAction(cocos2d::Sequence::create(animate, onDeathComplete, nullptr));
 	a.Object();
 }
@@ -104,5 +104,5 @@ void Obstacle::updateHealthBar(){
 	float percentage = (static_cast<float>(health) / maxHp) * 100;
 	if (percentage < 0) percentage = 0;
 	if (percentage > 100) percentage = 100;
-	_HP->setPercent(percentage); // ¸üĞÂÑªÌõ°Ù·Ö±È
+	_HP->setPercent(percentage); // æ›´æ–°è¡€æ¡ç™¾åˆ†æ¯”
 }

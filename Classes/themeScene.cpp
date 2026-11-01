@@ -64,14 +64,14 @@ void themescene::loadGameState() {
 		Document document;
 		document.Parse(jsonContent.c_str());
 
-		if (document.HasMember("levels") && document["levels"].IsArray()) {
+		if (!document.HasParseError() && document.IsObject() && document.HasMember("levels") && document["levels"].IsArray()) {
 			// 获取 levels 数组
 			const rapidjson::Value& levels = document["levels"];
 
 
 			// 遍历 levels 数组，填充 level_is_win 数组
-			for (SizeType i = 0; i < levels.Size(); i++) {
-				level_is_win[i] = levels[i].GetBool();  // 获取布尔值并添加到 level_is_win 中
+			for (SizeType i = 0; i < levels.Size() && i < 3; i++) {
+				level_is_win[i] = levels[i].IsBool() && levels[i].GetBool();  // 获取布尔值并添加到 level_is_win 中
 			}
 
 			// 打印关卡状态

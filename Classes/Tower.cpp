@@ -88,8 +88,6 @@ void Tower::destroy(BaseLevelScene* my_scene)
 {
 	my_scene->removeChild(sprite_mark);
 	my_scene->removeChild(sp_base);
-	sprite_mark->release();
-	sp_base->release();
 	my_scene->updateMoney(sell_money[index][grade]);
 	a.TowerSell();
 }
@@ -99,7 +97,6 @@ void Tower::update(BaseLevelScene* my_scene, Vec2 position)
 	if (grade >= 2 || my_scene->getMoney() < up_cost[index][grade]) return;
 	my_scene->updateMoney(-up_cost[index][grade]);
 	my_scene->removeChild(sprite_mark);
-	sprite_mark->release();
 	grade += 1;
 	auto tower = EnglishUI::sprite(tower_table[index][grade]);
 	if (index == 1) tower->setScale(0.8);
@@ -112,7 +109,7 @@ void Tower::update(BaseLevelScene* my_scene, Vec2 position)
 	a.TowerUpdata();
 }
 
-void Tower::UpMenuAppear(BaseLevelScene* my_scene, Vec2& position)
+void Tower::UpMenuAppear(BaseLevelScene* my_scene, const Vec2& position)
 {
 	Sprite* up;
 	if (grade < 2 && my_scene->getMoney() >= up_cost[index][grade]) up = EnglishUI::sprite(up_graph[up_cost[index][grade]]);
@@ -137,9 +134,6 @@ void Tower::UpMenuGone(BaseLevelScene* my_scene)
 	my_scene->removeChild(curr_up);
 	my_scene->removeChild(curr_sale);
 	my_scene->removeChild(curr_range);
-	curr_up->release();
-	curr_sale->release();
-	curr_range->release();
 }
 
 template<class T>

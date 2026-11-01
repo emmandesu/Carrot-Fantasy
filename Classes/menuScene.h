@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 USING_NS_CC;
 
-class MenuScene : public Scene  //ÀàËÆhellowordScene
+class MenuScene : public Scene  //ç±»ä¼¼hellowordScene
 {
 public:
 	static Scene* createScene() {
@@ -13,13 +13,13 @@ public:
 	virtual bool init();
 	// a selector callback
 	void menuCloseCallback(Ref* pSender);
-	//È¥¹Ø¿¨Ñ¡Ôñ½çÃæ
+	//å»å…³å¡é€‰æ‹©ç•Œé¢
 	void to_AdvantureScene(Ref* pSender);
-	//È¥ÉèÖÃ½çÃæ
+	//å»è®¾ç½®ç•Œé¢
 	void to_SetScene(Ref* pSender);
-	//ÕâÊÇ¹ÛÕ½µ¼Ïò£¬ÏÈ²»Åª
+	//è¿™æ˜¯è§‚æˆ˜å¯¼å‘ï¼Œå…ˆä¸å¼„
 	void to_seeScene(Ref* pSender);
-	//È¥boss
+	//å»boss
 	void to_boss(Ref* pSender);
 	void know_Callback(Ref* pSender);
 	// implement the "static create()" method manually
@@ -27,4 +27,3 @@ public:
 };
 
 #endif // __MENU_SCENE_H__
-

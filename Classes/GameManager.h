@@ -10,85 +10,88 @@
 #include"Carrot.h"
 USING_NS_CC;
 
-//¹ÖÊŞ²¨µÄĞÅÏ¢
+//æ€ªå…½æ³¢çš„ä¿¡æ¯
 struct WaveConfig {
     int wave;
     std::string monsterName;
     int count;
-    std::array<float, 2> spawnInterval={1,2};  // Éú³É¼ä¸ôµÄ·¶Î§ [0.0, 2.0] Ö®Àà
+    std::array<float, 2> spawnInterval={1,2};  // ç”Ÿæˆé—´éš”çš„èŒƒå›´ [0.0, 2.0] ä¹‹ç±»
 };
-//Ò»¾Ö×î¶àµÄ¹ÖÊŞÊıÄ¿
+//ä¸€å±€æœ€å¤šçš„æ€ªå…½æ•°ç›®
 const int MAX_MONSTER_NUM=150;
 
 class GameManager {
 private:
-    // Ä¿±êÎ»ÖÃµÄÊı×é£¬¼ÙÉèlevelIdÊÇ1¡¢2¡¢3µÄ³¡¾°¹Ø¿¨
+    // ç›®æ ‡ä½ç½®çš„æ•°ç»„ï¼Œå‡è®¾levelIdæ˜¯1ã€2ã€3çš„åœºæ™¯å…³å¡
     std::vector<cocos2d::Vec2> dst1 = { Vec2(804, 640 - 196), Vec2(826, 640 - 210), Vec2(831, 640 - 287) };
     std::vector<cocos2d::Vec2> dst2 = { Vec2(854, 640 - 196), Vec2(886, 640 - 210), Vec2(881, 640 - 287) };
-    //¹ÜÀíÀàÏà¹Ø
-    static GameManager* instance;                                        // µ¥ÀıÖ¸Õë
-    BaseLevelScene* currentScene;                                        // µ±Ç°°ó¶¨µÄ³¡¾°
-    GameManager() : currentScene(nullptr), monsters(MAX_MONSTER_NUM) {}  // Ë½ÓĞ»¯¹¹Ôìº¯Êı£¬·ÀÖ¹Íâ²¿ÊµÀı»¯                                   
-    //ÂÜ²·Ïà¹Ø
-    Carrot* carrot;                                          // Carrot¶ÔÏó
-    void initCarrot();                                       //Ã¿¹Ø³õÊ¼»¯ÂÜ²·
-    //¹ÖÎï
-    int AllMonsterNum=0;                                    // ¹ÖÎï×ÜÊı
-    std::vector<WaveConfig> waveConfigs;                    //´æ´¢¹ÖÊŞ²¨
-    int waveIndex = 0;                                      //µ±Ç°²¨Êı
+    //ç®¡ç†ç±»ç›¸å…³
+    static GameManager* instance;                                        // å•ä¾‹æŒ‡é’ˆ
+    BaseLevelScene* currentScene;                                        // å½“å‰ç»‘å®šçš„åœºæ™¯
+    GameManager() : currentScene(nullptr), monsters() {}  // ç§æœ‰åŒ–æ„é€ å‡½æ•°ï¼Œé˜²æ­¢å¤–éƒ¨å®ä¾‹åŒ–
+    //èåœç›¸å…³
+    Carrot* carrot;                                          // Carrotå¯¹è±¡
+    void initCarrot();                                       //æ¯å…³åˆå§‹åŒ–èåœ
+    //æ€ªç‰©
+    int AllMonsterNum=0;                                    // æ€ªç‰©æ€»æ•°
+    std::vector<WaveConfig> waveConfigs;                    //å­˜å‚¨æ€ªå…½æ³¢
+    int waveIndex = 0;
+    std::vector<int> pendingCounts;                                      //å½“å‰æ³¢æ•°
     int AllWaveNum=0;
-    //Â·¾¶
-    std::map<int, std::vector<cocos2d::Vec2>>pathsCache;     //´æ´¢ÒÑ¾­¼ÓÔØ¹ıµÄ¹Ø¿¨µÄÍø¸ñÂ·¾¶
-    std::map<int, std::vector<cocos2d::Vec2>>ScreenPaths;    //´æ´¢ÒÑ¾­¼ÓÔØ¹ıµÄ¹Ø¿¨µÄÆÁÄ»Â·¾¶
-    std::vector<cocos2d::Vec2> path;                         //µ±Ç°ÆÁÄ»Íø¸ñÂ·¾¶
-    std::vector<cocos2d::Vec2> screenPath;                   //µ±Ç°ÆÁÄ»Â·¾¶
-    //¹Ø¿¨
-    int levelId;                                             //¹Ø¿¨±àºÅ
-    //ÊÂ¼ş¼àÌıÆ÷
-    cocos2d::EventListenerCustom* _listener;                 //ÓÃÓÚ¼ì²â¹ÖÊŞµ½´ïÖÕµãµÄÊÂ¼ş
+    //è·¯å¾„
+    std::map<int, std::vector<cocos2d::Vec2>>pathsCache;     //å­˜å‚¨å·²ç»åŠ è½½è¿‡çš„å…³å¡çš„ç½‘æ ¼è·¯å¾„
+    std::map<int, std::vector<cocos2d::Vec2>>ScreenPaths;    //å­˜å‚¨å·²ç»åŠ è½½è¿‡çš„å…³å¡çš„å±å¹•è·¯å¾„
+    std::vector<cocos2d::Vec2> path;                         //å½“å‰å±å¹•ç½‘æ ¼è·¯å¾„
+    std::vector<cocos2d::Vec2> screenPath;                   //å½“å‰å±å¹•è·¯å¾„
+    //å…³å¡
+    int levelId;                                             //å…³å¡ç¼–å·
+    //äº‹ä»¶ç›‘å¬å™¨
+    cocos2d::EventListenerCustom* _listener = nullptr;                 //ç”¨äºæ£€æµ‹æ€ªå…½åˆ°è¾¾ç»ˆç‚¹çš„äº‹ä»¶
 public:
-   
-    std::vector<Monster*> monsters;                          // ¹ÖÎïÁĞ±í
-    void stopAllSchedulers();                                //Í£Ö¹managerµÄËùÓĞµ÷¶ÈÆ÷
-    GameManager(const GameManager&) = delete;               
-    GameManager& operator=(const GameManager&) = delete;     // ½ûÓÃ¿½±´ºÍ¸³Öµ
+
+    std::vector<Monster*> monsters;                          // æ€ªç‰©åˆ—è¡¨
+    void stopAllSchedulers();                                //åœæ­¢managerçš„æ‰€æœ‰è°ƒåº¦å™¨
+    GameManager(const GameManager&) = delete;
+    GameManager& operator=(const GameManager&) = delete;     // ç¦ç”¨æ‹·è´å’Œèµ‹å€¼
     static GameManager* getInstance
-    (BaseLevelScene* scene = nullptr);                       // µ¥Àı»ñÈ¡º¯Êı
-    void setScene(BaseLevelScene* scene);                    //ÉèÖÃµ±Ç°³¡¾°
-    BaseLevelScene* getScene() const;                        // »ñÈ¡µ±Ç°³¡¾°
-    static void destroyInstance();                           //ÊÍ·ÅÊµÀı
-    //¸üĞÂ
+    (BaseLevelScene* scene = nullptr);                       // å•ä¾‹è·å–å‡½æ•°
+    void setScene(BaseLevelScene* scene);                    //è®¾ç½®å½“å‰åœºæ™¯
+    BaseLevelScene* getScene() const;                        // è·å–å½“å‰åœºæ™¯
+    static void destroyInstance();                           //é‡Šæ”¾å®ä¾‹
+    //æ›´æ–°
     void update(float deltaTime);
-    bool CheckLose();                                        //¼ì²éÊä×´Ì¬
-    bool CheckWin();                                         //¼ì²éÓ®×´Ì¬
-    //¹Ø¿¨
-    void initLevel(int level, bool ReadMode);                // ³õÊ¼»¯¹Ø¿¨Êı¾İ
-    void initPath();                                         // ³õÊ¼»¯Â·¾¶
-    // ¹ÖÎï¹ÜÀí
+    bool CheckLose();                                        //æ£€æŸ¥è¾“çŠ¶æ€
+    bool CheckWin();                                         //æ£€æŸ¥èµ¢çŠ¶æ€
+    //å…³å¡
+    void initLevel(int level, bool ReadMode);                // åˆå§‹åŒ–å…³å¡æ•°æ®
+    void initPath();                                         // åˆå§‹åŒ–è·¯å¾„
+    // æ€ªç‰©ç®¡ç†
     void loadMonsterWaveConfig
-    (const std::string& filename, const std::string& levelName);//¼ÓÔØ¹ÖÊŞ²¨ÅäÖÃ
-    void loadMonsterResources();                             //¼ÓÔØ¹ÖÊŞ×ÊÔ´
+    (const std::string& filename, const std::string& levelName);//åŠ è½½æ€ªå…½æ³¢é…ç½®
+    void loadMonsterResources();                             //åŠ è½½æ€ªå…½èµ„æº
     void produceMonsters(const std::string monsterName,
         const int startIndex,int health,bool pause=false);
-                                                             //¸ù¾İÃû×ÖºÍ³õÊ¼Êı¾İ²úÉú¹ÖÊŞ
-    void produceMonsterWave(const WaveConfig& waveConfig);   //²úÉú¹ÖÊŞ²¨
-    void startMonsterWaves();                                //¿ªÊ¼¹ÖÊŞ²¨
-    void playSpawnEffect(const cocos2d::Vec2& spawnPosition);//¹ÖÊŞ³ö³¡ÌØĞ§
-    void ClearMonsters();                                    //Çå³ıËùÓĞ¹ÖÊŞÄÚ´æ
-    int getCurrentWaveIndex() const{return waveIndex;}       //»ñÈ¡µ±Ç°¹ÖÊŞ²¨ĞòºÅ
-    int getAllWaveNum()const { return AllWaveNum; }          //»ñÈ¡×Ü²¨Êı
-    int getCurrentWaveNum()const { return waveIndex; }       //»ñÈ¡ÏÖ²¨Êı
+                                                             //æ ¹æ®åå­—å’Œåˆå§‹æ•°æ®äº§ç”Ÿæ€ªå…½
+    void produceMonsterWave(const WaveConfig& waveConfig, int waveNumber);   //äº§ç”Ÿæ€ªå…½æ³¢
+    void startMonsterWaves();                                //å¼€å§‹æ€ªå…½æ³¢
+    void playSpawnEffect(const cocos2d::Vec2& spawnPosition);//æ€ªå…½å‡ºåœºç‰¹æ•ˆ
+    void ClearMonsters();                                    //æ¸…é™¤æ‰€æœ‰æ€ªå…½å†…å­˜
+    int getCurrentWaveIndex() const{return waveIndex;}       //è·å–å½“å‰æ€ªå…½æ³¢åºå·
+    int getAllWaveNum()const { return AllWaveNum; }          //è·å–æ€»æ³¢æ•°
+    int getCurrentWaveNum()const { return waveIndex; }       //è·å–ç°æ³¢æ•°
     int getAllMonsterNum()const{return AllMonsterNum;}
-  //¶Áµµ´æµµÏà¹Ø
-    bool loadGameData(const std::string& fileName);          //¼ÓÔØ³õÊ¼ÓÎÏ·Êı¾İ
+  //è¯»æ¡£å­˜æ¡£ç›¸å…³
+    bool loadGameData(const std::string& fileName);          //åŠ è½½åˆå§‹æ¸¸æˆæ•°æ®
     bool loadPathForLevel(int levelId, const std::string& filePath);
-                                                             //¼ÓÔØµØÍ¼Êı¾İ
-    void saveMonstersDataToJson(const std::string& fileName);//´æ´¢¹ÖÊŞÊı¾İ
+                                                             //åŠ è½½åœ°å›¾æ•°æ®
+    void saveMonstersDataToJson(const std::string& fileName);//å­˜å‚¨æ€ªå…½æ•°æ®
     Vec2 gridToScreenCenter(const Vec2& gridPoint);
- //Ê±¼äÏà¹Ø
-    void registerListener();                                 // ×¢²áÊÂ¼ş¼àÌıÆ÷
-    void removeListener() ;                                  // ÒÆ³ıÊÂ¼ş¼àÌıÆ÷
-    void onMonsterPathComplete(cocos2d::EventCustom* event); // ÊÂ¼ş»Øµ÷
+ //æ—¶é—´ç›¸å…³
+    void registerListener();                                 // æ³¨å†Œäº‹ä»¶ç›‘å¬å™¨
+    void removeListener() ;                                  // ç§»é™¤äº‹ä»¶ç›‘å¬å™¨
+    void onMonsterPathComplete(cocos2d::EventCustom* event); // äº‹ä»¶å›è°ƒ
+    int getCarrotHealth() const;
+    void restoreCarrotHealth(int health);
     void Jineng1();
     void doudong();
 };
